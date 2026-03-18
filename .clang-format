@@ -1,0 +1,88 @@
+    # Base Style
+  BasedOnStyle: Google
+  
+  # Indentation
+  IndentWidth: 4                        # Use 4 spaces for indentation.
+  TabWidth: 4                           # Tab width is also 4 spaces.
+  UseTab: Never                         # Always use spaces instead of tabs.
+  IndentPPDirectives: BeforeHash        # Keeps preprocessor directives aligned before the hash.
+  AccessModifierOffset: '-2'            # Keeps access modifiers aligned with the class body.
+  
+  # Braces
+  AlwaysBreakTemplateDeclarations: 'Yes' # Breaks template declarations for better readability.
+  BreakBeforeBraces: Custom             # Customize brace placement.
+  BraceWrapping:
+    AfterClass: false                   # Place braces on a new line after class declarations.
+    AfterFunction: false                # Place braces on a new line after function definitions.
+    AfterNamespace: false               # Place braces on a new line after namespace declarations.
+    BeforeElse: false                   # Place `else` on a new line.
+    SplitEmptyFunction: false           # Keep empty function braces on the same line.
+  
+  # Column Limit
+  ColumnLimit: 170                      # Set the maximum line length to 150 characters.
+  
+  # Alignments
+  AlignTrailingComments:                # Align trailing comments with the code.
+    Kind: Always
+    OverEmptyLines: 1
+    MaxEmptyLinesToKeep: 2
+  AlignConsecutiveAssignments: true     # Align consecutive assignments for better readability.
+  AlignConsecutiveDeclarations: true    # Align consecutive declarations for better readability.
+  
+  # Function Declarations
+  AllowAllParametersOfDeclarationOnNextLine: false  # Allow parameters to break onto the next line.
+  ConstructorInitializerAllOnOneLineOrOnePerLine: true  # Break constructor initializers onto separate lines.
+  
+  # Namespace
+  NamespaceIndentation: All             # Indent all code inside namespaces.
+  FixNamespaceComments: true            # Fix namespace comments to match the style.
+  
+  # Empty Lines
+  MaxEmptyLinesToKeep: 2                # Allow up to 2 consecutive empty lines.
+  OverEmptyLines: 1                     # Align code over empty lines.
+  
+  # Include Statements
+  SortIncludes: false                    # Sort include statements.
+  IncludeBlocks: Regroup                  # Merge multiple #include blocks together and sort as one. Then split into groups based on category priority.
+  IncludeCategories:
+  - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
+    Priority:        2
+    SortPriority:    2
+    CaseSensitive:   true
+  - Regex:           '^((<|")(gtest|gmock|isl|json)/)'
+    Priority:        3
+  - Regex:           '<[[:alnum:].]+>'
+    Priority:        4
+  - Regex:           '.*'
+    Priority:        1
+    SortPriority:    0
+  
+  # Spaces
+  SpaceBeforeParens: ControlStatements  # Add a space before parentheses in control statements (e.g., `if`, `while`).
+  SpacesInParentheses: false            # Do not add spaces inside parentheses.
+  SpacesInSquareBrackets: false         # Do not add spaces inside square brackets.
+  SpaceBeforeSquareBrackets: false      # Do not add a space before square brackets.
+  
+  # Line Breaks
+  BreakBeforeBinaryOperators: NonAssignment         # Break before non-assignment binary operators.
+  BreakBeforeTernaryOperators: true                 # Break before ternary operators.
+  AllowShortFunctionsOnASingleLine: All             # Allow short functions to be on a single line.
+  AllowShortIfStatementsOnASingleLine: WithoutElse  # Allow short `if` statements to be on a single line if they do not have an `else`.
+  AllowShortCaseExpressionOnASingleLine: true       # Allow short case expressions to be on a single line.
+  AllowShortCaseLabelsOnASingleLine: true           # Allow short case labels to be on a single line.
+  AlignConsecutiveShortCaseStatements:              # Align consecutive short case statements.
+    Enabled: true                                   # Enable alignment.
+    AcrossEmptyLines: true                          # Align across empty lines.
+    AcrossComments: true                            # Align across comments.    
+    AlignCaseArrows: false                          # Align across Arrows.
+    AlignCaseColons: false                          # Align across Colons.
+
+  # Comments
+  CommentPragmas: '^ IWYU pragma:'        # Preserve specific comment pragmas.
+  ReflowComments: false                   # Do not reflow comments to fit within the column limit.
+  SpacesBeforeTrailingComments: 4         # Add 4 spaces before trailing comments.
+
+  # Spaces
+  SpaceAfterCStyleCast: false           # Do not add a space after C-style casts.
+  SpaceAfterLogicalNot: false           # Do not add a space after logical NOT operator.
+  SpaceBeforeAssignmentOperators: true  # Add a space before assignment operators.
