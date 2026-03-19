@@ -10,5 +10,6 @@
 
 #include "cb/cb_str.h"
 #include "cb/cb_vector.h"
+#include "cb/cb_file.h"
 
 #endif // CBRIDGE_MAIN_HPP
