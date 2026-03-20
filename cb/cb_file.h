@@ -1,6 +1,6 @@
 /**
  * @file cb_file.h
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY - FAL
  * @brief Utilities for filesystem operations and configuration parsing in pure C.
  * @version 1.0
  * @date 2026-03-19

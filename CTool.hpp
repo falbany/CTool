@@ -1,6 +1,9 @@
 /**
  * @file CTool.hpp
+ * @author Florent ALBANY - FAL
  * @brief Main entry point for the CTool library.
+ * @version 1.0
+ * @date 2026-03-19
  */
 
 #pragma once
@@ -17,5 +20,7 @@
 #include "ct/ct_math.hpp"
 #include "ct/ct_unit.hpp"
 #include "ct/ct_csv.hpp"
+#include "ct/ct_ini.hpp"
+#include "ct/ct_json.hpp"
 
 #endif // CTOOL_MAIN_HPP

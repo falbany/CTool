@@ -1,6 +1,6 @@
 /**
  * @file ct_csv.hpp
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY - FAL
  * @brief Thread-safe CSV streaming and parsing for test data logging.
  * @version 1.0
  * @date 2026-03-18

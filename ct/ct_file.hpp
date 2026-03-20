@@ -1,6 +1,6 @@
 /** 
  * @file ct_file.hpp
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY - FAL
  * @brief Utilities for file system operations, configuration parsing, and directory traversal.
  * @version 1.1
  * @date 2026-03-18

@@ -1,36 +1,48 @@
-# 📚 CTool & CBridge Documentation Hub
+# 📚 Documentation Hub
 
-This hub provides a central map for the **CTool** framework. The project is divided into **CBridge** (Object-oriented C for portability) and **CTool** (Modern C++ for high-level bench automation).
+This folder contains the complete technical documentation for the CTool and CBridge modules. Use the tables below to navigate the API references and usage guides.
 
-## 🛠 Project Modules
+## 🟢 CBridge (Pure C Modules)
+*High-portability modules designed for C environments.*
 
-| File | Description | Documentation |
-| :--- | :--- | :--- |
-| **CBridge (Pure C)** | | |
-| [`cb/cb_str.h`](https://www.google.com/search?q=../cb/cb_str.h) | Dynamic string management with C++-like API. | [**Usage Guide**](./cb_str.md) |
-| [`cb/cb_vector.h`](https://www.google.com/search?q=../cb/cb_vector.h) | Generic `void*` dynamic array (std::vector mimic). | [**Usage Guide**](./cb_vector.md) |
-| [`cb/cb_file.h`](https://www.google.com/search?q=../cb/cb_file.h) | Low-level file I/O and configuration parsing. | [**Usage Guide**](./cb_file.md) |
-| **CTool (C++)** | | |
-| [`ct/ct_str.hpp`](https://www.google.com/search?q=../ct/ct_str.hpp) | Advanced string formatting and manipulation. | *Pending* |
-| [`ct/ct_file.hpp`](https://www.google.com/search?q=../ct/ct_file.hpp) | High-level filesystem and path utilities. | *Pending* |
-| [`ct/ct_csv.hpp`](https://www.google.com/search?q=../ct/ct_csv.hpp) | CSV data parsing and generation for test results. | *Pending* |
-| [`ct/ct_log.hpp`](https://www.google.com/search?q=../ct/ct_log.hpp) | Thread-safe logging for automated test sequences. | *Pending* |
-| [`ct/ct_math.hpp`](https://www.google.com/search?q=../ct/ct_math.hpp) | Statistical and mathematical tools for data analysis. | *Pending* |
-| [`ct/ct_time.hpp`](https://www.google.com/search?q=../ct/ct_time.hpp) | High-precision timing and timestamping for bench measurements. | *Pending* |
-| [`ct/ct_unit.hpp`](https://www.google.com/search?q=../ct/ct_unit.hpp) | Electronics-specific unit handling and conversions. | *Pending* |
-| [`ct/ct_sys.hpp`](https://www.google.com/search?q=../ct/ct_sys.hpp) | System environment and OS-level interactions. | *Pending* |
-| [`ct/ct_core.hpp`](https://www.google.com/search?q=../ct/ct_core.hpp) | Base templates and core framework definitions. | *Pending* |
+| File                                  | Description                                                  | Documentation                    |
+| :------------------------------------ | :----------------------------------------------------------- | :------------------------------- |
+| [`cb/cb_str.h`](../cb/cb_str.h)       | Dynamic string object with C++-like functionality.           | [**cb_str.md**](cb_str.md)       |
+| [`cb/cb_vector.h`](../cb/cb_vector.h) | Generic dynamic array for storing any data type via `void*`. | [**cb_vector.md**](cb_vector.md) |
+| [`cb/cb_file.h`](../cb/cb_file.h)     | Filesystem utilities, path handling, and config parsing.     | [**cb_file.md**](cb_file.md)     |
+| [`cb/cb_math.h`](../cb/cb_math.h)     | high-performance numerical utilities.                        | [**cb_math.md**](cb_math.md)     |
+| [`cb/cb_net.h`](../cb/cb_net.h)       | C basic TCP and UDP networking utilities.                    | [**cb_net.md**](cb_net.md)       |
 
------
 
-## 📂 Navigation Info
 
-  * **`cb/`**: Contains the C implementation files. Use these if your target environment is a legacy ATE or an embedded system requiring strict C89/C99 compliance.
-  * **`ct/`**: Contains C++ implementation and template files (`.hpp`, `.cpp`, `.tpp`). These take advantage of modern C++ features for more complex PC-based tools.
-  * **`examples/`**: Contains non-compiled code snippets demonstrating how to integrate these modules into your specific electronics test projects.
+---
 
------
+## 🔵 CTool (C++11 Modules)
+*Modern utility classes leveraging the C++ Standard Library.*
 
-### Pro-Tip for Navigation
+| File                                  | Description                                                    | Documentation                |
+| :------------------------------------ | :------------------------------------------------------------- | :--------------------------- |
+| [`ct/ct_json.hpp`](../ct/ct_json.hpp) | Basic, JSON strings manipulation and extraction.               | [**ct_json.md**](ct_json.md) |
+| [`ct/ct_ini.hpp`](../ct/ct_ini.hpp)   | Robust interface for managing standard INI configuration files | [**ct_ini.md**](ct_ini.md)   |
+| [`ct/ct_net.hpp`](../ct/ct_net.hpp)   | object-oriented interface for TCP networking.                  | [**ct_net.md**](ct_net.md)   |
+| [`ct/ct_csv.hpp`](../ct/ct_csv.hpp)   | Generic CSV parser and data generator.                         | *Coming Soon*                |
+| [`ct/ct_str.hpp`](../ct/ct_str.hpp)   | Advanced string formatting, splitting, and manipulation.       | *Coming Soon*                |
+| [`ct/ct_str.hpp`](../ct/ct_str.hpp)   | Advanced string formatting, splitting, and manipulation.       | *Coming Soon*                |
+| [`ct/ct_file.hpp`](../ct/ct_file.hpp) | C++ wrappers for file I/O and directory operations.            | *Coming Soon*                |
+| [`ct/ct_log.hpp`](../ct/ct_log.hpp)   | Multi-level, thread-safe logging system.                       | *Coming Soon*                |
+| [`ct/ct_time.hpp`](../ct/ct_time.hpp) | High-precision timestamps and sleep utilities.                 | *Coming Soon*                |
+| [`ct/ct_math.hpp`](../ct/ct_math.hpp) | Common mathematical and statistical utilities.                 | *Coming Soon*                |
+| [`ct/ct_sys.hpp`](../ct/ct_sys.hpp)   | Cross-platform system and environment tools.                   | *Coming Soon*                |
+| [`ct/ct_unit.hpp`](../ct/ct_unit.hpp) | Flexible unit conversion and handling.                         | *Coming Soon*                |
+| [`ct/ct_core.hpp`](../ct/ct_core.hpp) | Framework core definitions and templates.                      | *Coming Soon*                |
 
-If you are using a modern IDE (VS Code, CLion), you can `Ctrl + Click` the file paths in the table above to jump directly to the header definitions for a quick look at the function signatures.
+---
+
+## Usage Principles
+
+1.  **Memory Management:** CBridge modules (`cb_`) require manual memory management via their respective `.free()` functions. CTool modules (`ct_`) utilize standard RAII.
+2.  **Namespace Pattern:** CBridge uses a global struct (e.g., `cb_str.method()`) to simulate namespaces in C.
+3.  **Cross-Platform:** All modules are tested for compatibility between MSVC (Windows) and GCC/Clang (Linux).
+
+**Maintained by:** Florent ALBANY  
+**Last Updated:** 19/03/2026

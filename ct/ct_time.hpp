@@ -1,6 +1,6 @@
 /** 
  * @file ct_time.hpp
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY - FAL
  * @brief Time utilities.
  * @version 1.0
  * @date 2026-03-18

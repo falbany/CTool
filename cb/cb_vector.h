@@ -1,6 +1,6 @@
 /**
  * @file cb_vector.h
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY - FAL
  * @brief Pure C imitation of C++ std::vector for generic pointer collections.
  * @version 1.0
  * @date 2026-03-19

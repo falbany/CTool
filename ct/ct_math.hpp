@@ -1,6 +1,6 @@
 /**
  * @file ct_math.hpp
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY - FAL
  * @brief Numerical utilities for statistical analysis and linear modeling.
  * @version 1.0
  * @date 2026-03-18

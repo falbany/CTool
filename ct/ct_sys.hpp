@@ -1,6 +1,6 @@
 /**
  * @file ct_sys.hpp
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY - FAL
  * @brief System-level utilities for OS interaction and process management.
  * @version 1.0
  * @date 2026-03-18

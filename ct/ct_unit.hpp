@@ -1,6 +1,6 @@
 /**
  * @file ct_unit.hpp
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY - FAL
  * @brief Utilities for engineering notation and unit conversion.
  */
 
