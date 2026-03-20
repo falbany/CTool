@@ -32,7 +32,7 @@ auto connectedClient = myServer.accept();
 if (connectedClient) {
     connectedClient->send("Hello from Server!");
 }
-
+```
 ---
 
 ## Usage Examples
