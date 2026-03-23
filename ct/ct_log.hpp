@@ -24,7 +24,7 @@ namespace ct {
      * @brief Logging utilities for console output with varying verbosity levels.
      */
     namespace log {
-        
+
         /**
          * @enum Level
          * @brief Defines the verbosity levels for the logging system.

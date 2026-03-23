@@ -45,9 +45,9 @@ namespace ct {
 
             void disconnect();
 
-        private:
-            friend class TcpServer; // Allow TcpServer to access private constructor
-            explicit TcpClient(int socket); // Constructor for accepted connections
+          private:
+            friend class TcpServer;            // Allow TcpServer to access private constructor
+            explicit TcpClient(int socket);    // Constructor for accepted connections
             int _socket;
         };
 

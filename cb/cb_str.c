@@ -14,9 +14,10 @@ static void impl_append_len(cb_string_t* self, const char* str, size_t len) {
         if (new_cap < required_capacity) new_cap = required_capacity;
         char* new_data = (char*)realloc(self->data, new_cap + 1);
         if (new_data) {
-            self->data = new_data;
+            self->data     = new_data;
             self->capacity = new_cap;
-        } else return;
+        } else
+            return;
     }
     memcpy(self->data + self->length, str, len);
     self->length += len;
@@ -29,12 +30,14 @@ static void impl_append_len(cb_string_t* self, const char* str, size_t len) {
 static cb_string_t* impl_create(const char* init_str) {
     cb_string_t* self = (cb_string_t*)malloc(sizeof(cb_string_t));
     if (!self) return NULL;
-    self->length = init_str ? strlen(init_str) : 0;
+    self->length   = init_str ? strlen(init_str) : 0;
     self->capacity = self->length > 0 ? self->length * 2 : 16;
-    self->data = (char*)malloc(self->capacity + 1);
+    self->data     = (char*)malloc(self->capacity + 1);
     if (self->data) {
-        if (init_str) strcpy(self->data, init_str);
-        else self->data[0] = '\0';
+        if (init_str)
+            strcpy(self->data, init_str);
+        else
+            self->data[0] = '\0';
     }
     return self;
 }
@@ -50,29 +53,23 @@ static void impl_reserve(cb_string_t* self, size_t new_cap) {
     if (!self || new_cap <= self->capacity) return;
     char* new_data = (char*)realloc(self->data, new_cap + 1);
     if (new_data) {
-        self->data = new_data;
+        self->data     = new_data;
         self->capacity = new_cap;
     }
 }
 
 static void impl_clear(cb_string_t* self) {
     if (self && self->data) {
-        self->length = 0;
+        self->length  = 0;
         self->data[0] = '\0';
     }
 }
 
-static bool impl_empty(const cb_string_t* self) {
-    return !self || self->length == 0;
-}
+static bool impl_empty(const cb_string_t* self) { return !self || self->length == 0; }
 
-static size_t impl_length(const cb_string_t* self) {
-    return self ? self->length : 0;
-}
+static size_t impl_length(const cb_string_t* self) { return self ? self->length : 0; }
 
-static const char* impl_c_str(const cb_string_t* self) {
-    return (self && self->data) ? self->data : "";
-}
+static const char* impl_c_str(const cb_string_t* self) { return (self && self->data) ? self->data : ""; }
 
 // ============================================================================
 // Modifiers
@@ -83,14 +80,14 @@ static void impl_append(cb_string_t* self, const char* suffix) {
 
 static void impl_insert(cb_string_t* self, size_t pos, const char* str) {
     if (!self || !str) return;
-    if (pos > self->length) pos = self->length; // Clamp to end
-    
+    if (pos > self->length) pos = self->length;    // Clamp to end
+
     size_t str_len = strlen(str);
     if (str_len == 0) return;
 
     // Ensure capacity
     if (self->length + str_len > self->capacity) {
-        impl_reserve(self, self->length + str_len + (self->capacity / 2)); 
+        impl_reserve(self, self->length + str_len + (self->capacity / 2));
     }
 
     // Shift existing data to the right
@@ -102,7 +99,7 @@ static void impl_insert(cb_string_t* self, size_t pos, const char* str) {
 
 static void impl_erase(cb_string_t* self, size_t pos, size_t len) {
     if (!self || pos >= self->length || len == 0) return;
-    
+
     // Clamp length to avoid out-of-bounds
     if (pos + len > self->length) len = self->length - pos;
 
@@ -130,7 +127,7 @@ static void impl_trim(cb_string_t* self) {
         memmove(self->data, self->data + start, new_len);
     }
     self->data[new_len] = '\0';
-    self->length = new_len;
+    self->length        = new_len;
 }
 
 static void impl_replace_all(cb_string_t* self, const char* search_str, const char* replace_str) {
@@ -138,9 +135,9 @@ static void impl_replace_all(cb_string_t* self, const char* search_str, const ch
     size_t search_len = strlen(search_str);
     if (search_len == 0) return;
 
-    cb_string_t* temp = impl_create("");
-    const char* current = self->data;
-    char* match;
+    cb_string_t* temp    = impl_create("");
+    const char*  current = self->data;
+    char*        match;
 
     while ((match = strstr(current, search_str)) != NULL) {
         impl_append_len(temp, current, match - current);
@@ -150,10 +147,10 @@ static void impl_replace_all(cb_string_t* self, const char* search_str, const ch
     impl_append(temp, current);
 
     free(self->data);
-    self->data = temp->data;
-    self->length = temp->length;
+    self->data     = temp->data;
+    self->length   = temp->length;
     self->capacity = temp->capacity;
-    free(temp); 
+    free(temp);
 }
 
 // ============================================================================
@@ -192,7 +189,7 @@ static size_t impl_find(const cb_string_t* self, const char* target, size_t star
 static cb_string_t* impl_substr(const cb_string_t* self, size_t pos, size_t len) {
     if (!self || pos >= self->length) return impl_create("");
     if (pos + len > self->length) len = self->length - pos;
-    
+
     cb_string_t* result = impl_create("");
     impl_append_len(result, self->data + pos, len);
     return result;
@@ -205,7 +202,7 @@ static cb_string_t* impl_catch_in_range(const cb_string_t* self, const char* sta
     start_pos += strlen(start_str);
     const char* end_pos = strstr(start_pos, end_str);
     if (!end_pos) return impl_create("");
-    
+
     cb_string_t* result = impl_create("");
     impl_append_len(result, start_pos, end_pos - start_pos);
     return result;
@@ -214,23 +211,21 @@ static cb_string_t* impl_catch_in_range(const cb_string_t* self, const char* sta
 // ============================================================================
 // Global Namespace Instance Definition
 // ============================================================================
-const struct cb_str_namespace cb_str = {
-    .create = impl_create,
-    .free = impl_free,
-    .reserve = impl_reserve,
-    .clear = impl_clear,
-    .empty = impl_empty,
-    .length = impl_length,
-    .c_str = impl_c_str,
-    .append = impl_append,
-    .insert = impl_insert,
-    .erase = impl_erase,
-    .trim = impl_trim,
-    .replace_all = impl_replace_all,
-    .compare = impl_compare,
-    .starts_with = impl_starts_with,
-    .ends_with = impl_ends_with,
-    .find = impl_find,
-    .substr = impl_substr,
-    .catch_in_range = impl_catch_in_range
-};
+const struct cb_str_namespace cb_str = {.create         = impl_create,
+                                        .free           = impl_free,
+                                        .reserve        = impl_reserve,
+                                        .clear          = impl_clear,
+                                        .empty          = impl_empty,
+                                        .length         = impl_length,
+                                        .c_str          = impl_c_str,
+                                        .append         = impl_append,
+                                        .insert         = impl_insert,
+                                        .erase          = impl_erase,
+                                        .trim           = impl_trim,
+                                        .replace_all    = impl_replace_all,
+                                        .compare        = impl_compare,
+                                        .starts_with    = impl_starts_with,
+                                        .ends_with      = impl_ends_with,
+                                        .find           = impl_find,
+                                        .substr         = impl_substr,
+                                        .catch_in_range = impl_catch_in_range};

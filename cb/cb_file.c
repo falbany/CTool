@@ -64,7 +64,7 @@ static cb_string_t* impl_get_parameter(const char* path, const char* key, const 
     FILE* f = fopen(path, "r");
     if (!f) return cb_str.create("");
 
-    char line[1024];
+    char         line[1024];
     cb_string_t* result = cb_str.create("");
 
     while (fgets(line, sizeof(line), f)) {
@@ -80,7 +80,7 @@ static cb_string_t* impl_get_parameter(const char* path, const char* key, const 
         if (cb_str.find(s_line, key, 0) != CB_STR_NPOS) {
             cb_string_t* val = cb_str.catch_in_range(s_line, separator, "\n");
             cb_str.trim(val);
-            
+
             // Swap to result and break
             cb_str.free(result);
             result = val;
@@ -101,18 +101,20 @@ static cb_vector_t* impl_get_files(const char* directory, const char* prefix, co
     char search_path[MAX_PATH];
     sprintf(search_path, "%s\\*", directory);
     WIN32_FIND_DATA fd;
-    HANDLE hFind = FindFirstFile(search_path, &fd);
+    HANDLE          hFind = FindFirstFile(search_path, &fd);
 
     if (hFind != INVALID_HANDLE_VALUE) {
         do {
             if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                cb_string_t* name = cb_str.create(fd.cFileName);
-                bool match = true;
+                cb_string_t* name  = cb_str.create(fd.cFileName);
+                bool         match = true;
                 if (prefix && !cb_str.starts_with(name, prefix)) match = false;
                 if (suffix && !cb_str.ends_with(name, suffix)) match = false;
 
-                if (match) cb_vector.push_back(vec, name);
-                else cb_str.free(name);
+                if (match)
+                    cb_vector.push_back(vec, name);
+                else
+                    cb_str.free(name);
             }
         } while (FindNextFile(hFind, &fd));
         FindClose(hFind);
@@ -122,14 +124,16 @@ static cb_vector_t* impl_get_files(const char* directory, const char* prefix, co
     if (d) {
         struct dirent* dir;
         while ((dir = readdir(d)) != NULL) {
-            if (dir->d_type == DT_REG) { // Regular file
-                cb_string_t* name = cb_str.create(dir->d_name);
-                bool match = true;
+            if (dir->d_type == DT_REG) {    // Regular file
+                cb_string_t* name  = cb_str.create(dir->d_name);
+                bool         match = true;
                 if (prefix && !cb_str.starts_with(name, prefix)) match = false;
                 if (suffix && !cb_str.ends_with(name, suffix)) match = false;
 
-                if (match) cb_vector.push_back(vec, name);
-                else cb_str.free(name);
+                if (match)
+                    cb_vector.push_back(vec, name);
+                else
+                    cb_str.free(name);
             }
         }
         closedir(d);
@@ -138,11 +142,9 @@ static cb_vector_t* impl_get_files(const char* directory, const char* prefix, co
     return vec;
 }
 
-const struct cb_file_namespace cb_file = {
-    .exists = impl_exists,
-    .get_size = impl_get_size,
-    .read_all = impl_read_all,
-    .get_working_directory = impl_get_working_directory,
-    .get_parameter = impl_get_parameter,
-    .get_files = impl_get_files
-};
+const struct cb_file_namespace cb_file = {.exists                = impl_exists,
+                                          .get_size              = impl_get_size,
+                                          .read_all              = impl_read_all,
+                                          .get_working_directory = impl_get_working_directory,
+                                          .get_parameter         = impl_get_parameter,
+                                          .get_files             = impl_get_files};

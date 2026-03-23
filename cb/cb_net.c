@@ -19,7 +19,7 @@
     #include <winsock2.h>
     #include <ws2tcpip.h>
     #pragma comment(lib, "ws2_32.lib")
-    typedef int socklen_t;
+typedef int socklen_t;
 #else
     #include <sys/socket.h>
     #include <arpa/inet.h>
@@ -39,7 +39,7 @@ static bool impl_init(void) {
     WSADATA wsa;
     return WSAStartup(MAKEWORD(2, 2), &wsa) == 0;
 #else
-    return true; // Not required on POSIX
+    return true;    // Not required on POSIX
 #endif
 }
 
@@ -59,13 +59,13 @@ static void impl_cleanup(void) {
  */
 static cb_socket_t impl_connect(const char* host, int port, cb_net_proto_t proto) {
     struct addrinfo hints, *res;
-    int sock_type = (proto == CB_NET_TCP) ? SOCK_STREAM : SOCK_DGRAM;
-    char port_str[16];
-    
+    int             sock_type = (proto == CB_NET_TCP) ? SOCK_STREAM : SOCK_DGRAM;
+    char            port_str[16];
+
     snprintf(port_str, sizeof(port_str), "%d", port);
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
+    hints.ai_family   = AF_UNSPEC;    // AF_INET or AF_INET6 to force version
     hints.ai_socktype = sock_type;
 
     if (getaddrinfo(host, port_str, &hints, &res) != 0) {
@@ -92,34 +92,22 @@ static cb_socket_t impl_connect(const char* host, int port, cb_net_proto_t proto
  * @brief Platform-specific implementation for sending data.
  * @see cb_net_namespace::send
  */
-static int impl_send(cb_socket_t sock, const char* data, size_t len) {
-    return send(sock, data, (int)len, 0);
-}
+static int impl_send(cb_socket_t sock, const char* data, size_t len) { return send(sock, data, (int)len, 0); }
 
 /**
  * @brief Platform-specific implementation for receiving data.
  * @see cb_net_namespace::receive
  */
-static int impl_receive(cb_socket_t sock, char* buffer, size_t max_len) {
-    return recv(sock, buffer, (int)max_len, 0);
-}
+static int impl_receive(cb_socket_t sock, char* buffer, size_t max_len) { return recv(sock, buffer, (int)max_len, 0); }
 
 /**
  * @brief Platform-specific implementation for closing a socket.
  * @see cb_net_namespace::close
  */
-static void impl_close(cb_socket_t sock) {
-    closesocket(sock);
-}
+static void impl_close(cb_socket_t sock) { closesocket(sock); }
 
 /**
  * @brief The global instance of the networking function table.
  */
-const struct cb_net_namespace cb_net = {
-    .init = impl_init,
-    .cleanup = impl_cleanup,
-    .connect = impl_connect,
-    .send = impl_send,
-    .receive = impl_receive,
-    .close = impl_close
-};
+const struct cb_net_namespace cb_net =
+    {.init = impl_init, .cleanup = impl_cleanup, .connect = impl_connect, .send = impl_send, .receive = impl_receive, .close = impl_close};

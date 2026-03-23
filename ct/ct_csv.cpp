@@ -1,6 +1,5 @@
 #include "ct_csv.hpp"
 #include "ct_str.hpp"
-#include <algorithm>
 
 namespace ct {
     namespace csv {

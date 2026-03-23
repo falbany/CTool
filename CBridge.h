@@ -9,13 +9,13 @@
 #pragma once
 
 #ifndef CBRIDGE_MAIN_HPP
-#define CBRIDGE_MAIN_HPP
+    #define CBRIDGE_MAIN_HPP
 
-#include "cb/cb_str.h"
-#include "cb/cb_vector.h"
-#include "cb/cb_file.h"
-#include "cb/cb_math.h"
-#include "cb/cb_net.h"
+    #include "cb/cb_str.h"
+    #include "cb/cb_vector.h"
+    #include "cb/cb_file.h"
+    #include "cb/cb_math.h"
+    #include "cb/cb_net.h"
 
 /**
  * @struct CBridge_Namespace
@@ -45,13 +45,13 @@
  * @endcode
  */
 struct CBridge_Namespace {
-    const struct cb_str_namespace* str;
+    const struct cb_str_namespace*    str;
     const struct cb_vector_namespace* vector;
-    const struct cb_file_namespace* file;
-    const struct cb_math_namespace* math; 
-    const struct cb_net_namespace* net;
+    const struct cb_file_namespace*   file;
+    const struct cb_math_namespace*   math;
+    const struct cb_net_namespace*    net;
 };
 
 extern const struct CBridge_Namespace CBridge;
 
-#endif // CBRIDGE_MAIN_HPP
+#endif    // CBRIDGE_MAIN_HPP
