@@ -1,4 +1,5 @@
 #include "ct_csv.hpp"
+#include "ct_str.hpp"
 
 namespace ct {
     namespace csv {
