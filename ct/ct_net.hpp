@@ -10,7 +10,6 @@
 #define CT_NET_HPP
 
 #include <string>
-#include <vector>
 #include <memory>
 
 namespace ct {

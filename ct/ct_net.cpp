@@ -1,6 +1,6 @@
 #include "ct_net.hpp"
-#include "../CBridge.h"
-#include <stdexcept>
+#include "../cb/cb_net.h"
+#include <vector>
 #include <memory>
 
 namespace ct {

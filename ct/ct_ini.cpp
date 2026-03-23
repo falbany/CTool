@@ -1,6 +1,5 @@
 #include "ct_ini.hpp"
 #include <fstream>
-#include <algorithm>
 
 namespace ct {
     namespace ini {
