@@ -10,7 +10,7 @@
 
 #ifndef CTOOL_MAIN_HPP
     #define CTOOL_MAIN_HPP
-    
+
     #include "libctool.h"
 
     #include "ct/ct_core.hpp"
