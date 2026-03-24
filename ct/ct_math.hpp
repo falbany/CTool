@@ -13,6 +13,7 @@
 
     #include <vector>
     #include <cmath>
+    #include "../libctool.h"
 
 namespace ct {
     // ------------------------------------------------------------------------
@@ -40,17 +41,17 @@ namespace ct {
      * @param y Vector of dependent values (e.g., Drain-Source Current).
      * @return RegResult containing the calculated model.
      */
-        RegResult linearFit(const std::vector<double>& x, const std::vector<double>& y);
+        LIBCTOOL_API RegResult linearFit(const std::vector<double>& x, const std::vector<double>& y);
 
         /**
      * @brief Calculates the arithmetic mean (average) of a dataset.
      */
-        double mean(const std::vector<double>& data);
+        LIBCTOOL_API double mean(const std::vector<double>& data);
 
         /**
      * @brief Calculates the standard deviation of a dataset.
      */
-        double standardDeviation(const std::vector<double>& data);
+        LIBCTOOL_API double standardDeviation(const std::vector<double>& data);
 
         /**
      * @brief Checks if two floating-point values are approximately equal within a tolerance.
@@ -59,7 +60,7 @@ namespace ct {
      * @param epsilon The maximum allowable difference.
      * @return true if the values are near each other.
      */
-        bool isNear(double a, double b, double epsilon = 1e-9);
+        LIBCTOOL_API bool isNear(double a, double b, double epsilon = 1e-9);
 
         /**
      * @brief Clamps a value within a specified range.

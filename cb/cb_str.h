@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include "../libctool.h"
 
 /**
  * @brief Returned by search functions to indicate no matches were found.
@@ -167,6 +168,6 @@ struct cb_str_namespace {
  * cb_str.free(scpi_cmd);
  * @endcode
  */
-extern const struct cb_str_namespace cb_str;
+LIBCTOOL_API extern const struct cb_str_namespace cb_str;
 
 #endif    // CB_STR_H

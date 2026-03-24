@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include "../libctool.h"
 
 /**
  * @struct cb_reg_result
@@ -57,6 +58,6 @@ struct cb_math_namespace {
     double (*clamp)(double val, double min, double max);
 };
 
-extern const struct cb_math_namespace cb_math;
+LIBCTOOL_API extern const struct cb_math_namespace cb_math;
 
 #endif    // CB_MATH_H

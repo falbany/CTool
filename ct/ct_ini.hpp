@@ -12,6 +12,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "../libctool.h"
 
 namespace ct {
     /**
@@ -24,7 +25,7 @@ namespace ct {
          * @class Profile
          * @brief Represents an entire INI file structure.
          */
-        class Profile {
+        class LIBCTOOL_API Profile {
           public:
             Profile() = default;
 

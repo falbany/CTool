@@ -13,6 +13,7 @@
 
     #include <iostream>
     #include <string>
+    #include "../libctool.h"
 
 namespace ct {
     // ------------------------------------------------------------------------
@@ -44,7 +45,7 @@ namespace ct {
          * @param stream The output stream destination (e.g., `std::cout`, `std::cerr`). Defaults to `std::cout`.
          * @param currentLevel The global/application verbosity threshold. Defaults to `Level::Debug`.
          */
-        void message(Level msgLevel, const std::string& msg, std::ostream& stream = std::cout, Level currentLevel = Level::Debug);
+        LIBCTOOL_API void message(Level msgLevel, const std::string& msg, std::ostream& stream = std::cout, Level currentLevel = Level::Debug);
 
         /**
          * @brief Convenience function to log a message directly to standard output (`std::cout`).
@@ -52,7 +53,7 @@ namespace ct {
          * @param msg The string message to log.
          * @param currentLevel The global/application verbosity threshold. Defaults to `Level::Warning`.
          */
-        void toCout(Level msgLevel, const std::string& msg, Level currentLevel = Level::Warning);
+        LIBCTOOL_API void toCout(Level msgLevel, const std::string& msg, Level currentLevel = Level::Warning);
 
         /**
          * @brief Convenience function to log a message directly to standard error (`std::cerr`).
@@ -60,7 +61,7 @@ namespace ct {
          * @param msg The string message to log.
          * @param currentLevel The global/application verbosity threshold. Defaults to `Level::Warning`.
          */
-        void toCerr(Level msgLevel, const std::string& msg, Level currentLevel = Level::Warning);
+        LIBCTOOL_API void toCerr(Level msgLevel, const std::string& msg, Level currentLevel = Level::Warning);
 
     }    // namespace log
 }    // namespace ct

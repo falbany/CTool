@@ -15,6 +15,7 @@
     #include <vector>
     #include <fstream>
     #include <mutex>
+    #include "../libctool.h"
 
 namespace ct {
     // ------------------------------------------------------------------------
@@ -34,7 +35,7 @@ namespace ct {
          * Handles automatic header management and ensures thread-safe 
          * writing to the filesystem.
          */
-        class Writer {
+        class LIBCTOOL_API Writer {
           public:
             /**
              * @brief Construct a new Writer object.
@@ -83,7 +84,7 @@ namespace ct {
          * @param skipHeader If true, the first line is ignored.
          * @return std::vector<std::vector<std::string>> The parsed data.
          */
-        std::vector<std::vector<std::string>> read(const std::string& filename, char delimiter = ',', bool skipHeader = true);
+        LIBCTOOL_API std::vector<std::vector<std::string>> read(const std::string& filename, char delimiter = ',', bool skipHeader = true);
 
     }    // namespace csv
 }    // namespace ct

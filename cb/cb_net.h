@@ -17,6 +17,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include "../libctool.h"
 
 /**
  * @brief Cross-platform socket descriptor.
@@ -143,6 +144,6 @@ struct cb_net_namespace {
  * }
  * @endcode
  */
-extern const struct cb_net_namespace cb_net;
+LIBCTOOL_API extern const struct cb_net_namespace cb_net;
 
 #endif

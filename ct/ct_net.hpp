@@ -11,6 +11,7 @@
 
 #include <string>
 #include <memory>
+#include "../libctool.h"
 
 namespace ct {
     /**
@@ -26,7 +27,7 @@ namespace ct {
          * @class TcpClient
          * @brief A synchronous TCP client for point-to-point communication.
          */
-        class TcpClient {
+        class LIBCTOOL_API TcpClient {
           public:
             TcpClient();
             ~TcpClient();
@@ -55,7 +56,7 @@ namespace ct {
          * @class TcpServer
          * @brief A simple TCP listener that can accept incoming connections.
          */
-        class TcpServer {
+        class LIBCTOOL_API TcpServer {
           public:
             TcpServer();
             ~TcpServer();

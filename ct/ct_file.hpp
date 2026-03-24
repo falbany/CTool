@@ -13,6 +13,7 @@
 
     #include <string>
     #include <vector>
+    #include "../libctool.h"
 
 namespace ct {
     namespace file {
@@ -24,28 +25,28 @@ namespace ct {
          * @param filename Path to the file.
          * @return true if accessible, false otherwise.
          */
-        bool exists(const std::string& filename);
+        LIBCTOOL_API bool exists(const std::string& filename);
 
         /**
          * @brief Retrieves the size of a file in bytes.
          * @param filename Path to the file.
          * @return long long Size in bytes, or -1 if the file does not exist.
          */
-        long long getSize(const std::string& filename);
+        LIBCTOOL_API long long getSize(const std::string& filename);
 
         /**
          * @brief Reads the entire contents of a file into a string.
          * @param filename Path to the file.
          * @return std::string The file content.
          */
-        std::string readAll(const std::string& filename);
+        LIBCTOOL_API std::string readAll(const std::string& filename);
 
         /**
          * @brief Reads a file line by line into a vector.
          * @param filename Path to the file.
          * @return std::vector<std::string> A list of lines.
          */
-        std::vector<std::string> readLines(const std::string& filename);
+        LIBCTOOL_API std::vector<std::string> readLines(const std::string& filename);
 
 
         // --- WRITE OPERATIONS ---
@@ -56,7 +57,7 @@ namespace ct {
          * @param content The string to write.
          * @return true if successful.
          */
-        bool writeAll(const std::string& filename, const std::string& content);
+        LIBCTOOL_API bool writeAll(const std::string& filename, const std::string& content);
 
         /**
          * @brief Appends a single line to the end of a file.
@@ -64,7 +65,7 @@ namespace ct {
          * @param line The string to append.
          * @return true if successful.
          */
-        bool appendLine(const std::string& filename, const std::string& line);
+        LIBCTOOL_API bool appendLine(const std::string& filename, const std::string& line);
 
 
         // --- CONFIGURATION & PARSING ---
@@ -77,7 +78,7 @@ namespace ct {
          * @param separator The delimiter between key and value (default: "=").
          * @return std::string The extracted value, trimmed of whitespace.
          */
-        std::string getParameter(const std::string& filename, const std::string& key, const std::string& separator = "=");
+        LIBCTOOL_API std::string getParameter(const std::string& filename, const std::string& key, const std::string& separator = "=");
 
 
         // --- PATH & DIRECTORY ---
@@ -86,14 +87,14 @@ namespace ct {
          * @brief Retrieves the current working directory.
          * @return std::string Absolute path of the working directory.
          */
-        std::string getWorkingDirectory();
+        LIBCTOOL_API std::string getWorkingDirectory();
 
         /**
          * @brief Extracts the file extension (e.g., ".csv") from a path.
          * @param path The full path or filename.
          * @return std::string The extension including the dot.
          */
-        std::string getExtension(const std::string& path);
+        LIBCTOOL_API std::string getExtension(const std::string& path);
 
         /**
          * @brief Lists filenames in a directory matching specific criteria.
@@ -102,14 +103,14 @@ namespace ct {
          * @param suffix Optional filename end string (e.g., extension).
          * @return std::vector<std::string> List of matching filenames.
          */
-        std::vector<std::string> getFiles(const std::string& directory, const std::string& prefix = "", const std::string& suffix = "");
+        LIBCTOOL_API std::vector<std::string> getFiles(const std::string& directory, const std::string& prefix = "", const std::string& suffix = "");
 
         /**
          * @brief Deletes a file from the disk.
          * @param filename Path to the file.
          * @return true if successfully deleted.
          */
-        bool remove(const std::string& filename);
+        LIBCTOOL_API bool remove(const std::string& filename);
 
     }    // namespace file
 }    // namespace ct

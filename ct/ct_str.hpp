@@ -13,6 +13,7 @@
 
     #include <string>
     #include <vector>
+    #include "../libctool.h"
 
 namespace ct {
     // ------------------------------------------------------------------------
@@ -30,7 +31,7 @@ namespace ct {
          * @param dest The destination `std::string` object.
          * @param src The source C-style string. If `nullptr`, `dest` is cleared.
          */
-        void assign(std::string& dest, const char* src);
+        LIBCTOOL_API void assign(std::string& dest, const char* src);
 
         /**
          * @brief Updates or appends a prefixed field within a delimited string.
@@ -40,7 +41,7 @@ namespace ct {
          * @param delimiter The character splitting the fields. Defaults to '_'.
          * @return std::string The updated string (e.g., "SN001_LOT42_T25.00").
          */
-        std::string updateField(const std::string& currentStr, const std::string& prefix, const std::string& newValue, char delimiter = '_');
+        LIBCTOOL_API std::string updateField(const std::string& currentStr, const std::string& prefix, const std::string& newValue, char delimiter = '_');
 
         /**
          * @brief Finds and replaces all occurrences of a substring within a string.
@@ -49,7 +50,7 @@ namespace ct {
          * @param replaceStr The substring to replace `searchStr` with.
          * @return std::string The modified string.
          */
-        std::string findAndReplace(const std::string& sIn, const std::string& searchStr, const std::string& replaceStr);
+        LIBCTOOL_API std::string findAndReplace(const std::string& sIn, const std::string& searchStr, const std::string& replaceStr);
 
         /**
          * @brief Recursively finds and replaces all occurrences of a substring.
@@ -59,7 +60,7 @@ namespace ct {
          * @param replaceStr The substring to replace `searchStr` with.
          * @return std::string The modified string.
          */
-        std::string findAndReplaceRecursive(const std::string& sIn, const std::string& searchStr, const std::string& replaceStr);
+        LIBCTOOL_API std::string findAndReplaceRecursive(const std::string& sIn, const std::string& searchStr, const std::string& replaceStr);
 
         /**
          * @brief Extracts a substring trapped between two delimiter strings.
@@ -68,7 +69,7 @@ namespace ct {
          * @param searchStr2 The ending delimiter.
          * @return std::string The extracted internal string, or an empty string if bounds are not found.
          */
-        std::string catchInRange(const std::string& sIn, const std::string& searchStr1, const std::string& searchStr2);
+        LIBCTOOL_API std::string catchInRange(const std::string& sIn, const std::string& searchStr1, const std::string& searchStr2);
 
         /**
          * @brief Splits a string into a vector of substrings based on a delimiter character.
@@ -76,14 +77,14 @@ namespace ct {
          * @param delimiter The character used as the separation boundary.
          * @return std::vector<std::string> A list of extracted tokens. Empty tokens are discarded.
          */
-        std::vector<std::string> split(const std::string& str, char delimiter);
+        LIBCTOOL_API std::vector<std::string> split(const std::string& str, char delimiter);
 
         /**
          * @brief Removes leading and trailing whitespace characters from a string.
          * @param str The string to trim.
          * @return std::string The trimmed string.
          */
-        std::string trim(const std::string& str);
+        LIBCTOOL_API std::string trim(const std::string& str);
 
         /**
          * @brief Converts any fundamental data type to its string representation.

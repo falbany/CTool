@@ -14,6 +14,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "../libctool.h"
 
 namespace ct {
     /**
@@ -27,14 +28,14 @@ namespace ct {
          * @param kv_pairs Map of Key-Value pairs.
          * @return std::string Formatted JSON: {"key": "value"}.
          */
-        std::string stringify(const std::map<std::string, std::string>& kv_pairs);
+        LIBCTOOL_API std::string stringify(const std::map<std::string, std::string>& kv_pairs);
 
         /**
          * @brief Serializes a list of strings into a JSON array.
          * @param list Vector of strings.
          * @return std::string Formatted JSON array: ["item1", "item2"].
          */
-        std::string stringifyArray(const std::vector<std::string>& list);
+        LIBCTOOL_API std::string stringifyArray(const std::vector<std::string>& list);
 
         /**
          * @brief Extracts a string value associated with a key in a JSON string.
@@ -43,21 +44,21 @@ namespace ct {
          * @param key The key to look for.
          * @return std::string The value found, or empty string if not found.
          */
-        std::string getValue(const std::string& json, const std::string& key);
+        LIBCTOOL_API std::string getValue(const std::string& json, const std::string& key);
 
         /**
          * @brief Validates if a string has basic JSON syntax (starts/ends with braces).
          * @param json String to check.
          * @return true if it appears to be valid JSON.
          */
-        bool isValid(const std::string& json);
+        LIBCTOOL_API bool isValid(const std::string& json);
 
         /**
          * @brief Minifies a JSON string by removing unnecessary whitespace.
          * @param json The source JSON.
          * @return std::string Minified version.
          */
-        std::string minify(const std::string& json);
+        LIBCTOOL_API std::string minify(const std::string& json);
 
     }    // namespace json
 }    // namespace ct

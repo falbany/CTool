@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include "../libctool.h"
 
 /**
  * @struct cb_vector_t
@@ -97,6 +98,6 @@ struct cb_vector_namespace {
  * @brief Global access to vector functionalities.
  * Example: cb_vector.push_back(my_vec, my_data);
  */
-extern const struct cb_vector_namespace cb_vector;
+LIBCTOOL_API extern const struct cb_vector_namespace cb_vector;
 
 #endif    // CB_VECTOR_H

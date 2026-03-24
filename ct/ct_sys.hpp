@@ -13,6 +13,7 @@
 
     #include <string>
     #include <vector>
+    #include "../libctool.h"
 
 namespace ct {
 
@@ -27,14 +28,14 @@ namespace ct {
          * @param command The shell command to execute.
          * @return std::string The resulting output from the command.
          */
-        std::string executeCommand(const std::string& command);
+        LIBCTOOL_API std::string executeCommand(const std::string& command);
 
         /**
          * @brief Retrieves the value of an environment variable.
          * @param varName The name of the environment variable (e.g., "PATH").
          * @return std::string The value of the variable, or an empty string if not found.
          */
-        std::string getEnv(const std::string& varName);
+        LIBCTOOL_API std::string getEnv(const std::string& varName);
 
         /**
          * @brief Creates a new directory on the disk.
@@ -42,25 +43,25 @@ namespace ct {
          * @return true If the directory was created successfully or already exists.
          * @return false If creation failed.
          */
-        bool makeDirectory(const std::string& path);
+        LIBCTOOL_API bool makeDirectory(const std::string& path);
 
         /**
          * @brief Retrieves the network hostname of the local machine.
          * @return std::string The machine hostname.
          */
-        std::string getHostname();
+        LIBCTOOL_API std::string getHostname();
 
         /**
          * @brief Retrieves the Process ID (PID) of the current application.
          * @return int The current process identifier.
          */
-        int getProcessId();
+        LIBCTOOL_API int getProcessId();
 
         /**
          * @brief Checks if the current system architecture is Little Endian.
          * @return true if Little Endian, false if Big Endian.
          */
-        bool isLittleEndian();
+        LIBCTOOL_API bool isLittleEndian();
 
     }    // namespace sys
 }    // namespace ct

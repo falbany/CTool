@@ -13,6 +13,7 @@
 
     #include <string>
     #include <chrono>
+    #include "../libctool.h"
 
 namespace ct {
     // ------------------------------------------------------------------------
@@ -29,38 +30,38 @@ namespace ct {
          * @brief Generates a human-readable timestamp of the current system time.
          * @return std::string Formatted timestamp as "YYYY-MM-DD HH:MM:SS".
          */
-        std::string getCurrentTimestamp();
+        LIBCTOOL_API std::string getCurrentTimestamp();
 
         /**
          * @brief Halts the execution of the current thread for a specified number of milliseconds.
          * @param milliseconds Duration to sleep in milliseconds.
          */
-        void sleepMs(long milliseconds);
+        LIBCTOOL_API void sleepMs(long milliseconds);
 
         /**
          * @brief Halts the execution of the current thread for a specified number of seconds.
          * @param seconds Duration to sleep in seconds.
          */
-        void sleepS(long seconds);
+        LIBCTOOL_API void sleepS(long seconds);
 
         /**
          * @brief Retrieves the uptime of the application (or steady clock) in milliseconds.
          * * Useful for lightweight execution timing or benchmarking standard operations.
          * @return long long Elapsed milliseconds since an arbitrary epoch (steady clock).
          */
-        long long getUptimeMs();
+        LIBCTOOL_API long long getUptimeMs();
 
         /**
-         * @brief Retrieves the uptime of the application in nanoseconds.
+         * @brief Retrieves the uptime of the application in nanoparseconds.
          * @return long long Elapsed nanoseconds since an arbitrary epoch (steady clock).
          */
-        long long getUptimeNs();
+        LIBCTOOL_API long long getUptimeNs();
 
         /**
          * @brief A simple scoped timer that prints the elapsed time in the destructor.
          * * Usage: ct::time::Timer timer("Operation Name"); ... work ... 
          */
-        class Timer {
+        class LIBCTOOL_API Timer {
           public:
             explicit Timer(const std::string& label = "Unknown");
             ~Timer();

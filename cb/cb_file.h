@@ -12,6 +12,7 @@
 #include "cb_str.h"
 #include "cb_vector.h"
 #include <stdbool.h>
+#include "../libctool.h"
 
 /**
  * @struct cb_file_namespace
@@ -59,6 +60,6 @@ struct cb_file_namespace {
     cb_vector_t* (*get_files)(const char* directory, const char* prefix, const char* suffix);
 };
 
-extern const struct cb_file_namespace cb_file;
+LIBCTOOL_API extern const struct cb_file_namespace cb_file;
 
 #endif    // CB_FILE_H
