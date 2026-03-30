@@ -14,6 +14,8 @@
     #include "libctool.h"
 
     #include "ct/ct_core.hpp"
+    #include "ct/ct_array2d.hpp"
+    #include "ct/ct_array3d.hpp"
     #include "ct/ct_log.hpp"
     #include "ct/ct_time.hpp"
     #include "ct/ct_str.hpp"
