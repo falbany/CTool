@@ -29,9 +29,12 @@ Generic functions supporting `int`, `double`, `float`, etc.
 | `clamp`       | Constrain value to range [min, max].  | `template <T> T clamp(T val, T min, T max)`         |
 
 ### Modeling
-| Function    | Description                                     | Signature                                                                         |
-| :---------- | :---------------------------------------------- | :-------------------------------------------------------------------------------- |
-| `linearFit` | Linear least-squares regression ($y = mx + c$). | `RegResult linearFit(const std::vector<double>& x, const std::vector<double>& y)` |
+| Function        | Description                                     | Signature                                                                                                                   |
+| :-------------- | :---------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `linearFit`     | Linear least-squares regression ($y = mx + c$). | `RegResult linearFit(const std::vector<double>& x, const std::vector<double>& y)`                                           |
+| `logLinearFit`  | Exponential regression ($y = A e^{Bx}$).        | `RegResult logLinearFit(const std::vector<double>& x, const std::vector<double>& y)`                                        |
+| `polynomialFit` | Polynomial regression (Degree 1–4).             | `std::vector<double> polynomialFit(const std::vector<double>& x, const std::vector<double>& y, int degree)`                 |
+| `residuals`     | Error analysis for a given linear model.        | `std::vector<double> residuals(const std::vector<double>& x, const std::vector<double>& y, double slope, double intercept)` |
 
 ---
 
@@ -142,6 +145,81 @@ int main() {
     std::cout << "Slope: " << result.slope << "\n";
     std::cout << "Intercept: " << result.intercept << "\n";
     std::cout << "R-Squared: " << result.rSquared << "\n";
+
+    return 0;
+}
+```
+
+## Advanced Modeling Functions
+
+### Exponential Regression (Log-Linear)
+Fits $y = A e^{Bx}$ by performing linear regression on $\ln(y)$.
+
+```cpp
+#include "ct/ct_math.hpp"
+#include <vector>
+#include <iostream>
+
+int main() {
+    std::vector<double> x = {1.0, 2.0, 3.0, 4.0, 5.0};
+    std::vector<double> y = {2.7, 7.4, 20.1, 54.6, 148.4}; // approx exp(1.1x)
+
+    ct::math::RegResult res = ct::math::logLinearFit(x, y);
+
+    // Model: y = exp(intercept) * exp(slope * x)
+    double A = std::exp(res.intercept);
+    double B = res.slope;
+
+    std::cout << "Model: y = " << A << " * exp(" << B << " * x)\n";
+    std::cout << "R-Squared: " << res.rSquared << "\n";
+
+    return 0;
+}
+```
+
+### Residual Analysis
+Calculates the difference between actual and predicted values for a given linear model.
+
+```cpp
+#include "ct/ct_math.hpp"
+#include <vector>
+#include <iostream>
+
+int main() {
+    std::vector<double> x = {1.0, 2.0, 3.0};
+    std::vector<double> y = {2.0, 4.0, 6.5}; // Slight noise
+    double m = 2.0;
+    double c = 0.0;
+
+    std::vector<double> resid = ct::math::residuals(x, y, m, c);
+
+    std::cout << "Residuals: ";
+    for (double r : resid) std::cout << r << " "; // 0.0, 0.0, 0.5
+    std::cout << "\n";
+
+    return 0;
+}
+```
+
+### Polynomial Fitting
+Fits a polynomial $y = a_0 + a_1 x + \dots + a_n x^n$. Supports degrees 1 to 4.
+
+```cpp
+#include "ct/ct_math.hpp"
+#include <vector>
+#include <iostream>
+
+int main() {
+    std::vector<double> x = {1.0, 2.0, 3.0, 4.0, 5.0};
+    std::vector<double> y = {2.1, 4.9, 12.2, 20.1, 30.0}; // approx y = x^2 + 1
+
+    // Fit quadratic (degree 2)
+    std::vector<double> coeffs = ct::math::polynomialFit(x, y, 2);
+
+    // Coefficients: [a0, a1, a2] -> y = a0 + a1*x + a2*x^2
+    std::cout << "Coefficients: ";
+    for (double c : coeffs) std::cout << c << " "; // approx 1.0 0.0 1.0
+    std::cout << "\n";
 
     return 0;
 }

@@ -73,7 +73,7 @@ static cb_socket_t impl_connect(const char* host, int port, cb_net_proto_t proto
     }
 
     cb_socket_t sock = (cb_socket_t)socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if (sock == INVALID_SOCKET) {
+    if ((int)sock == (int)INVALID_SOCKET) {
         freeaddrinfo(res);
         return INVALID_SOCKET;
     }

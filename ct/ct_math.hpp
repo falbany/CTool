@@ -43,6 +43,45 @@ namespace ct {
          */
         LIBCTOOL_API RegResult linearFit(const std::vector<double>& x, const std::vector<double>& y);
 
+        
+        /**
+         * @brief Performs linear least-squares regression on logarithmically transformed data.
+         * @note Fits the model $y = A \cdot e^{B \cdot x}$ by solving $\ln(y) = B \cdot x + \ln(A)$.
+         *       Throws an error if any $y \le 0$.
+         * @param x Vector of independent values.
+         * @param y Vector of dependent values (must be strictly positive).
+         * @return RegResult where:
+         *         - slope corresponds to B (exponent coefficient).
+         *         - intercept corresponds to $\ln(A)$.
+         *         - rSquared is the goodness of fit for the log-transformed data.
+         */
+        LIBCTOOL_API RegResult logLinearFit(const std::vector<double>& x, const std::vector<double>& y);
+
+        /**
+         * @brief Calculates residuals (errors) for a linear model.
+         * @param x Vector of independent values.
+         * @param y Vector of actual dependent values.
+         * @param slope Slope of the linear model ($m$).
+         * @param intercept Y-intercept of the linear model ($c$).
+         * @return std::vector<double> Vector of residuals: $y_{actual} - y_{predicted}$.
+         */
+        LIBCTOOL_API std::vector<double> residuals(const std::vector<double>& x, const std::vector<double>& y, double slope, double intercept);
+
+        /**
+         * @brief Fits a polynomial of degree $n$ to the data using the Normal Equation.
+         * @note Supports degrees 1 to 4. Higher degrees may cause numerical instability 
+         *       without iterative solvers or external libraries.
+         *       Solves $(X^T X) \beta = X^T y$ using Gaussian elimination.
+         * @param x Vector of independent values.
+         * @param y Vector of dependent values.
+         * @param degree Degree of the polynomial ($1 \le degree \le 4$).
+         * @return std::vector<double> Coefficients $[a_0, a_1, ..., a_{degree}]$ 
+         *         where $y = a_0 + a_1 x + \dots + a_{degree} x^{degree}$.
+         * @return Returns empty vector if input sizes mismatch or degree is invalid.
+         * @throw std::invalid_argument if degree is outside [1, 4].
+         */
+        LIBCTOOL_API std::vector<double> polynomialFit(const std::vector<double>& x, const std::vector<double>& y, int degree);
+
         /**
          * @brief Calculates the minimum value in a dataset.
          * @note Returns a double. If the input is integral, it is cast to double.
