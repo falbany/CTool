@@ -1,6 +1,5 @@
 # CTool & CBridge Utility Library
 
-**Project:** SERMA MTP Team / Librairies Logicielle / C-CPP  
 **Author:** Florent ALBANY (FAL)  
 **License:** Copyright (c) 2026  
 **C++ Standard:** C++11 and above | **C Standard:** C99/C11
@@ -66,5 +65,4 @@ For a full API reference and detailed module guides, visit the **[Documentation 
 
 ## Contact
 
-  - **Author:** Florent ALBANY (f.albany@serma.com)
-  - **Repository:** GitLab (SERMA MTP Team / CTool)
+  - **Author:** Florent ALBANY (FAL)

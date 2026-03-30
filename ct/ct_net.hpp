@@ -1,6 +1,6 @@
 /**
  * @file ct_net.hpp
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY (FAL)
  * @brief Object-oriented networking suite for TCP/UDP communication.
  * @version 1.1
  * @date 2026-03-20

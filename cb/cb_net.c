@@ -1,6 +1,6 @@
 /**
  * @file cb_net.c
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY (FAL)
  * @brief Implementation of the cross-platform networking utilities.
  *
  * This file contains the platform-specific implementations of the networking

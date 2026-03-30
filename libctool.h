@@ -1,6 +1,6 @@
 /**
  * @file libctool.h
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY (FAL)
  * @brief Logic for DLL export/import and static linking.
  * @version 1.1
  * @date 2026-03-24

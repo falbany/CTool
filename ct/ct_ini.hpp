@@ -1,6 +1,6 @@
 /**
  * @file ct_ini.hpp
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY (FAL)
  * @brief Robust INI configuration parser and serializer.
  * @version 1.1
  * @date 2026-03-20

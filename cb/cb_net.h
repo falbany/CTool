@@ -1,6 +1,6 @@
 /**
  * @file cb_net.h
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY (FAL)
  * @brief Cross-platform C networking utilities (TCP/UDP).
  * 
  * This module provides a simplified, cross-platform interface for basic TCP and

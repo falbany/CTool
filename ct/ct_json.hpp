@@ -1,6 +1,6 @@
 /**
  * @file ct_json.hpp
- * @author Florent ALBANY (f.albany@serma.com)
+ * @author Florent ALBANY (FAL)
  * @brief Lightweight JSON serializer and parser for C++11.
  * @version 1.1
  * @date 2026-03-20
