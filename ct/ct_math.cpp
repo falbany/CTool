@@ -37,11 +37,35 @@ namespace ct {
             return res;
         }
 
+        double min(const std::vector<double>& data) {
+            if (data.empty()) return 0.0;
+            return *std::min_element(data.begin(), data.end());
+        }
+
+        double max(const std::vector<double>& data) {
+            if (data.empty()) return 0.0;
+            return *std::max_element(data.begin(), data.end());
+        }
+
         double mean(const std::vector<double>& data) {
             if (data.empty()) return 0.0;
             return std::accumulate(data.begin(), data.end(), 0.0) / data.size();
         }
 
+        double variance(const std::vector<double>& data) {
+            size_t n = data.size();
+            if (n < 2) return 0.0; // Variance is undefined for single value or empty
+
+            double avg = mean(data);
+            double sq_sum = 0.0;
+            for (double v : data) {
+                sq_sum += (v - avg) * (v - avg);
+            }
+            // Population variance (n) or Sample variance (n-1)? 
+            // Standard deviation used n here, so we stay consistent.
+            return sq_sum / n; 
+        }
+        
         double standardDeviation(const std::vector<double>& data) {
             if (data.size() < 2) return 0.0;
             double avg    = mean(data);

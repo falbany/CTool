@@ -44,9 +44,36 @@ namespace ct {
         LIBCTOOL_API RegResult linearFit(const std::vector<double>& x, const std::vector<double>& y);
 
         /**
+         * @brief Calculates the minimum value in a dataset.
+         * @note Returns a double. If the input is integral, it is cast to double.
+         *       Returns 0.0 if the vector is empty.
+         * @param data Vector of numeric values.
+         * @return double The minimum value.
+         */
+        LIBCTOOL_API double min(const std::vector<double>& data);
+
+        /**
+         * @brief Calculates the maximum value in a dataset.
+         * @note Returns a double. If the input is integral, it is cast to double.
+         *       Returns 0.0 if the vector is empty.
+         * @param data Vector of numeric values.
+         * @return double The maximum value.
+         */
+        LIBCTOOL_API double max(const std::vector<double>& data);
+
+        /**
          * @brief Calculates the arithmetic mean (average) of a dataset.
          */
         LIBCTOOL_API double mean(const std::vector<double>& data);
+
+        /**
+         * @brief Calculates the variance of a dataset (population variance).
+         * @note Variance is the square of the standard deviation.
+         *       Returns 0.0 if the vector has fewer than 2 elements.
+         * @param data Vector of numeric values.
+         * @return double The variance.
+         */
+        LIBCTOOL_API double variance(const std::vector<double>& data);
 
         /**
          * @brief Calculates the standard deviation of a dataset.
@@ -83,6 +110,42 @@ namespace ct {
          */
         template <typename T>
         T median(const std::vector<T>& data);
+
+        /**
+         * @brief Calculates the sum of numeric values in a dataset.
+         * @note This function uses `double` for internal accumulation to prevent overflow 
+         *       and loss of precision when summing integers or floating-point numbers.
+         *       The return type `T` is cast from the accumulated double value.
+         * @tparam T Numeric type (e.g., double, int, float).
+         * @param data Vector of numeric values to sum.
+         * @return T The sum of the elements. Returns 0 if the vector is empty.
+         */
+        template <typename T>
+        T sum(const std::vector<T>& data);
+
+        /**
+         * @brief Calculates the $k$-th percentile of a dataset.
+         * @note Uses linear interpolation between values if the percentile falls between indices.
+         * @tparam T Numeric type.
+         * @param data Vector of numeric values.
+         * @param k The percentile to calculate (0.0 to 100.0).
+         * @return double The value at the specified percentile.
+         * @return 0.0 if the vector is empty.
+         * @throw std::invalid_argument if $k$ is outside [0, 100].
+         */
+        template <typename T>
+        double percentile(const std::vector<T>& data, double k);
+
+        /**
+         * @brief Normalizes a dataset to a range [0, 1] using Min-Max scaling.
+         * @note Formula: $x_{scaled} = \frac{x - min}{max - min}$.
+         *       If $max == min$, all values are set to 0.5 (or 0.0 if all are same).
+         * @tparam T Numeric type.
+         * @param data Vector of numeric values.
+         * @return std::vector<double> The normalized values.
+         */
+        template <typename T>
+        std::vector<double> minMaxScale(const std::vector<T>& data);
 
     }    // namespace math
 }    // namespace ct
