@@ -146,12 +146,47 @@ DataFrame filter(const DataFrame& df, const std::string& col, const Cell& val, C
 
 #### Functions
 
-| Function | Description | Returns / Throws |
-| :--- | :--- | :--- |
-| `fromCSV(file, delim, hasHeader)` | Loads a CSV file. Automatically parses numeric strings as `DOUBLE` cells. | `DataFrame` |
-| `toCSV(df, file, delim)` | Exports the DataFrame to a CSV file. Empty cells become empty strings. | `bool` (success) |
-| `fromArray2D(matrix, names)` | Converts a numeric `Array2D` into a DataFrame. | `DataFrame` |
-| `toArray2D(df, colNames)` | Extracts numeric columns into a dense `Array2D<double>`. | `Array2D<double>`. Throws `std::runtime_error` if non-numeric. |
+| Function                          | Description                                                               | Returns / Throws                                               |
+| :-------------------------------- | :------------------------------------------------------------------------ | :------------------------------------------------------------- |
+| `fromCSV(file, delim, hasHeader)` | Loads a CSV file. Automatically parses numeric strings as `DOUBLE` cells. | `DataFrame`                                                    |
+| `toCSV(df, file, delim)`          | Exports the DataFrame to a CSV file. Empty cells become empty strings.    | `bool` (success)                                               |
+| `fromArray2D(matrix, names)`      | Converts a numeric `Array2D` into a DataFrame.                            | `DataFrame`                                                    |
+| `toArray2D(df, colNames)`         | Extracts numeric columns into a dense `Array2D<double>`.                  | `Array2D<double>`. Throws `std::runtime_error` if non-numeric. |
+| `fromNumArray(arr, names)`        | Converts a `NumArray` into a DataFrame.                                   | `DataFrame`                                                    |
+| `toNumArray(df, colNames)`        | Converts selected DataFrame columns into a `NumArray`.                    | `NumArray<double>`                                             |
+
+#### NumArray Integration (High Performance)
+The module now supports direct conversion between `DataFrame` and `ct::num::NumArray`, leveraging contiguous memory layouts for high-performance numerical pipelines.
+
+**Why use NumArray over Array2D?**
+- **Memory:** `NumArray` stores data in a single contiguous block (like NumPy), enabling faster CPU cache usage and SIMD optimizations.
+- **Math:** `NumArray` supports element-wise operators (`+`, `*`, `sqrt`) natively, whereas `Array2D` requires manual loops or helper functions.
+
+#### Example: Data Science Pipeline
+```cpp
+#include "ct/ct_dataframe.hpp"
+#include "ct/ct_num.hpp"
+
+// 1. Load Data
+auto df = ct::data::fromCSV("dataset.csv");
+
+// 2. Filter Data
+auto filtered = ct::data::filterGt(df, "Revenue", 1000.0);
+
+// 3. Convert to High-Performance Matrix
+// Extracts 'Revenue' and 'Cost' into a contiguous NumArray
+ct::num::NumArray<double> matrix = ct::data::toNumArray(filtered, {"Revenue", "Cost"});
+
+// 4. Perform Vectorized Math (No manual loops!)
+ct::num::NumArray<double> profit = matrix; // Copy
+// Assuming 'Profit' logic: Profit = Revenue - Cost (requires manual row logic or element-wise)
+// Example: Profit per row = Revenue - Cost (Broadcasting or custom logic)
+// Note: For row-wise operations, manual loops are still needed unless broadcasting is implemented.
+
+// 5. Convert back to DataFrame for reporting
+auto report_df = ct::data::fromNumArray(matrix, {"Revenue", "Cost"});
+ct::data::toCSV(report_df, "final_report.csv");
+```
 
 #### CSV Parsing Heuristics
 When using `fromCSV`, the module attempts to convert every cell string to a `double` using `std::stod`. If successful, the cell is stored as a `DOUBLE`. If conversion fails (e.g., for "Alice" or "Pending"), the cell is stored as a `STRING`.

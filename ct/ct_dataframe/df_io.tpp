@@ -96,6 +96,71 @@ namespace ct {
             return matrix;
         }
 
+        inline DataFrame fromNumArray(const ct::num::NumArray<double>& array, const std::vector<std::string>& columnNames) {
+            DataFrame df;
+            if (array.size() == 0) return df;    // Empty check
+
+            const size_t rows = array.rows();
+            const size_t cols = array.cols();
+
+            if (!columnNames.empty() && columnNames.size() != cols) {
+                throw std::invalid_argument("fromNumArray: columnNames size mismatch with array width.");
+            }
+
+            // Add columns first
+            for (size_t j = 0; j < cols; ++j) {
+                std::string name = columnNames.empty() ? "col" + std::to_string(j) : columnNames[j];
+                df.addColumn(name);
+            }
+
+            // Access contiguous data directly for performance
+            const double* raw_data = array.data();
+
+            // Fill rows
+            for (size_t i = 0; i < rows; ++i) {
+                std::vector<Cell> row;
+                row.reserve(cols);
+                for (size_t j = 0; j < cols; ++j) {
+                    // Calculate 1D index manually or use operator()
+                    // Since NumArray uses contiguous storage: index = i * cols + j
+                    double val = raw_data[i * cols + j];
+                    row.push_back(Cell(val));
+                }
+                df.pushRow(row);
+            }
+            return df;
+        }
+
+        inline ct::num::NumArray<double> toNumArray(const DataFrame& df, const std::vector<std::string>& columnNames) {
+            if (df.rows() == 0 || columnNames.empty()) {
+                return ct::num::NumArray<double>(0, 0);
+            }
+
+            const size_t rows = df.rows();
+            const size_t cols = columnNames.size();
+
+            // Pre-allocate contiguous buffer (NumPy style)
+            ct::num::NumArray<double> matrix(rows, cols);
+            double*                   data_ptr = matrix.data();    // Get raw pointer for fast writing
+
+            for (size_t j = 0; j < cols; ++j) {
+                const std::string&       colName = columnNames[j];
+                const std::vector<Cell>& colData = df.getColumn(colName);
+
+                for (size_t i = 0; i < rows; ++i) {
+                    // Check type safety
+                    if (colData[i].type() != Cell::DOUBLE && colData[i].type() != Cell::INT) {
+                        throw std::runtime_error("toNumArray: Column '" + colName + "' contains non-numeric data at row " + std::to_string(i));
+                    }
+
+                    double val = colData[i].asDouble();
+                    // Write to contiguous 1D buffer (row-major order: i * cols + j)
+                    data_ptr[i * cols + j] = val;
+                }
+            }
+            return matrix;
+        }
+
     }    // namespace data
 }    // namespace ct
 

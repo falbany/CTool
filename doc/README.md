@@ -29,6 +29,7 @@ This folder contains the complete technical documentation for the CTool and CBri
 | [`ct/ct_array2d.hpp`](../ct/ct_array2d.hpp)     | Dynamic 2D Array container                          | [**ct_array2d.md**](ct_array2d.md)     |
 | [`ct/ct_array3d.hpp`](../ct/ct_array3d.hpp)     | Dynamic 3D Array container                          | [**ct_array3d.md**](ct_array3d.md)     |
 | [`ct/ct_dataframe.hpp`](../ct/ct_dataframe.hpp) | A Python Pandas like DataFrame.                     | [**ct_dataframe.md**](ct_dataframe.md) |
+| [`ct/ct_num.hpp`](../ct/ct_num.hpp)             | NumPy-like Array Operations                         | [**ct_num.md**](ct_num.md)             |
 | [`ct/ct_csv.hpp`](../ct/ct_csv.hpp)             | Generic CSV parser and data generator.              | *Coming Soon*                          |
 | [`ct/ct_str.hpp`](../ct/ct_str.hpp)             | Advanced string manipulation.                       | *Coming Soon*                          |
 | [`ct/ct_file.hpp`](../ct/ct_file.hpp)           | C++ wrappers for file I/O and directory operations. | *Coming Soon*                          |
