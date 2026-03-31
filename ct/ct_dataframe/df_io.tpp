@@ -8,29 +8,7 @@
 namespace ct {
     namespace data {
 
-        inline bool toCSV(const DataFrame& df, const std::string& filename, char delim) {
-            try {
-                ct::csv::Writer writer(filename, delim, false);
-                writer.setHeader(df.columnNames());
-
-                for (size_t r = 0; r < df.rows(); ++r) {
-                    std::vector<Cell>        rowCells = df.getRow(r);
-                    std::vector<std::string> rowStrings;
-                    for (const auto& cell : rowCells) {
-                        if (cell.type() == Cell::STRING)
-                            rowStrings.push_back(cell.asString());
-                        else if (cell.type() == Cell::EMPTY)
-                            rowStrings.push_back("");
-                        else
-                            rowStrings.push_back(std::to_string(cell.asDouble()));
-                    }
-                    writer.writeRow(rowStrings);
-                }
-                return true;
-            } catch (...) {
-                return false;
-            }
-        }
+        // --- Factory Functions (Imports) ---
 
         inline DataFrame fromCSV(const std::string& filename, char delim, bool hasHeader) {
             DataFrame df;
@@ -82,20 +60,6 @@ namespace ct {
             return df;
         }
 
-        inline ct::array::Array2D<double> toArray2D(const DataFrame& df, const std::vector<std::string>& columnNames) {
-            if (df.rows() == 0 || columnNames.empty()) return ct::array::Array2D<double>();
-
-            ct::array::Array2D<double> matrix(df.rows(), columnNames.size());
-
-            for (size_t j = 0; j < columnNames.size(); ++j) {
-                std::vector<Cell> colData = df.getColumn(columnNames[j]);
-                for (size_t i = 0; i < colData.size(); ++i) {
-                    matrix(i, j) = colData[i].asDouble();    // asDouble throws if STRING
-                }
-            }
-            return matrix;
-        }
-
         inline DataFrame fromNumArray(const ct::num::NumArray<double>& array, const std::vector<std::string>& columnNames) {
             DataFrame df;
             if (array.size() == 0) return df;    // Empty check
@@ -131,31 +95,75 @@ namespace ct {
             return df;
         }
 
-        inline ct::num::NumArray<double> toNumArray(const DataFrame& df, const std::vector<std::string>& columnNames) {
-            if (df.rows() == 0 || columnNames.empty()) {
+        // --- Member Method Implementations (Exports) ---
+        // These are defined here in df_io.tpp but called as df.toCSV(), etc.
+
+        inline bool DataFrame::toCSV(const std::string& filename, char delim) {
+            try {
+                ct::csv::Writer writer(filename, delim, false);
+                writer.setHeader(columnNames());
+
+                for (size_t r = 0; r < rows(); ++r) {
+                    std::vector<std::string> rowStrings;
+                    rowStrings.reserve(cols());
+
+                    auto names = columnNames();
+                    for (const auto& name : names) {
+                        const Cell& cell = at(r, name);
+                        if (cell.type() == Cell::STRING) {
+                            rowStrings.push_back(cell.asString());
+                        } else if (cell.type() == Cell::EMPTY) {
+                            rowStrings.push_back("");
+                        } else {
+                            rowStrings.push_back(std::to_string(cell.asDouble()));
+                        }
+                    }
+                    writer.writeRow(rowStrings);
+                }
+                return true;
+            } catch (...) {
+                return false;
+            }
+        }
+
+        inline ct::array::Array2D<double> DataFrame::toArray2D(const std::vector<std::string>& columnNames) const {
+            if (rows() == 0 || columnNames.empty()) {
+                return ct::array::Array2D<double>();
+            }
+
+            ct::array::Array2D<double> matrix(rows(), columnNames.size());
+
+            for (size_t j = 0; j < columnNames.size(); ++j) {
+                std::vector<Cell> colData = getColumn(columnNames[j]);
+                for (size_t i = 0; i < colData.size(); ++i) {
+                    matrix(i, j) = colData[i].asDouble();
+                }
+            }
+            return matrix;
+        }
+
+        inline ct::num::NumArray<double> DataFrame::toNumArray(const std::vector<std::string>& columnNames) const {
+            if (rows() == 0 || columnNames.empty()) {
                 return ct::num::NumArray<double>(0, 0);
             }
 
-            const size_t rows = df.rows();
-            const size_t cols = columnNames.size();
+            const size_t rows_count = rows();
+            const size_t cols_count = columnNames.size();
 
-            // Pre-allocate contiguous buffer (NumPy style)
-            ct::num::NumArray<double> matrix(rows, cols);
-            double*                   data_ptr = matrix.data();    // Get raw pointer for fast writing
+            ct::num::NumArray<double> matrix(rows_count, cols_count);
+            double*                   data_ptr = matrix.data();
 
-            for (size_t j = 0; j < cols; ++j) {
+            for (size_t j = 0; j < cols_count; ++j) {
                 const std::string&       colName = columnNames[j];
-                const std::vector<Cell>& colData = df.getColumn(colName);
+                const std::vector<Cell>& colData = getColumn(colName);
 
-                for (size_t i = 0; i < rows; ++i) {
-                    // Check type safety
+                for (size_t i = 0; i < rows_count; ++i) {
                     if (colData[i].type() != Cell::DOUBLE && colData[i].type() != Cell::INT) {
                         throw std::runtime_error("toNumArray: Column '" + colName + "' contains non-numeric data at row " + std::to_string(i));
                     }
 
-                    double val = colData[i].asDouble();
-                    // Write to contiguous 1D buffer (row-major order: i * cols + j)
-                    data_ptr[i * cols + j] = val;
+                    double val                   = colData[i].asDouble();
+                    data_ptr[i * cols_count + j] = val;
                 }
             }
             return matrix;

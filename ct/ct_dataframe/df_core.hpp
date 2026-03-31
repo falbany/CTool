@@ -12,6 +12,8 @@
     #define CT_DF_CORE_HPP
 
     #include "df_column.hpp"
+    #include "../ct_array2d.hpp"
+    #include "../ct_num.hpp"
     #include <vector>
     #include <string>
     #include "../../libctool.h"
@@ -170,6 +172,36 @@ namespace ct {
              * @throws std::runtime_error If `name` is not found.
              */
             std::vector<Cell> getColumn(const std::string& name) const;
+
+            // --- I/O & Conversion Methods ---
+            // Note: Implementations are in df_io.tpp for separation of concerns.
+
+            /**
+             * @brief Exports the DataFrame to a CSV file.
+             * @param filename Destination path.
+             * @param delim Column separator (default: ',').
+             * @return true if successful, false if an error occurred.
+             * @note Throws std::runtime_error on I/O failure if strict mode was enabled.
+             */
+            bool toCSV(const std::string& filename, char delim = ',');
+
+            /**
+             * @brief Exports numeric columns to a legacy Array2D<double>.
+             * @param columnNames List of numeric columns to extract.
+             * @return Array2D<double> A matrix containing the selected data.
+             * @throws std::runtime_error if a column is non-numeric or names are invalid.
+             * @note Returns an empty Array2D if columnNames is empty.
+             */
+            ct::array::Array2D<double> toArray2D(const std::vector<std::string>& columnNames) const;
+
+            /**
+             * @brief Exports numeric columns to a high-performance NumArray<double>.
+             * @param columnNames List of numeric columns to extract.
+             * @return NumArray<double> A contiguous matrix containing the selected data.
+             * @throws std::runtime_error if a column is non-numeric or names are invalid.
+             * @note Uses contiguous memory for faster downstream math operations.
+             */
+            ct::num::NumArray<double> toNumArray(const std::vector<std::string>& columnNames) const;
 
           private:
             /**

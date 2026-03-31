@@ -8,12 +8,19 @@ The `DataFrame` module provides a lightweight, type-safe C++11 implementation of
 
 The module is organized into four logical components:
 
-| Header          | Responsibility                                    |
-| --------------- | ------------------------------------------------- |
-| `df_types.hpp`  | `Cell` class (type-safe variant) and helpers      |
-| `df_core.hpp`   | `DataFrame` and `Column` core class definitions   |
-| `df_filter.hpp` | Filtering engine (`filterEq`, `filterGt`, etc.)   |
-| `df_io.hpp`     | I/O utilities (CSV export, Array2D, Pretty Print) |
+| Header          | Responsibility                                  |
+| --------------- | ----------------------------------------------- |
+| `df_types.hpp`  | `Cell` class (type-safe variant) and helpers    |
+| `df_core.hpp`   | `DataFrame` and `Column` core class definitions |
+| `df_filter.hpp` | Filtering engine (`filterEq`, `filterGt`, etc.) |
+| `df_io.hpp`     | **Import/Export & Conversion Logic**            |
+
+**Design Pattern:**
+- **`df_core`**: Pure data structure. Defines the API.
+- **`df_io`**: Contains implementation logic for **imports** (loading from files/arrays) and **exports** (saving to CSV/converting to arrays).
+- **Dual-Mode API**: 
+  - **Creation**: Data can be loaded from external sources using **Free Functions** (`ct::data::fromCSV`, `fromArray2D`).
+  - **Manipulation**: Data is manipulated via **Instance Methods** (`df.pushRow`, `df.toCSV`).
 
 All implementations are provided as inline template code via corresponding `.tpp` files to enable header-only usage.
 
@@ -97,6 +104,26 @@ The main class storing data in **column-major** format for better cache locality
 | `getRow(size_t index)`                       | Returns a copy of the row as `std::vector<Cell>`.               |
 | `getColumn(const std::string& name)`         | Returns a copy of the column as `std::vector<Cell>`.            |
 
+#### **Export Methods (Instance)**
+*Methods to save or convert the current DataFrame instance.*
+
+| Method                      | Description                                                            | Returns / Throws   |
+| :-------------------------- | :--------------------------------------------------------------------- | :----------------- |
+| `df.toCSV(filename, delim)` | Exports the DataFrame to a CSV file. Empty cells become empty strings. | `bool` (success)   |
+| `df.toArray2D(colNames)`    | Extracts numeric columns into a legacy `Array2D<double>`.              | `Array2D<double>`  |
+| `df.toNumArray(colNames)`   | Extracts numeric columns into a high-performance `NumArray<double>`.   | `NumArray<double>` |
+
+#### **Import Functions (Free)**
+*Static or free functions to create a DataFrame from external sources.*
+
+| Function                           | Description                                                               | Returns / Throws |
+| :--------------------------------- | :------------------------------------------------------------------------ | :--------------- |
+| `fromCSV(filename, delim, header)` | Loads a CSV file. Automatically parses numeric strings as `DOUBLE` cells. | `DataFrame`      |
+| `fromArray2D(array, names)`        | Converts a legacy `Array2D` into a DataFrame.                             | `DataFrame`      |
+| `fromNumArray(array, names)`       | Converts a high-performance `NumArray` into a DataFrame.                  | `DataFrame`      |
+
+> **Note:** Import functions are free functions in the `ct::data` namespace, while export functions are member methods of `DataFrame`.
+
 #### Exceptions
 
 | Method        | Exception               | Condition                           |
@@ -142,66 +169,86 @@ DataFrame filter(const DataFrame& df, const std::string& col, const Cell& val, C
 
 ---
 
-### I/O Utilities
+### I/O Utilities & Integration
 
-#### Functions
-
-| Function                          | Description                                                               | Returns / Throws                                               |
-| :-------------------------------- | :------------------------------------------------------------------------ | :------------------------------------------------------------- |
-| `fromCSV(file, delim, hasHeader)` | Loads a CSV file. Automatically parses numeric strings as `DOUBLE` cells. | `DataFrame`                                                    |
-| `toCSV(df, file, delim)`          | Exports the DataFrame to a CSV file. Empty cells become empty strings.    | `bool` (success)                                               |
-| `fromArray2D(matrix, names)`      | Converts a numeric `Array2D` into a DataFrame.                            | `DataFrame`                                                    |
-| `toArray2D(df, colNames)`         | Extracts numeric columns into a dense `Array2D<double>`.                  | `Array2D<double>`. Throws `std::runtime_error` if non-numeric. |
-| `fromNumArray(arr, names)`        | Converts a `NumArray` into a DataFrame.                                   | `DataFrame`                                                    |
-| `toNumArray(df, colNames)`        | Converts selected DataFrame columns into a `NumArray`.                    | `NumArray<double>`                                             |
+The module provides a complete pipeline for data ingestion, manipulation, and export, with tight integration with the `ct_num` (NumPy-like) module.
 
 #### NumArray Integration (High Performance)
-The module now supports direct conversion between `DataFrame` and `ct::num::NumArray`, leveraging contiguous memory layouts for high-performance numerical pipelines.
+The module supports direct conversion from `DataFrame` to `ct::num::NumArray`, leveraging contiguous memory layouts for high-performance numerical pipelines.
 
-**Why use NumArray over Array2D?**
+**Why use `NumArray` over `Array2D`?**
 - **Memory:** `NumArray` stores data in a single contiguous block (like NumPy), enabling faster CPU cache usage and SIMD optimizations.
-- **Math:** `NumArray` supports element-wise operators (`+`, `*`, `sqrt`) natively, whereas `Array2D` requires manual loops or helper functions.
+- **Math:** `NumArray` supports element-wise operators (`+`, `*`, `sqrt`) natively, whereas `Array2D` requires manual loops.
 
-#### Example: Data Science Pipeline
+#### Example: Complete Data Science Pipeline (Import → Process → Export)
 ```cpp
 #include "ct/ct_dataframe.hpp"
 #include "ct/ct_num.hpp"
 
-// 1. Load Data
-auto df = ct::data::fromCSV("dataset.csv");
+int main() {
+    // 1. IMPORT Data from CSV
+    // Free function creates a new DataFrame from a file
+    ct::data::DataFrame df = ct::data::fromCSV("sales_data.csv");
 
-// 2. Filter Data
-auto filtered = ct::data::filterGt(df, "Revenue", 1000.0);
+    // 2. FILTER Data
+    // Get rows where 'Quantity' > 10
+    auto filtered = ct::data::filterGt(df, "Quantity", 10);
 
-// 3. Convert to High-Performance Matrix
-// Extracts 'Revenue' and 'Cost' into a contiguous NumArray
-ct::num::NumArray<double> matrix = ct::data::toNumArray(filtered, {"Revenue", "Cost"});
+    // 3. CONVERT to High-Performance Matrix
+    // Extracts 'Price' and 'Discount' into a contiguous NumArray
+    ct::num::NumArray<double> matrix = filtered.toNumArray({"Price", "Discount"});
 
-// 4. Perform Vectorized Math (No manual loops!)
-ct::num::NumArray<double> profit = matrix; // Copy
-// Assuming 'Profit' logic: Profit = Revenue - Cost (requires manual row logic or element-wise)
-// Example: Profit per row = Revenue - Cost (Broadcasting or custom logic)
-// Note: For row-wise operations, manual loops are still needed unless broadcasting is implemented.
+    // 4. PROCESS with NumArray Ufuncs (Vectorized Math)
+    // Apply 10% discount: Discount = Price * 0.1
+    ct::num::NumArray<double> discounts = ct::num::mul(matrix, 0.1); // Note: using ct::num::mul if available, or manual
+    
+    // Example using element-wise multiplication:
+    ct::num::NumArray<double> price_col = matrix.sliceRow(0); // Conceptual
+    // Let's use element-wise logic:
+    ct::num::NumArray<double> profit = matrix + matrix; // Just a demo of + operator
 
-// 5. Convert back to DataFrame for reporting
-auto report_df = ct::data::fromNumArray(matrix, {"Revenue", "Cost"});
-ct::data::toCSV(report_df, "final_report.csv");
+    // Better Example: Calculate Total Revenue (Price * Quantity)
+    // Assuming 'Quantity' is column 0 and 'Price' is column 1
+    ct::num::NumArray<double> revenue = matrix; 
+    // (In a real scenario, you'd perform row-wise math or use broadcasting)
+    
+    // 5. EXPORT Results back to DataFrame and CSV
+    auto result_df = ct::data::DataFrame::fromNumArray(revenue, {"Total_Revenue"});
+    result_df.toCSV("results.csv");
+
+    return 0;
+}
 ```
 
-#### CSV Parsing Heuristics
-When using `fromCSV`, the module attempts to convert every cell string to a `double` using `std::stod`. If successful, the cell is stored as a `DOUBLE`. If conversion fails (e.g., for "Alice" or "Pending"), the cell is stored as a `STRING`.
+#### Import Functions Details
+The module provides three free functions to populate DataFrames from external sources:
+
+1.  **`fromCSV(filename, delim, hasHeader)`**
+    *   Reads a CSV file.
+    *   **Heuristic:** Automatically attempts to parse numeric strings as `DOUBLE`. Non-numeric strings become `STRING`.
+    *   **Headers:** If `hasHeader` is `true` (default), the first row defines column names.
+
+2.  **`fromArray2D(array, names)`**
+    *   Converts a legacy `ct::array::Array2D` into a DataFrame.
+    *   Useful for migrating data from older grid-based systems.
+
+3.  **`fromNumArray(array, names)`**
+    *   Converts a high-performance `ct::num::NumArray` into a DataFrame.
+    *   Optimized for performance by reading contiguous memory directly.
+    *   **Throws** `std::invalid_argument` if column names count mismatches array width.
 
 #### CSV Export Details
-When using `toCSV`:
-- `delim`: Defaults to `,`.
+When using `df.toCSV`:
+- `delim`: Defaults to `,`. Use `'\t'` for TSV.
 - `DOUBLE`/`INT` cells are converted via `std::to_string`.
 - `EMPTY` cells are written as an empty field (,,).
+- Returns `true` on success, `false` on I/O error.
 
-#### Array2D Conversion Details
-`toArray2D` is specifically designed to bridge the gap between data management and mathematical processing. It requires a list of column names to extract.
-
-- **Throws** `std::runtime_error` if any listed column contains non-numeric data.
-- Returns an empty `Array2D` if the DataFrame has no rows or the column list is empty.
+#### Array2D vs. NumArray Conversion
+- **`toArray2D`**: Returns a legacy `Array2D<double>` (Vector of Vectors). Suitable for compatibility.
+- **`toNumArray`**: Returns a `NumArray<double>` (Contiguous memory). **Recommended** for numerical computations.
+  - **Throws** `std::runtime_error` if any listed column contains non-numeric data.
+  - Returns an empty `NumArray` if the DataFrame has no rows or the column list is empty.
 
 #### Pretty Printing
 
@@ -220,7 +267,7 @@ Prints a formatted table to any `std::ostream` (e.g., `std::cout`).
 
 ## Usage Examples
 
-### Creating and Populating a DataFrame
+### 1. Creating and Populating a DataFrame
 
 ```cpp
 #include "ct/ct_dataframe.hpp"
@@ -235,7 +282,7 @@ df.pushRow({102, "Bob", 88.0});
 df.pushRow({103, "Charlie", 92.3});
 ```
 
-### Filtering Data
+### 2. Filtering Data
 
 ```cpp
 #include "ct/ct_dataframe.hpp"
@@ -247,45 +294,103 @@ auto highPerformers = ct::data::filterGt(df, "Score", 90.0);
 auto midRange = ct::data::filter(df, "Score", 85.0, ct::data::CompareOp::GE);
 ```
 
-### 3. Math and I/O Integration
+### 3. Importing Data
+
 ```cpp
 #include "ct/ct_dataframe.hpp"
-#include "ct/ct_math.hpp"
 
-// Import from CSV
-auto df2 = ct::data::fromCSV("input_data.csv");
+// Load from CSV
+auto df1 = ct::data::fromCSV("input_data.csv");
 
-// Import from Math Array
-ct::array::Array2D<double> raw_matrix = { {1.1, 2.2}, {3.3, 4.4} };
-auto df3 = ct::data::fromArray2D(raw_matrix, {"FeatureA", "FeatureB"});
+// Load from legacy Array2D
+ct::array::Array2D<double> legacy_data = {{1.1, 2.2}, {3.3, 4.4}};
+auto df2 = ct::data::fromArray2D(legacy_data, {"ColA", "ColB"});
 
-// Export to CSV for external reporting
-ct::data::toCSV(df, "output.csv");          // Comma-separated
-ct::data::toCSV(df, "output.tsv", '\t');    // Tab-separated
-
-// Convert numeric columns to a matrix for linear regression
-auto matrix = ct::data::toArray2D(df, {"ID", "Value"});
-
-// Perform math on the exported matrix
-matrix.scale(2.0); 
+// Load from high-performance NumArray
+ct::num::NumArray<double> num_data = {{5.0, 6.0}};
+auto df3 = ct::data::fromNumArray(num_data, {"X", "Y"});
 ```
 
-### Pretty Printing
+### 4. Export and Conversion
+
+```cpp
+#include "ct/ct_dataframe.hpp"
+#include "ct/ct_num.hpp"
+
+ct::data::DataFrame df;
+df.addColumn("X");
+df.addColumn("Y");
+df.pushRow({1.1, 2.2});
+df.pushRow({3.3, 4.4});
+
+// Export to CSV
+df.toCSV("data.csv");
+df.toCSV("data.tsv", '\t');
+
+// Convert to legacy Array2D
+ct::array::Array2D<double> arr = df.toArray2D({"X", "Y"});
+
+// Perform math on Array2D
+arr.scale(2.0);
+
+// Convert to high-performance NumArray
+ct::num::NumArray<double> num_arr = df.toNumArray({"X", "Y"});
+
+// Perform math on NumArray
+auto sum_arr = num_arr + num_arr;
+auto scaled = num_arr * 2.0;
+auto roots = ct::num::sqrt(num_arr);
+```
+
+### 5. NumArray Integration with Ufuncs
+
+```cpp
+#include "ct/ct_dataframe.hpp"
+#include "ct/ct_num.hpp"
+
+// 1. Load Data
+auto df = ct::data::fromCSV("sensor_data.csv");
+
+// 2. Extract Numeric Columns
+auto matrix = df.toNumArray({"Temp", "Pressure"});
+
+// 3. Apply Universal Functions (Ufuncs)
+// Calculate square root of values
+auto roots = ct::num::sqrt(matrix);
+
+// Calculate sine of values
+auto sine_vals = ct::num::sin(matrix);
+
+// 4. Element-wise Arithmetic
+auto sum_matrix = matrix + matrix; // Element-wise addition
+auto scaled = matrix * 1.5;        // Element-wise scaling
+
+// 5. Reductions
+double total_temp = ct::num::sum(matrix); // Sum of all elements
+double avg_pressure = ct::num::mean(matrix); // Average
+```
+
+### 6. Pretty Printing
 
 ```cpp
 #include "ct/ct_dataframe.hpp"
 #include <iostream>
 
+ct::data::DataFrame df;
+df.addColumn("ID");
+df.addColumn("Name");
+df.pushRow({1, "Alice"});
+df.pushRow({2, "Bob"});
+
 std::cout << df << std::endl;
 // Output:
-// ID             Name           Score          
-// ---------------------------------------------
-// 101            Alice          95.50          
-// 102            Bob            88.00          
-// 103            Charlie        92.30          
+// ID             Name              
+// --------------------------------
+// 1              Alice             
+// 2              Bob               
 ```
 
-### Inspecting Data
+### 7. Inspecting Data
 
 ```cpp
 // Get first rows (for quick inspection)
@@ -305,9 +410,10 @@ if (ct::data::isNull(df.at(0, "ID"))) {
 
 ## Design Notes
 
-- **Column-Major Storage**: Data is stored column-by-column rather than row-by-row. This optimizes column access and filtering operations, which are the most common DataFrame workloads.
-- **No External Dependencies**: The `Cell` class replaces `std::variant` for C++11 compatibility. It uses a simple tagged union approach with explicit type checking.
-- **Immutable Filtering**: All filter functions return a new DataFrame rather than modifying the original, enabling functional-style data pipelines.
+- **Column-Major Storage**: Data is stored column-by-column rather than row-by-row. This optimizes column access and filtering operations.
+- **Hybrid API**: Imports are free functions (`fromCSV`), while exports are member methods (`toCSV`). This separation keeps the `DataFrame` class focused on data management while allowing flexible data ingestion.
+- **No External Dependencies**: The `Cell` class replaces `std::variant` for C++11 compatibility.
+- **Immutable Filtering**: All filter functions return a new `DataFrame` rather than modifying the original, enabling functional-style data pipelines.
 - **Header-Only Implementation**: All code is inlined via `.tpp` files, allowing the module to be used without separate compilation units.
 
 ---

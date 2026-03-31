@@ -4,6 +4,10 @@
  * @brief Implementation of DataFrame core methods.
  */
 
+#include "../ct_array2d.hpp"
+#include "../ct_num.hpp"
+#include "../ct_csv.hpp"
+#include <sstream>
 #include <stdexcept>
 
 namespace ct {
@@ -23,6 +27,8 @@ namespace ct {
         inline void DataFrame::clear() { m_columns.clear(); }
 
         inline size_t DataFrame::rows() const { return m_columns.empty() ? 0 : m_columns[0].size(); }
+
+        inline size_t DataFrame::cols() const { return m_columns.size(); }
 
         inline std::vector<std::string> DataFrame::columnNames() const {
             std::vector<std::string> names;
@@ -54,12 +60,15 @@ namespace ct {
 
         inline DataFrame DataFrame::head(size_t n) const {
             DataFrame res;
-            auto names = columnNames();
+            auto      names = columnNames();
             for (const auto& name : names) res.addColumn(name);
             size_t limit = (n < rows()) ? n : rows();
             for (size_t i = 0; i < limit; ++i) res.pushRow(getRow(i));
             return res;
         }
+
+        // --- I/O & Conversion Implementation ---
+        // Implemented in df_io.tpp
 
         inline int DataFrame::findIndex(const std::string& name) const {
             for (size_t i = 0; i < m_columns.size(); ++i) {

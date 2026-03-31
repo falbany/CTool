@@ -30,4 +30,3 @@
     #include "ct/ct_json.hpp"
 
 #endif    // CTOOL_MAIN_HPP
-
