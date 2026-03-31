@@ -20,22 +20,23 @@ This folder contains the complete technical documentation for the CTool and CBri
 ## 🔵 CTool (C++11 Modules)
 *Modern utility classes leveraging the C++ Standard Library.*
 
-| File                                        | Description                                         | Documentation                      |
-| :------------------------------------------ | :-------------------------------------------------- | :--------------------------------- |
-| [`ct/ct_json.hpp`](../ct/ct_json.hpp)       | Basic, JSON strings manipulation and extraction.    | [**ct_json.md**](ct_json.md)       |
-| [`ct/ct_ini.hpp`](../ct/ct_ini.hpp)         | Manage standard INI configuration files             | [**ct_ini.md**](ct_ini.md)         |
-| [`ct/ct_net.hpp`](../ct/ct_net.hpp)         | object-oriented interface for TCP networking.       | [**ct_net.md**](ct_net.md)         |
-| [`ct/ct_array2d.hpp`](../ct/ct_array2d.hpp) | Dynamic 2D Array container                          | [**ct_array2d.md**](ct_array2d.md) |
-| [`ct/ct_array3d.hpp`](../ct/ct_array3d.hpp) | Dynamic 3D Array container                          | [**ct_array3d.md**](ct_array3d.md) |
-| [`ct/ct_csv.hpp`](../ct/ct_csv.hpp)         | Generic CSV parser and data generator.              | *Coming Soon*                      |
-| [`ct/ct_str.hpp`](../ct/ct_str.hpp)         | Advanced string manipulation.                       | *Coming Soon*                      |
-| [`ct/ct_file.hpp`](../ct/ct_file.hpp)       | C++ wrappers for file I/O and directory operations. | *Coming Soon*                      |
-| [`ct/ct_log.hpp`](../ct/ct_log.hpp)         | Multi-level, thread-safe logging system.            | *Coming Soon*                      |
-| [`ct/ct_time.hpp`](../ct/ct_time.hpp)       | High-precision timestamps and sleep utilities.      | *Coming Soon*                      |
-| [`ct/ct_math.hpp`](../ct/ct_math.hpp)       | Common mathematical and statistical utilities.      | [**ct_math.md**](ct_math.md)       |
-| [`ct/ct_sys.hpp`](../ct/ct_sys.hpp)         | Cross-platform system and environment tools.        | *Coming Soon*                      |
-| [`ct/ct_unit.hpp`](../ct/ct_unit.hpp)       | Flexible unit conversion and handling.              | *Coming Soon*                      |
-| [`ct/ct_core.hpp`](../ct/ct_core.hpp)       | Framework core definitions and templates.           | *Coming Soon*                      |
+| File                                            | Description                                         | Documentation                          |
+| :---------------------------------------------- | :-------------------------------------------------- | :------------------------------------- |
+| [`ct/ct_json.hpp`](../ct/ct_json.hpp)           | Basic, JSON strings manipulation and extraction.    | [**ct_json.md**](ct_json.md)           |
+| [`ct/ct_ini.hpp`](../ct/ct_ini.hpp)             | Manage standard INI configuration files             | [**ct_ini.md**](ct_ini.md)             |
+| [`ct/ct_net.hpp`](../ct/ct_net.hpp)             | object-oriented interface for TCP networking.       | [**ct_net.md**](ct_net.md)             |
+| [`ct/ct_math.hpp`](../ct/ct_math.hpp)           | Common mathematical and statistical utilities.      | [**ct_math.md**](ct_math.md)           |
+| [`ct/ct_array2d.hpp`](../ct/ct_array2d.hpp)     | Dynamic 2D Array container                          | [**ct_array2d.md**](ct_array2d.md)     |
+| [`ct/ct_array3d.hpp`](../ct/ct_array3d.hpp)     | Dynamic 3D Array container                          | [**ct_array3d.md**](ct_array3d.md)     |
+| [`ct/ct_dataframe.hpp`](../ct/ct_dataframe.hpp) | A Python Pandas like DataFrame.                     | [**ct_dataframe.md**](ct_dataframe.md) |
+| [`ct/ct_csv.hpp`](../ct/ct_csv.hpp)             | Generic CSV parser and data generator.              | *Coming Soon*                          |
+| [`ct/ct_str.hpp`](../ct/ct_str.hpp)             | Advanced string manipulation.                       | *Coming Soon*                          |
+| [`ct/ct_file.hpp`](../ct/ct_file.hpp)           | C++ wrappers for file I/O and directory operations. | *Coming Soon*                          |
+| [`ct/ct_log.hpp`](../ct/ct_log.hpp)             | Multi-level, thread-safe logging system.            | *Coming Soon*                          |
+| [`ct/ct_time.hpp`](../ct/ct_time.hpp)           | High-precision timestamps and sleep utilities.      | *Coming Soon*                          |
+| [`ct/ct_sys.hpp`](../ct/ct_sys.hpp)             | Cross-platform system and environment tools.        | *Coming Soon*                          |
+| [`ct/ct_unit.hpp`](../ct/ct_unit.hpp)           | Flexible unit conversion and handling.              | *Coming Soon*                          |
+| [`ct/ct_core.hpp`](../ct/ct_core.hpp)           | Framework core definitions and templates.           | *Coming Soon*                          |
 
 ---
 

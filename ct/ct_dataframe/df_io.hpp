@@ -25,6 +25,24 @@ namespace ct {
         bool toCSV(const DataFrame& df, const std::string& filename, char delim = ',');
 
         /**
+         * @brief Loads a CSV file into a DataFrame.
+         * @param filename Path to the CSV file.
+         * @param delim Column separator.
+         * @param hasHeader If true, uses the first line for column names.
+         * @return DataFrame populated with data.
+         */
+        DataFrame fromCSV(const std::string& filename, char delim = ',', bool hasHeader = true);
+
+        /**
+         * @brief Creates a DataFrame from a ct::array::Array2D<double>.
+         * @param array The source numeric matrix.
+         * @param columnNames Optional list of names. If empty, default names "col0", "col1"... are used.
+         * @return DataFrame containing the matrix data as numeric Cells.
+         * @throws std::invalid_argument if columnNames size doesn't match array width.
+         */
+        DataFrame fromArray2D(const ct::array::Array2D<double>& array, const std::vector<std::string>& columnNames = std::vector<std::string>());
+
+        /**
          * @brief Exports numeric columns to a ct::array::Array2D<double>.
          * @param df The source DataFrame.
          * @param columnNames List of numeric columns to extract.

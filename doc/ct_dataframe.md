@@ -1,6 +1,6 @@
-# ct_dataframe Module
+# DataFrame Module
 
-The `ct::data` module provides a lightweight, type-safe C++11 implementation of a DataFrame. It allows for managing heterogeneous tabular data (mixing strings, integers, and doubles) within a single container, mimicking the basic behavior of Python's Pandas library.
+The `DataFrame` module provides a lightweight, type-safe C++11 implementation of a 2D data container. It allows for managing heterogeneous tabular data (mixing strings, integers, and doubles) within a single structure, mimicking the core behavior of Python's Pandas library.
 
 ---
 
@@ -144,25 +144,26 @@ DataFrame filter(const DataFrame& df, const std::string& col, const Cell& val, C
 
 ### I/O Utilities
 
-#### CSV Export
+#### Functions
 
-```cpp
-bool toCSV(const DataFrame& df, const std::string& filename, char delim = ',');
-```
+| Function | Description | Returns / Throws |
+| :--- | :--- | :--- |
+| `fromCSV(file, delim, hasHeader)` | Loads a CSV file. Automatically parses numeric strings as `DOUBLE` cells. | `DataFrame` |
+| `toCSV(df, file, delim)` | Exports the DataFrame to a CSV file. Empty cells become empty strings. | `bool` (success) |
+| `fromArray2D(matrix, names)` | Converts a numeric `Array2D` into a DataFrame. | `DataFrame` |
+| `toArray2D(df, colNames)` | Extracts numeric columns into a dense `Array2D<double>`. | `Array2D<double>`. Throws `std::runtime_error` if non-numeric. |
 
-Exports the DataFrame to a CSV file using the `ct::csv::Writer` backend. Returns `true` on success, `false` on failure.
+#### CSV Parsing Heuristics
+When using `fromCSV`, the module attempts to convert every cell string to a `double` using `std::stod`. If successful, the cell is stored as a `DOUBLE`. If conversion fails (e.g., for "Alice" or "Pending"), the cell is stored as a `STRING`.
 
-- `delim`: Column separator character (default `,`).
-- Empty cells are written as empty strings.
-- Double/Int cells are formatted using `std::to_string`.
+#### CSV Export Details
+When using `toCSV`:
+- `delim`: Defaults to `,`.
+- `DOUBLE`/`INT` cells are converted via `std::to_string`.
+- `EMPTY` cells are written as an empty field (,,).
 
-#### Array2D Conversion
-
-```cpp
-ct::array::Array2D<double> toArray2D(const DataFrame& df, const std::vector<std::string>& columnNames);
-```
-
-Extracts specified numeric columns into a dense `Array2D<double>` matrix for numerical processing.
+#### Array2D Conversion Details
+`toArray2D` is specifically designed to bridge the gap between data management and mathematical processing. It requires a list of column names to extract.
 
 - **Throws** `std::runtime_error` if any listed column contains non-numeric data.
 - Returns an empty `Array2D` if the DataFrame has no rows or the column list is empty.
@@ -187,7 +188,7 @@ Prints a formatted table to any `std::ostream` (e.g., `std::cout`).
 ### Creating and Populating a DataFrame
 
 ```cpp
-#include "ct/ct_dataframe/df_core.hpp"
+#include "ct/ct_dataframe.hpp"
 
 ct::data::DataFrame df;
 df.addColumn("ID");
@@ -202,7 +203,7 @@ df.pushRow({103, "Charlie", 92.3});
 ### Filtering Data
 
 ```cpp
-#include "ct/ct_dataframe/df_filter.hpp"
+#include "ct/ct_dataframe.hpp"
 
 // Get only rows where Score > 90.0
 auto highPerformers = ct::data::filterGt(df, "Score", 90.0); 
@@ -213,8 +214,15 @@ auto midRange = ct::data::filter(df, "Score", 85.0, ct::data::CompareOp::GE);
 
 ### 3. Math and I/O Integration
 ```cpp
-#include "ct/data/ct_dataframe.hpp"
+#include "ct/ct_dataframe.hpp"
 #include "ct/ct_math.hpp"
+
+// Import from CSV
+auto df2 = ct::data::fromCSV("input_data.csv");
+
+// Import from Math Array
+ct::array::Array2D<double> raw_matrix = { {1.1, 2.2}, {3.3, 4.4} };
+auto df3 = ct::data::fromArray2D(raw_matrix, {"FeatureA", "FeatureB"});
 
 // Export to CSV for external reporting
 ct::data::toCSV(df, "output.csv");          // Comma-separated
@@ -230,8 +238,8 @@ matrix.scale(2.0);
 ### Pretty Printing
 
 ```cpp
+#include "ct/ct_dataframe.hpp"
 #include <iostream>
-#include "ct/ct_dataframe/df_io.hpp"
 
 std::cout << df << std::endl;
 // Output:
