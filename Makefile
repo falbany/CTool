@@ -11,8 +11,8 @@ CXX      := g++
 # -DBUILDING_CTOOL_DLL : Indicate that we want to export symbols (dllexport)
 DLL_FLAGS := -DCTOOL_DYNAMIC -DBUILDING_CTOOL_DLL
 
-CFLAGS   := -std=c99 -fPIC -Wall -Wextra -O2 $(DLL_FLAGS)
-CXXFLAGS := -std=c++11 -fPIC -Wall -Wextra -O2 $(DLL_FLAGS)
+CFLAGS   := -std=c99 -fPIC -Wall -Wextra -O2 $(DLL_FLAGS) -MMD -MP
+CXXFLAGS := -std=c++11 -fPIC -Wall -Wextra -O2 $(DLL_FLAGS) -MMD -MP
 LDFLAGS  := -shared
 
 # Detect OS for extension
@@ -30,11 +30,14 @@ CT_DIR := ct
 BIN_DIR := bin
 
 # Source and Object files
-CB_SRCS := $(wildcard $(CB_DIR)/*.c) CBridge.c
-CT_SRCS := $(wildcard $(CT_DIR)/*.cpp) CTool.cpp
+CB_SRCS := $(shell find $(CB_DIR) -name "*.c") CBridge.c
+CT_SRCS := $(shell find $(CT_DIR) -name "*.cpp") CTool.cpp
 
 CB_OBJS := $(CB_SRCS:%.c=$(BIN_DIR)/%.o)
 CT_OBJS := $(CT_SRCS:%.cpp=$(BIN_DIR)/%.o)
+
+# Dependency files tracking headers
+DEPS := $(CB_OBJS:.o=.d) $(CT_OBJS:.o=.d)
 
 # Default rule
 all: $(BIN_DIR) $(TARGET)
@@ -42,8 +45,6 @@ all: $(BIN_DIR) $(TARGET)
 # Create bin directory
 $(BIN_DIR):
 	@mkdir -p $(BIN_DIR)
-	@mkdir -p $(BIN_DIR)/$(CB_DIR)
-	@mkdir -p $(BIN_DIR)/$(CT_DIR)
 
 # Link the shared library
 $(TARGET): $(CB_OBJS) $(CT_OBJS)
@@ -54,12 +55,17 @@ $(TARGET): $(CB_OBJS) $(CT_OBJS)
 # Compile C source files (CBridge)
 $(BIN_DIR)/%.o: %.c
 	@echo "Compiling C: $<"
+	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Compile C++ source files (CTool)
 $(BIN_DIR)/%.o: %.cpp
 	@echo "Compiling C++: $<"
+	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Include dependency files so make knows about header changes
+-include $(DEPS)
 
 # Cleanup
 clean:

@@ -24,6 +24,7 @@
     #include "ct/ct_math.hpp"
     #include "ct/ct_unit.hpp"
     #include "ct/ct_csv.hpp"
+    #include "ct/ct_dataframe.hpp"
     #include "ct/ct_ini.hpp"
     #include "ct/ct_json.hpp"
 

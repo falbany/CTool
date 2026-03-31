@@ -18,6 +18,7 @@ The project is structured into two distinct layers:
 - **String Manipulation:** Advanced parsing, trimming, splitting, and recursive find-and-replace.
 - **Filesystem Management:** Safe I/O, directory traversal, and configuration (`key=value`) parsing.
 - **Data Containers:** Generic dynamic vectors and string objects for C.
+- **Data Analysis:** Lightweight C++11 DataFrames for heterogeneous data handling.
 - **System Utilities:** High-precision timing, thread-safe logging, and unit conversion.
 
 ## Directory Structure
@@ -26,6 +27,7 @@ The project is structured into two distinct layers:
 .
 ├── cb/                # CBridge: Pure C Modules (Namespace Pattern)
 ├── ct/                # CTool: C++11 Utility Modules
+│   └── data/          # C++11 Data Analysis Module (DataFrame)
 ├── doc/               # Dedicated Markdown Documentation
 ├── examples/          # Non-compiled usage examples
 ├── CBridge.h / .c     # Unified C entry point
