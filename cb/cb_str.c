@@ -209,6 +209,111 @@ static cb_string_t* impl_catch_in_range(const cb_string_t* self, const char* sta
 }
 
 // ============================================================================
+// Splitting
+// ============================================================================
+/**
+ * @brief Creates a string with a known length, pre-allocating exact capacity.
+ * @note  Internal helper — avoids any realloc churn for split substrings.
+ */
+static cb_string_t* impl_create_len(const char* str, size_t len) {
+    cb_string_t* self = (cb_string_t*)malloc(sizeof(cb_string_t));
+    if (!self) return NULL;
+    self->length   = len;
+    self->capacity = len;
+    self->data     = (char*)malloc(len + 1);
+    if (self->data) {
+        if (len > 0 && str)
+            memcpy(self->data, str, len);
+        self->data[len] = '\0';
+    }
+    return self;
+}
+
+static cb_str_parts_t impl_split(const cb_string_t* self, const char* delimiter) {
+    cb_str_parts_t result = {NULL, 0};
+
+    // Edge: NULL or empty string → zero parts
+    if (!self || self->length == 0) return result;
+
+    // Edge: NULL or empty delimiter → single part containing the whole string
+    if (!delimiter || delimiter[0] == '\0') {
+        result.count = 1;
+        result.parts = (cb_string_t**)calloc(1, sizeof(cb_string_t*));
+        if (!result.parts) return (cb_str_parts_t){NULL, 0};
+        result.parts[0] = impl_create_len(self->data, self->length);
+        if (!result.parts[0]) {
+            free(result.parts);
+            return (cb_str_parts_t){NULL, 0};
+        }
+        return result;
+    }
+
+    size_t delim_len = strlen(delimiter);
+
+    // --- PASS 1: count delimiter occurrences → exact part count ---
+    size_t num_delims = 0;
+    const char* scan = self->data;
+    while ((scan = strstr(scan, delimiter)) != NULL) {
+        num_delims++;
+        scan += delim_len;
+    }
+    size_t part_count = num_delims + 1;
+
+    // Single calloc for the parts array
+    result.parts = (cb_string_t**)calloc(part_count, sizeof(cb_string_t*));
+    if (!result.parts) return (cb_str_parts_t){NULL, 0};
+    result.count = part_count;
+
+    // --- PASS 2: extract each substring at known lengths (zero realloc churn) ---
+    const char* cursor = self->data;
+    const char* delim_pos;
+    size_t i = 0;
+
+    while (i < part_count) {
+        delim_pos = strstr(cursor, delimiter);
+        if (delim_pos != NULL) {
+            size_t sub_len = (size_t)(delim_pos - cursor);
+            result.parts[i] = impl_create_len(cursor, sub_len);
+            if (!result.parts[i]) {
+                // Partial cleanup on allocation failure
+                for (size_t j = 0; j < i; j++) impl_free(result.parts[j]);
+                free(result.parts);
+                return (cb_str_parts_t){NULL, 0};
+            }
+            cursor = delim_pos + delim_len;
+            i++;
+        } else {
+            // Last part: remainder of the string
+            size_t sub_len = self->data + self->length - cursor;
+            result.parts[i] = impl_create_len(cursor, sub_len);
+            if (!result.parts[i]) {
+                for (size_t j = 0; j < i; j++) impl_free(result.parts[j]);
+                free(result.parts);
+                return (cb_str_parts_t){NULL, 0};
+            }
+            break;
+        }
+    }
+
+    return result;
+}
+
+/**
+ * @brief Frees a cb_str_parts_t result: deallocates every part and the parts array.
+ */
+LIBCTOOL_API void cb_str_parts_free(cb_str_parts_t* parts) {
+    if (!parts) return;
+    if (parts->parts) {
+        for (size_t i = 0; i < parts->count; i++) {
+            impl_free(parts->parts[i]);
+        }
+        free(parts->parts);
+    }
+    parts->parts = NULL;
+    parts->count = 0;
+}
+
+// ============================================================================
 // Global Namespace Instance Definition
 // ============================================================================
 const struct cb_str_namespace cb_str = {.create         = impl_create,
@@ -228,4 +333,5 @@ const struct cb_str_namespace cb_str = {.create         = impl_create,
                                         .ends_with      = impl_ends_with,
                                         .find           = impl_find,
                                         .substr         = impl_substr,
+                                        .split          = impl_split,
                                         .catch_in_range = impl_catch_in_range};

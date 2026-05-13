@@ -24,6 +24,13 @@ The `cb_str` module provides a dynamic string implementation for pure C that mim
 | `find(cb_string_t*, const char*, size_t)`                | Returns index of first match or `CB_STR_NPOS`.      |
 | `substr(cb_string_t*, size_t, size_t)`                   | Returns a **new** string containing the range.      |
 | `catch_in_range(cb_string_t*, const char*, const char*)` | Extracts text between two delimiters.               |
+| `split(cb_string_t*, const char*)`                       | Splits the string by a delimiter into an array.     |
+
+### Standalone Utilities
+
+| Function                              | Description                                          |
+| :------------------------------------ | :--------------------------------------------------- |
+| `cb_str_parts_free(cb_str_parts_t*)`  | Frees all parts and the array from a split result.   |
 
 ## Usage Examples
 
@@ -57,4 +64,37 @@ printf("Value: %s\n", cb_str.c_str(val));
 
 cb_str.free(val);
 cb_str.free(raw);
+```
+
+### Splitting Strings
+```c
+cb_string_t* csv = cb_str.create("apple,banana,cherry,fig");
+cb_str_parts_t parts = cb_str.split(csv, ",");
+
+for (size_t i = 0; i < parts.count; i++) {
+    printf("Part %zu: %s\n", i, cb_str.c_str(parts.parts[i]));
+}
+
+// Clean up the entire split result in one call
+cb_str_parts_free(&parts);
+cb_str.free(csv);
+```
+
+### Splitting — Edge Cases
+```c
+// Trailing / consecutive delimiters produce empty parts
+cb_string_t* s1 = cb_str.create("a,,b,");
+cb_str_parts_t p1 = cb_str.split(s1, ",");
+// p1.count == 4  →  "a"  ""  "b"  ""
+
+cb_str_parts_free(&p1);
+cb_str.free(s1);
+
+// NULL or empty delimiter returns the whole string as a single part
+cb_string_t* s2 = cb_str.create("hello");
+cb_str_parts_t p2 = cb_str.split(s2, "");
+// p2.count == 1  →  "hello"
+
+cb_str_parts_free(&p2);
+cb_str.free(s2);
 ```

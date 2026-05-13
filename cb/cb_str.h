@@ -31,6 +31,24 @@ typedef struct {
 } cb_string_t;
 
 /**
+ * @struct cb_str_parts_t
+ * @brief Result of splitting a string. Contains an array of cb_string_t pointers
+ *        and the total number of parts.
+ * @note  Caller owns all memory. Use cb_str_parts_free() to deallocate.
+ */
+typedef struct {
+    cb_string_t** parts;   ///< Array of dynamically allocated cb_string_t objects.
+    size_t        count;   ///< Number of elements in the parts array.
+} cb_str_parts_t;
+
+/**
+ * @brief Frees a cb_str_parts_t result: deallocates every part and the parts array itself.
+ * @param parts Pointer to the split result (will be zeroed out after the call).
+ * @note  Safe to call with a NULL pointer or a result where parts == NULL.
+ */
+LIBCTOOL_API void cb_str_parts_free(cb_str_parts_t* parts);
+
+/**
  * @struct cb_str_namespace
  * @brief A struct of function pointers acting as the "cb::str" namespace.
  * This groups all string manipulation functions under a single API object.
@@ -149,6 +167,15 @@ struct cb_str_namespace {
      * @return A new cb_string_t containing the extracted text.
      */
     cb_string_t* (*substr)(const cb_string_t* self, size_t pos, size_t len);
+
+    /**
+     * @brief Splits the string by a delimiter, returning an array of newly allocated cb_string_t objects.
+     * @param self The string object.
+     * @param delimiter The delimiter string (can be NULL/empty to return the whole string as a single part).
+     * @return A cb_str_parts_t with the parts array and count.
+     * @note  Caller must call cb_str_parts_free() on the result when done.
+     */
+    cb_str_parts_t (*split)(const cb_string_t* self, const char* delimiter);
 
     /**
      * @brief Extracts a substring trapped between two delimiter strings.
