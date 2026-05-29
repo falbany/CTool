@@ -201,7 +201,7 @@ namespace ct {
              * @return Array2D<T> The transposed matrix.
              */
             Array2D<T> transpose() const;
-            
+
             /**
              * @brief Returns the maximum value in the array.
              * @return T Maximum element.

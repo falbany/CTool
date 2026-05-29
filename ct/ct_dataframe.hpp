@@ -11,7 +11,7 @@
 #ifndef CT_DF_DATAFRAME_HPP
     #define CT_DF_DATAFRAME_HPP
 
-    /**
+/**
     * This header groups all components of the DataFrame feature:
     * - Core structures (DataFrame, Column, Cell)
     * - Filtering engine (filterEq, filterGt, etc.)

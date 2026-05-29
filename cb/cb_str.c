@@ -222,8 +222,7 @@ static cb_string_t* impl_create_len(const char* str, size_t len) {
     self->capacity = len;
     self->data     = (char*)malloc(len + 1);
     if (self->data) {
-        if (len > 0 && str)
-            memcpy(self->data, str, len);
+        if (len > 0 && str) memcpy(self->data, str, len);
         self->data[len] = '\0';
     }
     return self;
@@ -251,8 +250,8 @@ static cb_str_parts_t impl_split(const cb_string_t* self, const char* delimiter)
     size_t delim_len = strlen(delimiter);
 
     // --- PASS 1: count delimiter occurrences → exact part count ---
-    size_t num_delims = 0;
-    const char* scan = self->data;
+    size_t      num_delims = 0;
+    const char* scan       = self->data;
     while ((scan = strstr(scan, delimiter)) != NULL) {
         num_delims++;
         scan += delim_len;
@@ -267,12 +266,12 @@ static cb_str_parts_t impl_split(const cb_string_t* self, const char* delimiter)
     // --- PASS 2: extract each substring at known lengths (zero realloc churn) ---
     const char* cursor = self->data;
     const char* delim_pos;
-    size_t i = 0;
+    size_t      i = 0;
 
     while (i < part_count) {
         delim_pos = strstr(cursor, delimiter);
         if (delim_pos != NULL) {
-            size_t sub_len = (size_t)(delim_pos - cursor);
+            size_t sub_len  = (size_t)(delim_pos - cursor);
             result.parts[i] = impl_create_len(cursor, sub_len);
             if (!result.parts[i]) {
                 // Partial cleanup on allocation failure
@@ -284,7 +283,7 @@ static cb_str_parts_t impl_split(const cb_string_t* self, const char* delimiter)
             i++;
         } else {
             // Last part: remainder of the string
-            size_t sub_len = self->data + self->length - cursor;
+            size_t sub_len  = self->data + self->length - cursor;
             result.parts[i] = impl_create_len(cursor, sub_len);
             if (!result.parts[i]) {
                 for (size_t j = 0; j < i; j++) impl_free(result.parts[j]);

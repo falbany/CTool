@@ -23,7 +23,7 @@ TEST(CtTimeCurrentTimestamp, BasicFormat) {
 }
 
 TEST(CtTimeCurrentTimestamp, ContainsValidDate) {
-    std::string ts = ct::time::getCurrentTimestamp();
+    std::string ts   = ct::time::getCurrentTimestamp();
     std::string year = ts.substr(0, 4);
     EXPECT_EQ(year.length(), 4u);
     EXPECT_TRUE(year[0] == '2') << "Year should start with '2'";
@@ -112,8 +112,7 @@ TEST(CtTimeUptimeMs, MonotonicIncrease) {
 }
 
 TEST(CtTimeUptimeMs, ReturnsValidType) {
-    static_assert(std::is_same_v<decltype(ct::time::getUptimeMs()), long long>,
-                  "getUptimeMs must return long long");
+    static_assert(std::is_same_v<decltype(ct::time::getUptimeMs()), long long>, "getUptimeMs must return long long");
     EXPECT_TRUE(true) << "Return type verified at compile-time";
 }
 
@@ -127,8 +126,7 @@ TEST(CtTimeUptimeNs, ReturnsPositive) {
 }
 
 TEST(CtTimeUptimeNs, ReturnsValidType) {
-    static_assert(std::is_same_v<decltype(ct::time::getUptimeNs()), long long>,
-                  "getUptimeNs must return long long");
+    static_assert(std::is_same_v<decltype(ct::time::getUptimeNs()), long long>, "getUptimeNs must return long long");
     EXPECT_TRUE(true) << "Return type verified at compile-time";
 }
 
@@ -150,7 +148,7 @@ TEST(CtTimeTimer, DestructorCompletes) {
         ct::time::Timer timer("DestructorTest");
         /* Small sleep so the timer has measurable duration */
         ct::time::sleepMs(5);
-    }    /* Timer destructor runs here */
+    } /* Timer destructor runs here */
     EXPECT_TRUE(true) << "Timer destructor completed without crash";
 }
 
@@ -172,9 +170,7 @@ TEST(CtTimeTimer, DefaultLabel) {
 }
 
 TEST(CtTimeTimer, PreventCopying) {
-    static_assert(!std::is_copy_constructible_v<ct::time::Timer>,
-                  "Timer must not be copy-constructible");
-    static_assert(!std::is_copy_assignable_v<ct::time::Timer>,
-                  "Timer must not be copy-assignable");
+    static_assert(!std::is_copy_constructible_v<ct::time::Timer>, "Timer must not be copy-constructible");
+    static_assert(!std::is_copy_assignable_v<ct::time::Timer>, "Timer must not be copy-assignable");
     EXPECT_TRUE(true) << "Timer is non-copyable (verified at compile-time)";
 }

@@ -196,7 +196,7 @@ TEST(CtStrFindAndReplaceRecursive, ReplaceAll) {
 TEST(CtStrFindAndReplaceRecursive, GuardPreventsInfiniteLoop) {
     /* replaceStr contains searchStr → guard triggers, returns original unchanged */
     testing::internal::CaptureStderr();
-    std::string result = ct::str::findAndReplaceRecursive("hello", "a", "aa");
+    std::string result        = ct::str::findAndReplaceRecursive("hello", "a", "aa");
     std::string stderr_output = testing::internal::GetCapturedStderr();
     EXPECT_EQ(result, "hello");
     EXPECT_FALSE(stderr_output.empty()) << "Should have logged error to stderr";
@@ -220,7 +220,7 @@ TEST(CtStrFindAndReplaceRecursive, EmptyReplaceStrRemovesAll) {
 TEST(CtStrFindAndReplaceRecursive, GuardDoesNotTriggerForSafeArgs) {
     /* replaceStr does NOT contain searchStr → proceeds normally */
     testing::internal::CaptureStderr();
-    std::string result = ct::str::findAndReplaceRecursive("hello", "l", "X");
+    std::string result        = ct::str::findAndReplaceRecursive("hello", "l", "X");
     std::string stderr_output = testing::internal::GetCapturedStderr();
     EXPECT_EQ(result, "heXXo");
     EXPECT_TRUE(stderr_output.empty()) << "No error should be logged for safe arguments";
@@ -477,7 +477,7 @@ TEST(CtStrToString, Float) {
 }
 
 TEST(CtStrToString, LargeInt) {
-    int large = 1234567890;
+    int         large  = 1234567890;
     std::string result = ct::str::toString(large);
     EXPECT_EQ(result, "1234567890");
 }
@@ -487,8 +487,8 @@ TEST(CtStrToString, LargeInt) {
  * ============================================================================ */
 
 TEST(CtStrEdgeCases, TrimThenSplit) {
-    std::string trimmed = ct::str::trim("  a,b,c  ");
-    std::vector<std::string> tokens = ct::str::split(trimmed, ',');
+    std::string              trimmed = ct::str::trim("  a,b,c  ");
+    std::vector<std::string> tokens  = ct::str::split(trimmed, ',');
     ASSERT_EQ(tokens.size(), 3u);
     EXPECT_EQ(tokens[0], "a");
     EXPECT_EQ(tokens[1], "b");
@@ -496,8 +496,8 @@ TEST(CtStrEdgeCases, TrimThenSplit) {
 }
 
 TEST(CtStrEdgeCases, UpdateFieldThenSplit) {
-    std::string updated = ct::str::updateField("A_B", "C", "D");
-    std::vector<std::string> tokens = ct::str::split(updated, '_');
+    std::string              updated = ct::str::updateField("A_B", "C", "D");
+    std::vector<std::string> tokens  = ct::str::split(updated, '_');
     ASSERT_EQ(tokens.size(), 3u);
     EXPECT_EQ(tokens[0], "A");
     EXPECT_EQ(tokens[1], "B");
@@ -517,8 +517,8 @@ TEST(CtStrEdgeCases, LargeStringSplit) {
 }
 
 TEST(CtStrEdgeCases, FindAndReplaceInTrimmed) {
-    std::string s = "  foo bar foo  ";
-    std::string trimmed = ct::str::trim(s);
+    std::string s        = "  foo bar foo  ";
+    std::string trimmed  = ct::str::trim(s);
     std::string replaced = ct::str::findAndReplace(trimmed, "foo", "baz");
     EXPECT_EQ(replaced, "baz bar baz");
 }
@@ -543,8 +543,8 @@ TEST(CtStrEdgeCases, AssignNullThenFindAndReplace) {
 }
 
 TEST(CtStrEdgeCases, TrimIsIdempotent) {
-    std::string input = " \t\n hello world \n\t ";
-    std::string first = ct::str::trim(input);
+    std::string input  = " \t\n hello world \n\t ";
+    std::string first  = ct::str::trim(input);
     std::string second = ct::str::trim(first);
     EXPECT_EQ(first, second) << "trim() should be idempotent";
     EXPECT_EQ(first, "hello world");
@@ -560,7 +560,7 @@ TEST(CtStrEdgeCases, UpdateFieldWithEmptyFieldsFromSplit) {
 TEST(CtStrEdgeCases, VeryLongStringTrim) {
     std::string spaces(10000, ' ');
     std::string middle = "x";
-    std::string input = spaces + middle + spaces;
+    std::string input  = spaces + middle + spaces;
     std::string result = ct::str::trim(input);
     EXPECT_EQ(result, "x");
 }

@@ -39,9 +39,7 @@ class CtIniTest : public ::testing::Test {
     }
 
     // Generate unique test file paths
-    std::string getTempFilePath(const std::string& filename) {
-        return test_dir + "/" + filename;
-    }
+    std::string getTempFilePath(const std::string& filename) { return test_dir + "/" + filename; }
 
     // Helper to create test INI files
     void createTestFile(const std::string& filename, const std::string& content) {
@@ -70,7 +68,7 @@ version = 1.0.0
     createTestFile("simple.ini", content);
 
     ct::ini::Profile profile;
-    bool              result = profile.load(getTempFilePath("simple.ini"));
+    bool             result = profile.load(getTempFilePath("simple.ini"));
 
     EXPECT_TRUE(result);
     EXPECT_TRUE(profile.hasSection("database"));
@@ -81,14 +79,14 @@ TEST_F(CtIniTest, LoadEmptyFile) {
     createTestFile("empty.ini", "");
 
     ct::ini::Profile profile;
-    bool              result = profile.load(getTempFilePath("empty.ini"));
+    bool             result = profile.load(getTempFilePath("empty.ini"));
 
     EXPECT_TRUE(result);
 }
 
 TEST_F(CtIniTest, LoadNonexistentFile) {
     ct::ini::Profile profile;
-    bool              result = profile.load(getTempFilePath("nonexistent.ini"));
+    bool             result = profile.load(getTempFilePath("nonexistent.ini"));
 
     EXPECT_FALSE(result);
 }
@@ -103,7 +101,7 @@ key3 = value3
     createTestFile("default_section.ini", content);
 
     ct::ini::Profile profile;
-    bool              result = profile.load(getTempFilePath("default_section.ini"));
+    bool             result = profile.load(getTempFilePath("default_section.ini"));
 
     EXPECT_TRUE(result);
     EXPECT_TRUE(profile.hasSection("default"));
@@ -332,7 +330,7 @@ port = 5432
     createTestFile("empty_lines.ini", content);
 
     ct::ini::Profile profile;
-    bool              result = profile.load(getTempFilePath("empty_lines.ini"));
+    bool             result = profile.load(getTempFilePath("empty_lines.ini"));
 
     EXPECT_TRUE(result);
     EXPECT_EQ(profile.get("database", "host"), "localhost");
@@ -358,7 +356,7 @@ TEST_F(CtIniTest, SaveAndReload) {
 
     // Load and verify
     ct::ini::Profile loaded;
-    bool              load_result = loaded.load(save_file);
+    bool             load_result = loaded.load(save_file);
     EXPECT_TRUE(load_result);
 
     EXPECT_EQ(loaded.get("database", "host"), "localhost");
@@ -370,7 +368,7 @@ TEST_F(CtIniTest, SaveEmptyProfile) {
     std::string save_file = getTempFilePath("empty_save.ini");
 
     ct::ini::Profile profile;
-    bool              result = profile.save(save_file);
+    bool             result = profile.save(save_file);
 
     EXPECT_TRUE(result);
     EXPECT_TRUE(fs::exists(save_file));
@@ -382,7 +380,7 @@ TEST_F(CtIniTest, SaveToInvalidPath) {
 
     // Try to save to an invalid path (non-existent parent directory)
     std::string invalid_path = test_dir + "/nonexistent/path/file.ini";
-    bool        result        = profile.save(invalid_path);
+    bool        result       = profile.save(invalid_path);
 
     // This should fail because the parent directory doesn't exist
     EXPECT_FALSE(result);
@@ -564,7 +562,7 @@ TEST_F(CtIniTest, LoadLargeFile) {
     createTestFile("large.ini", content);
 
     ct::ini::Profile profile;
-    bool              result = profile.load(getTempFilePath("large.ini"));
+    bool             result = profile.load(getTempFilePath("large.ini"));
 
     EXPECT_TRUE(result);
     EXPECT_TRUE(profile.hasSection("section_0"));
@@ -604,7 +602,7 @@ ttl = 3600 ; 1 hour
     createTestFile("app_config.ini", content);
 
     ct::ini::Profile profile;
-    bool              result = profile.load(getTempFilePath("app_config.ini"));
+    bool             result = profile.load(getTempFilePath("app_config.ini"));
 
     EXPECT_TRUE(result);
     EXPECT_EQ(profile.get("database", "host"), "db.example.com");
@@ -636,7 +634,7 @@ version = 1.0.0
     profile.set("security", "ssl", "enabled");
 
     std::string modified_file = getTempFilePath("modified.ini");
-    bool        save_result    = profile.save(modified_file);
+    bool        save_result   = profile.save(modified_file);
     EXPECT_TRUE(save_result);
 
     // Reload and verify

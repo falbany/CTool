@@ -35,7 +35,7 @@ namespace ct {
          */
         template <typename T>
         class Array3D {
-        public:
+          public:
             /**
              * @brief Constructs an empty array.
              */
@@ -59,9 +59,9 @@ namespace ct {
             Array3D(const std::vector<std::vector<std::vector<T>>>& data);
 
             // --- Copy/Move Semantics ---
-            Array3D(const Array3D&) = default;
-            Array3D& operator=(const Array3D&) = default;
-            Array3D(Array3D&&) noexcept = default;
+            Array3D(const Array3D&)                = default;
+            Array3D& operator=(const Array3D&)     = default;
+            Array3D(Array3D&&) noexcept            = default;
             Array3D& operator=(Array3D&&) noexcept = default;
 
             // --- Dimensions ---
@@ -87,7 +87,7 @@ namespace ct {
              * @return Reference to the element.
              * @throws std::out_of_range if indices are invalid.
              */
-            T& at(size_t d, size_t r, size_t c);
+            T&       at(size_t d, size_t r, size_t c);
             const T& at(size_t d, size_t r, size_t c) const;
 
             /**
@@ -98,7 +98,7 @@ namespace ct {
              * @return Reference to the element.
              * @note Only use if bounds are guaranteed.
              */
-            T& operator()(size_t d, size_t r, size_t c);
+            T&       operator()(size_t d, size_t r, size_t c);
             const T& operator()(size_t d, size_t r, size_t c) const;
 
             // --- Operations ---
@@ -160,7 +160,7 @@ namespace ct {
              */
             ct::array::Array2D<T> slice(size_t d) const;
 
-        private:
+          private:
             std::vector<std::vector<std::vector<T>>> m_data;
         };
 

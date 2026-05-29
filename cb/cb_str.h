@@ -37,8 +37,8 @@ typedef struct {
  * @note  Caller owns all memory. Use cb_str_parts_free() to deallocate.
  */
 typedef struct {
-    cb_string_t** parts;   ///< Array of dynamically allocated cb_string_t objects.
-    size_t        count;   ///< Number of elements in the parts array.
+    cb_string_t** parts;    ///< Array of dynamically allocated cb_string_t objects.
+    size_t        count;    ///< Number of elements in the parts array.
 } cb_str_parts_t;
 
 /**

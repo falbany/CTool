@@ -43,7 +43,7 @@ namespace ct {
          */
         LIBCTOOL_API RegResult linearFit(const std::vector<double>& x, const std::vector<double>& y);
 
-        
+
         /**
          * @brief Performs linear least-squares regression on logarithmically transformed data.
          * @note Fits the model $y = A \cdot e^{B \cdot x}$ by solving $\ln(y) = B \cdot x + \ln(A)$.
