@@ -1,5 +1,6 @@
 #include "ct_time.hpp"
 #include "ct_log.hpp"
+#include "../platform.h"
 #include <chrono>
 #include <thread>
 #include <ctime>
@@ -7,13 +8,8 @@
 #include <sstream>
 #include <iomanip>
 
-// OS-specific includes required for C++11 directory traversal
-#if defined(_WIN32)
-    #include <windows.h>
+#if PLATFORM_WINDOWS
     #define getcwd _getcwd
-#else
-    #include <unistd.h>
-    #include <sys/types.h>
 #endif
 
 namespace ct {

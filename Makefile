@@ -70,6 +70,6 @@ $(BIN_DIR)/%.o: %.cpp
 # Cleanup
 clean:
 	@echo "Cleaning up..."
-	@rm -rf $(BIN_DIR) $(TARGET)
+	@-rm -rf $(BIN_DIR) $(TARGET)
 
 .PHONY: all clean

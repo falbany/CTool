@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <array>
 #include <cstdlib>
+#include <cstdint>
 
 #if defined(_WIN32)
     #include <windows.h>

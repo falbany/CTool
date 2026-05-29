@@ -28,5 +28,6 @@
     #include "ct/ct_dataframe.hpp"
     #include "ct/ct_ini.hpp"
     #include "ct/ct_json.hpp"
+    #include "ct/ct_net.hpp"
 
 #endif    // CTOOL_MAIN_HPP

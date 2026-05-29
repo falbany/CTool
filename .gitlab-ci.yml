@@ -1,0 +1,50 @@
+# GitLab CI/CD Pipeline for CTool
+
+stages:
+  - format
+  - build
+
+variables:
+  PROJECT_NAME: "CTool"
+
+# ============================================================================
+# CLANG-FORMAT CHECK
+# ============================================================================
+clang_format_check:
+  stage: format
+  image: gcc:latest
+
+  script:
+    - apt-get update && apt-get install -y sudo wget gnupg ca-certificates lsb-release
+    - wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor > /usr/share/keyrings/llvm-archive-keyring.gpg
+    - echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg] http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-22 main" | sudo tee /etc/apt/sources.list.d/llvm.list
+    - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y clang-format-22
+    - ln -sf /usr/bin/clang-format-22 /usr/bin/clang-format
+    - chmod +x format.sh
+    - ./format.sh --check
+  
+  rules:
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG != null
+
+# ============================================================================
+# CPPCHECK STATIC ANALYSIS
+# ============================================================================
+cppcheck:
+  stage: build
+  image: gcc:latest
+
+  script:
+    - apt-get update && apt-get install -y cppcheck
+    - cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem . 2>&1 | tee cppcheck-report.txt
+  
+  artifacts:
+    reports:
+      sast: cppcheck-report.txt
+    paths:
+      - cppcheck-report.txt
+    expire_in: 1 week
+  
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
