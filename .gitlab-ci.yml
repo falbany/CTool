@@ -15,8 +15,8 @@ clang_format_check:
   image: gcc:latest
 
   script:
-    - apt-get update && apt-get install -y sudo wget gnupg ca-certificates lsb-release
-    - wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor > /usr/share/keyrings/llvm-archive-keyring.gpg
+    - apt-get update && apt-get install -y wget gnupg ca-certificates lsb-release
+    - wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor > /usr/share/keyrings/llvm-archive-keyring.gpg
     - echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg] http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-22 main" | sudo tee /etc/apt/sources.list.d/llvm.list
     - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y clang-format-22
     - ln -sf /usr/bin/clang-format-22 /usr/bin/clang-format
