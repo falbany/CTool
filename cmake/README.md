@@ -13,6 +13,7 @@ Toolchain files define the **compiler and target environment**. They are selecte
 | [`MSYS2-UCRT64.cmake`](./MSYS2-UCRT64.cmake) | MSYS2 UCRT64 GCC toolchain (default Windows environment) |
 | [`Clang-LLVM.cmake`](./Clang-LLVM.cmake) | LLVM/Clang toolchain for Windows |
 | [`MinGW.cmake`](./MinGW.cmake) | MinGW-w64 GCC toolchain |
+| [`macOS-Clang.cmake`](./macOS-Clang.cmake) | Clang toolchain for macOS |
 
 #### Usage
 
@@ -20,8 +21,11 @@ Toolchain files define the **compiler and target environment**. They are selecte
 # Use MSYS2 UCRT64
 cmake -B build-msys2 -DCMAKE_TOOLCHAIN_FILE=cmake/MSYS2-UCRT64.cmake
 
-# Use Clang/LLVM
+# Use Clang/LLVM (Windows)
 cmake -B build-clang -DCMAKE_TOOLCHAIN_FILE=cmake/Clang-LLVM.cmake
+
+# Use macOS Clang
+cmake -B build-mac -DCMAKE_TOOLCHAIN_FILE=cmake/macOS-Clang.cmake
 
 # Use MinGW-w64
 cmake -B build-mingw -DCMAKE_TOOLCHAIN_FILE=cmake/MinGW.cmake

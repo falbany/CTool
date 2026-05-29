@@ -92,6 +92,12 @@ namespace ct {
             T*       data() noexcept;
             const T* data() const noexcept;
 
+            // --- Iterators ---
+            typename std::vector<T>::iterator begin() noexcept { return m_data.begin(); }
+            typename std::vector<T>::iterator end() noexcept { return m_data.end(); }
+            typename std::vector<T>::const_iterator begin() const noexcept { return m_data.begin(); }
+            typename std::vector<T>::const_iterator end() const noexcept { return m_data.end(); }
+
             // --- Copy/Move ---
             NumArray(const NumArray&)                = default;
             NumArray& operator=(const NumArray&)     = default;

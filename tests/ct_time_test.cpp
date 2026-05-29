@@ -86,11 +86,9 @@ TEST(CtTimeSleepS, SleepZero) {
 }
 
 TEST(CtTimeSleepS, SleepMultiple) {
-    long long total_before = ct::time::getUptimeMs();
     ct::time::sleepS(0);
     ct::time::sleepS(0);
     ct::time::sleepS(0);
-    long long total_after = ct::time::getUptimeMs();
     /* Multiple zero-sleeps should complete without error */
     EXPECT_TRUE(true) << "Consecutive sleepS(0) calls did not crash";
 }

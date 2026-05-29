@@ -60,11 +60,20 @@ ct::num::NumArray<double> add_5 = a + 5.0;
 // Result: {{6.0, 7.0}, {8.0, 9.0}}
 
 // Scalar + Array (Commutative)
-ct::num::NumArray<double> add_5_rev = 5.0 + a;
+ct::num::NumArray<double> add_5_rev = 5.0 + a; 
+// Result: {{6.0, 7.0}, {8.0, 9.0}}
 
-// Multiplication and Division
+// Array * Array (Shapes must match)
+ct::num::NumArray<double> prod_ab = a * b;
+// Result: {{5.0, 12.0}, {21.0, 32.0}}
+
+// Array * Scalar
 ct::num::NumArray<double> scaled = a * 2.0;
+// Result: {{2.0, 4.0}, {6.0, 8.0}}
+
+// Array / Scalar
 ct::num::NumArray<double> divided = b / 2.0;
+// Result: {{2.5, 3.0}, {3.5, 4.0}}
 ```
 
 ### 5. Universal Functions (Ufuncs)

@@ -32,7 +32,6 @@ namespace ct {
             m_cols = list.begin()->size();
             m_data.reserve(m_rows * m_cols);
 
-            size_t r_idx = 0;
             for (const auto& row : list) {
                 if (row.size() != m_cols) {
                     throw std::invalid_argument("ct::num::NumArray: Jagged arrays are not supported.");
@@ -40,7 +39,6 @@ namespace ct {
                 for (const auto& val : row) {
                     m_data.push_back(val);
                 }
-                r_idx++;
             }
         }
 
@@ -120,7 +118,7 @@ namespace ct {
             }
             NumArray<T> res = lhs;    // Copy LHS
             for (size_t i = 0; i < lhs.size(); ++i) {
-                res.m_data[i] += rhs.m_data[i];
+                res.data()[i] += rhs.data()[i];
             }
             return res;
         }
@@ -128,7 +126,7 @@ namespace ct {
         template <typename T>
         NumArray<T> operator+(const NumArray<T>& lhs, const T& scalar) {
             NumArray<T> res = lhs;
-            for (auto& val : res.m_data) {
+            for (auto& val : res) {
                 val += scalar;
             }
             return res;
@@ -146,7 +144,7 @@ namespace ct {
             }
             NumArray<T> res = lhs;
             for (size_t i = 0; i < lhs.size(); ++i) {
-                res.m_data[i] -= rhs.m_data[i];
+                res.data()[i] -= rhs.data()[i];
             }
             return res;
         }
@@ -154,8 +152,8 @@ namespace ct {
         template <typename T>
         NumArray<T> operator-(const NumArray<T>& lhs, const T& scalar) {
             NumArray<T> res = lhs;
-            for (auto& val : res.m_data) {
-                val -= scalar;
+            for (size_t i = 0; i < res.size(); ++i) {
+                res.data()[i] -= scalar;
             }
             return res;
         }
@@ -167,7 +165,7 @@ namespace ct {
             }
             NumArray<T> res = lhs;
             for (size_t i = 0; i < lhs.size(); ++i) {
-                res.m_data[i] *= rhs.m_data[i];
+                res.data()[i] *= rhs.data()[i];
             }
             return res;
         }
@@ -175,8 +173,8 @@ namespace ct {
         template <typename T>
         NumArray<T> operator*(const NumArray<T>& lhs, const T& scalar) {
             NumArray<T> res = lhs;
-            for (auto& val : res.m_data) {
-                val *= scalar;
+            for (size_t i = 0; i < res.size(); ++i) {
+                res.data()[i] *= scalar;
             }
             return res;
         }
@@ -184,8 +182,8 @@ namespace ct {
         template <typename T>
         NumArray<T> operator/(const NumArray<T>& lhs, const T& scalar) {
             NumArray<T> res = lhs;
-            for (auto& val : res.m_data) {
-                val /= scalar;
+            for (size_t i = 0; i < res.size(); ++i) {
+                res.data()[i] /= scalar;
             }
             return res;
         }
@@ -196,7 +194,7 @@ namespace ct {
         NumArray<double> sqrt(const NumArray<T>& arr) {
             NumArray<double> res(arr.rows(), arr.cols());
             for (size_t i = 0; i < arr.size(); ++i) {
-                res.m_data[i] = static_cast<double>(std::sqrt(static_cast<double>(arr.data()[i])));
+                res.data()[i] = static_cast<double>(std::sqrt(static_cast<double>(arr.data()[i])));
             }
             return res;
         }
@@ -205,7 +203,7 @@ namespace ct {
         NumArray<double> sin(const NumArray<T>& arr) {
             NumArray<double> res(arr.rows(), arr.cols());
             for (size_t i = 0; i < arr.size(); ++i) {
-                res.m_data[i] = static_cast<double>(std::sin(static_cast<double>(arr.data()[i])));
+                res.data()[i] = static_cast<double>(std::sin(static_cast<double>(arr.data()[i])));
             }
             return res;
         }
@@ -214,7 +212,7 @@ namespace ct {
         NumArray<T> abs(const NumArray<T>& arr) {
             NumArray<T> res(arr.rows(), arr.cols());
             for (size_t i = 0; i < arr.size(); ++i) {
-                res.m_data[i] = static_cast<T>(std::abs(arr.data()[i]));
+                res.data()[i] = static_cast<T>(std::abs(arr.data()[i]));
             }
             return res;
         }
@@ -224,7 +222,7 @@ namespace ct {
         template <typename T>
         double sum(const NumArray<T>& arr) {
             double result = 0.0;
-            for (const auto& val : arr.m_data) {
+            for (const auto& val : arr) {
                 result += static_cast<double>(val);
             }
             return result;
@@ -239,13 +237,13 @@ namespace ct {
         template <typename T>
         T max(const NumArray<T>& arr) {
             if (arr.empty()) throw std::runtime_error("ct::num::max: Empty array.");
-            return *std::max_element(arr.m_data.begin(), arr.m_data.end());
+            return *std::max_element(arr.begin(), arr.end());
         }
 
         template <typename T>
         T min(const NumArray<T>& arr) {
             if (arr.empty()) throw std::runtime_error("ct::num::min: Empty array.");
-            return *std::min_element(arr.m_data.begin(), arr.m_data.end());
+            return *std::min_element(arr.begin(), arr.end());
         }
 
         // --- Stream Output ---
