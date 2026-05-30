@@ -7,11 +7,11 @@ This folder contains the complete technical documentation for the CTool and CBri
 
 | File                                  | Description                                                  | Documentation                    |
 | :------------------------------------ | :----------------------------------------------------------- | :------------------------------- |
-| [`cb/cb_str.h`](../cb/cb_str.h)       | Dynamic string object with C++-like functionality.           | [**cb_str.md**](cb_str.md)       |
-| [`cb/cb_vector.h`](../cb/cb_vector.h) | Generic dynamic array for storing any data type via `void*`. | [**cb_vector.md**](cb_vector.md) |
-| [`cb/cb_file.h`](../cb/cb_file.h)     | Filesystem utilities, path handling, and config parsing.     | [**cb_file.md**](cb_file.md)     |
-| [`cb/cb_math.h`](../cb/cb_math.h)     | high-performance numerical utilities.                        | [**cb_math.md**](cb_math.md)     |
-| [`cb/cb_net.h`](../cb/cb_net.h)       | C basic TCP and UDP networking utilities.                    | [**cb_net.md**](cb_net.md)       |
+| [`cbridge/string.h`](../cbridge/string.h)       | Dynamic string object with C++-like functionality.           | [**string.md**](string.md)       |
+| [`cbridge/vector.h`](../cbridge/vector.h) | Generic dynamic array for storing any data type via `void*`. | [**vector.md**](vector.md) |
+| [`cbridge/file.h`](../cbridge/file.h)     | Filesystem utilities, path handling, and config parsing.     | [**file.md**](file.md)     |
+| [`cbridge/math.h`](../cbridge/math.h)     | high-performance numerical utilities.                        | [**math.md**](math.md)     |
+| [`cbridge/net.h`](../cbridge/net.h)       | C basic TCP and UDP networking utilities.                    | [**net.md**](net.md)       |
 
 
 
@@ -22,29 +22,29 @@ This folder contains the complete technical documentation for the CTool and CBri
 
 | File                                            | Description                                         | Documentation                          |
 | :---------------------------------------------- | :-------------------------------------------------- | :------------------------------------- |
-| [`ct/ct_json.hpp`](../ct/ct_json.hpp)           | Basic, JSON strings manipulation and extraction.    | [**ct_json.md**](ct_json.md)           |
-| [`ct/ct_ini.hpp`](../ct/ct_ini.hpp)             | Manage standard INI configuration files             | [**ct_ini.md**](ct_ini.md)             |
-| [`ct/ct_net.hpp`](../ct/ct_net.hpp)             | object-oriented interface for TCP networking.       | [**ct_net.md**](ct_net.md)             |
-| [`ct/ct_math.hpp`](../ct/ct_math.hpp)           | Common mathematical and statistical utilities.      | [**ct_math.md**](ct_math.md)           |
-| [`ct/ct_array2d.hpp`](../ct/ct_array2d.hpp)     | Dynamic 2D Array container                          | [**ct_array2d.md**](ct_array2d.md)     |
-| [`ct/ct_array3d.hpp`](../ct/ct_array3d.hpp)     | Dynamic 3D Array container                          | [**ct_array3d.md**](ct_array3d.md)     |
-| [`ct/ct_dataframe.hpp`](../ct/ct_dataframe.hpp) | A Python Pandas like DataFrame.                     | [**ct_dataframe.md**](ct_dataframe.md) |
-| [`ct/ct_num.hpp`](../ct/ct_num.hpp)             | NumPy-like Array Operations                         | [**ct_num.md**](ct_num.md)             |
-| [`ct/ct_csv.hpp`](../ct/ct_csv.hpp)             | Generic CSV parser and data generator.              | *Coming Soon*                          |
-| [`ct/ct_str.hpp`](../ct/ct_str.hpp)             | Advanced string manipulation.                       | *Coming Soon*                          |
-| [`ct/ct_file.hpp`](../ct/ct_file.hpp)           | C++ wrappers for file I/O and directory operations. | *Coming Soon*                          |
-| [`ct/ct_log.hpp`](../ct/ct_log.hpp)             | Multi-level, thread-safe logging system.            | *Coming Soon*                          |
-| [`ct/ct_time.hpp`](../ct/ct_time.hpp)           | High-precision timestamps and sleep utilities.      | *Coming Soon*                          |
-| [`ct/ct_sys.hpp`](../ct/ct_sys.hpp)             | Cross-platform system and environment tools.        | *Coming Soon*                          |
-| [`ct/ct_unit.hpp`](../ct/ct_unit.hpp)           | Flexible unit conversion and handling.              | [**ct_unit.md**](ct_unit.md)           |
-| [`ct/ct_core.hpp`](../ct/ct_core.hpp)           | Framework core definitions and templates.           | *Coming Soon*                          |
+| [`ctool/json.hpp`](../ctool/json.hpp)           | Basic, JSON strings manipulation and extraction.    | [**json.md**](json.md)           |
+| [`ctool/ini.hpp`](../ctool/ini.hpp)             | Manage standard INI configuration files             | [**ini.md**](ini.md)             |
+| [`ctool/net.hpp`](../ctool/net.hpp)             | object-oriented interface for TCP networking.       | [**net.md**](net.md)             |
+| [`ctool/math.hpp`](../ctool/math.hpp)           | Common mathematical and statistical utilities.      | [**math.md**](math.md)           |
+| [`ctool/array2d.hpp`](../ctool/array2d.hpp)     | Dynamic 2D Array container                          | [**array2d.md**](array2d.md)     |
+| [`ctool/array3d.hpp`](../ctool/array3d.hpp)     | Dynamic 3D Array container                          | [**array3d.md**](array3d.md)     |
+| [`ctool/dataframe.hpp`](../ctool/dataframe.hpp) | A Python Pandas like DataFrame.                     | [**dataframe.md**](dataframe.md) |
+| [`ctool/num.hpp`](../ctool/num.hpp)             | NumPy-like Array Operations                         | [**num.md**](num.md)             |
+| [`ctool/csv.hpp`](../ctool/csv.hpp)             | Generic CSV parser and data generator.              | *Coming Soon*                          |
+| [`ctool/string.hpp`](../ctool/string.hpp)             | Advanced string manipulation.                       | *Coming Soon*                          |
+| [`ctool/file.hpp`](../ctool/file.hpp)           | C++ wrappers for file I/O and directory operations. | *Coming Soon*                          |
+| [`ctool/log.hpp`](../ctool/log.hpp)             | Multi-level, thread-safe logging system.            | *Coming Soon*                          |
+| [`ctool/time.hpp`](../ctool/time.hpp)           | High-precision timestamps and sleep utilities.      | *Coming Soon*                          |
+| [`ctool/sys.hpp`](../ctool/sys.hpp)             | Cross-platform system and environment tools.        | *Coming Soon*                          |
+| [`ctool/unit.hpp`](../ctool/unit.hpp)           | Flexible unit conversion and handling.              | [**unit.md**](unit.md)           |
+| [`ctool/core.hpp`](../ctool/core.hpp)           | Framework core definitions and templates.           | *Coming Soon*                          |
 
 ---
 
 ## Usage Principles
 
-1.  **Memory Management:** CBridge modules (`cb_`) require manual memory management via their respective `.free()` functions. CTool modules (`ct_`) utilize standard RAII.
-2.  **Namespace Pattern:** CBridge uses a global struct (e.g., `cb_str.method()`) to simulate namespaces in C.
+1.  **Memory Management:** CBridge modules (`cbridge_`) require manual memory management via their respective `.free()` functions. CTool modules (`ctool_`) utilize standard RAII.
+2.  **Namespace Pattern:** CBridge uses a global struct (e.g., `cbridge_string.method()`) to simulate namespaces in C.
 3.  **Cross-Platform:** All modules are tested for compatibility between MSVC (Windows) and GCC/Clang (Linux).
 
 **Maintained by:** Florent ALBANY  

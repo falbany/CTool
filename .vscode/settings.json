@@ -1,5 +1,9 @@
 {
     "cSpell.words": [
         "LIBCTOOL"
-    ]
+    ],
+    "chat.tools.terminal.autoApprove": {
+        "mv": true,
+        "mkdir": true
+    }
 }

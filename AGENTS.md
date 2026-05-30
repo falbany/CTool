@@ -3,8 +3,8 @@
 This document defines the mandatory steps for adding new features or modules to the CTool/CBridge project.
 
 ## 1. Directory Standards
-- **Pure C (CBridge):** Source in `cb/`, headers in `cb/`. Use `cb_` prefix.
-- **C++ (CTool):** Source in `ct/`, headers in `ct/`, templates in `ct/*.tpp`. Use `ct_` prefix.
+- **Pure C (CBridge):** Source in `cbridge/`, headers in `cbridge/`.
+- **C++ (CTool):** Source in `ctool/`, headers in `ctool/`, templates in `ctool/*.tpp`.
 - **Documentation:** Every new module **must** have a corresponding `.md` file in `doc/`.
 
 ## 2. Namespace Integration

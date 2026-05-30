@@ -13,11 +13,11 @@
 
     #include "libctool.h"
 
-    #include "cb/cb_str.h"
-    #include "cb/cb_vector.h"
-    #include "cb/cb_file.h"
-    #include "cb/cb_math.h"
-    #include "cb/cb_net.h"
+    #include "cbridge/string.h"
+    #include "cbridge/vector.h"
+    #include "cbridge/file.h"
+    #include "cbridge/math.h"
+    #include "cbridge/net.h"
 
 /**
  * @struct CBridge_Namespace
@@ -35,23 +35,23 @@
  * @section Usage Example
  * @code{c}
  * // Initialize modules if required (some might be lazy-loaded)
- * cb_init();
+ * cbridge_init();
  * 
  * // Access string functions
- * const struct cb_str_namespace* str = CBridge.str;
+ * const struct string_namespace* str = CBridge.str;
  * char* result = str->concat("Hello ", "World");
  * 
  * // Access math functions
- * const struct cb_math_namespace* math = CBridge.math;
+ * const struct math_namespace* math = CBridge.math;
  * float pi = math->get_pi();
  * @endcode
  */
 struct CBridge_Namespace {
-    const struct cb_str_namespace*    str;
-    const struct cb_vector_namespace* vector;
-    const struct cb_file_namespace*   file;
-    const struct cb_math_namespace*   math;
-    const struct cb_net_namespace*    net;
+    const struct cbridge_string_namespace* str;
+    const struct cbridge_vector_namespace* vector;
+    const struct cbridge_file_namespace*   file;
+    const struct cbridge_math_namespace*   math;
+    const struct cbridge_net_namespace*    net;
 };
 
 extern const struct CBridge_Namespace CBridge;

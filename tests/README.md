@@ -12,7 +12,7 @@ This directory contains the automated test suite for the CTool and CBridge libra
 
 | File | Module Tested | Language | Coverage |
 |---|---|---|---|
-| `cb_str_test.cpp` | CBridge string module (`cb_str`) | C++ (tests C API) | Lifecycle, append, insert, erase, trim, replace_all, compare, starts_with, ends_with, find, substr, catch_in_range, split, edge cases |
+| `/str_test.cpp` | CBridge string module (`/str`) | C++ (tests C API) | Lifecycle, append, insert, erase, trim, replace_all, compare, starts_with, ends_with, find, substr, catch_in_range, split, edge cases |
 
 ## Prerequisites
 
@@ -39,14 +39,14 @@ ctest --test-dir build
 ### Run a Specific Test Executable
 
 ```bash
-./build/tests/cb_str_test
+./build/tests//str_test
 ```
 
 ### Run Specific Test Cases (GTest filter)
 
 ```bash
-./build/tests/cb_str_test --gtest_filter="CbStrTrim.*"
-./build/tests/cb_str_test --gtest_filter="CbStrLifecycle.CreateNullString"
+./build/tests//str_test --gtest_filter="CbStrTrim.*"
+./build/tests//str_test --gtest_filter="CbStrLifecycle.CreateNullString"
 ```
 
 ## Adding a New Test
@@ -55,15 +55,15 @@ ctest --test-dir build
 2. Include the module header (with `extern "C"` if testing C code):
    ```cpp
    extern "C" {
-   #include "cb/cb_str.h"
+   #include "cb/string.h"
    }
    ```
 3. Write test cases using GTest macros:
    ```cpp
    TEST(CbStrLifecycle, MyNewTest) {
-       cb_string_t* s = cb_str.create("test");
-       EXPECT_EQ(cb_str.length(s), 4);
-       cb_str.free(s);
+       /string_t* s = /str.create("test");
+       EXPECT_EQ(/str.length(s), 4);
+       /str.free(s);
    }
    ```
 4. Register the executable in `tests/CMakeLists.txt`:
@@ -84,7 +84,7 @@ ctest --test-dir build
 - **Test suite names**: PascalCase, `<Module><Section>` (e.g., `CbStrTrim`, `CtStrCompare`).
 - **Test case names**: PascalCase, descriptive (e.g., `TrimLeadingSpaces`, `FindNotFound`).
 - **Assertions**: Prefer `EXPECT_*` (non-fatal) over `ASSERT_*` (fatal).
-- **Memory**: Always free C resources (`cb_str.free()`, `cb_str_parts_free()`) in the test body.
+- **Memory**: Always free C resources (`/str.free()`, `/str_parts_free()`) in the test body.
 - **Null pointers**: Use `nullptr` for GTest comparisons, `NULL` for C API calls.
 
 ## Troubleshooting

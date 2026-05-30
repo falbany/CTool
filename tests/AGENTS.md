@@ -7,11 +7,11 @@ This document defines the mandatory conventions for adding or modifying tests in
 - **Google Test (GTest)** is the sole test framework. Do not introduce custom test macros.
 - Test files are **C++ (`.cpp`)** — even when testing pure C modules (CBridge). GTest requires C++.
 - The `gtest_main` library provides the `main()` entry point. Do **not** write a custom `main()`.
-- C headers are included via `extern "C" { #include "cb/cb_str.h" }` when they lack `__cplusplus` guards.
+- C headers are included via `extern "C" { #include "cb/string.h" }` when they lack `__cplusplus` guards.
 
 ## 2. File & Naming Conventions
 
-- Test file name: `<module>_test.cpp` (e.g., `cb_str_test.cpp`, `cb_math_test.cpp`).
+- Test file name: `<module>_test.cpp` (e.g., `/str_test.cpp`, `/math_test.cpp`).
 - Each test executable maps to one source file.
 - Test suite naming: `TEST(<Module><Section>, TestName)` where `<Module><Section>` is PascalCase (e.g., `CbStrLifecycle`, `CtStrTrim`).
 - Test case names are PascalCase (e.g., `CreateNullString`, `TrimBothSides`).
@@ -30,12 +30,12 @@ This document defines the mandatory conventions for adding or modifying tests in
 - `EXPECT_EQ(expected, actual)` for numeric equality.
 
 ### Memory & Resources
-- All heap-allocated objects (`cb_string_t*`, `cb_str_parts_t`, etc.) **must** be freed in the test body.
-- Use raw `cb_str.free(s)` / `cb_str_parts_free(&parts)` — no fixtures or RAII wrappers.
+- All heap-allocated objects (`/string_t*`, `/str_parts_t`, etc.) **must** be freed in the test body.
+- Use raw `/str.free(s)` / `/str_parts_free(&parts)` — no fixtures or RAII wrappers.
 
 ### NULL / nullptr
 - Use `nullptr` (C++ keyword) in GTest comparisons: `EXPECT_NE(s, nullptr)`.
-- Use `NULL` only when calling C APIs that expect `NULL` (e.g., `cb_str.create(NULL)`).
+- Use `NULL` only when calling C APIs that expect `NULL` (e.g., `/str.create(NULL)`).
 
 ## 4. Build Integration
 
@@ -71,9 +71,9 @@ Each test file header must include:
 Example:
 ```cpp
 /**
- * @file cb_str_test.cpp
+ * @file /str_test.cpp
  * @author Florent ALBANY - FAL
- * @brief Comprehensive test suite for CBridge string module (cb_str) using Google Test.
+ * @brief Comprehensive test suite for CBridge string module (/str) using Google Test.
  * @version 2.0
  * @date 2026-05-29
  */

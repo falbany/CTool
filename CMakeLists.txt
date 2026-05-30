@@ -27,7 +27,7 @@ option(BUILD_TESTS "Build tests" ON)
 # For static library builds, use the existing Makefile.
 # ============================================================================
 file(GLOB_RECURSE CB_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/cb/*.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/cbridge/*.c
     ${CMAKE_CURRENT_SOURCE_DIR}/CBridge.c
 )
 
@@ -45,7 +45,7 @@ endif()
 # Used internally for test linking.
 # ============================================================================
 file(GLOB_RECURSE CT_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/ct/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ctool/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CTool.cpp
 )
 

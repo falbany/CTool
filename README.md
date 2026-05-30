@@ -25,8 +25,8 @@ The project is structured into two distinct layers:
 
 ```text
 .
-├── cb/                # CBridge: Pure C Modules (Namespace Pattern)
-├── ct/                # CTool: C++11 Utility Modules
+├── cbridge/                # CBridge: Pure C Modules (Namespace Pattern)
+├── ctool/                # CTool: C++11 Utility Modules
 │   └── data/          # C++11 Data Analysis Module (DataFrame)
 ├── doc/               # Dedicated Markdown Documentation
 ├── examples/          # Non-compiled usage examples
@@ -42,7 +42,7 @@ The project is structured into two distinct layers:
 ```cpp
 #include "CTool.hpp"
 
-using namespace ct;
+using namespace ctool;
 std::string clean = str::trim("  General Purpose Code  ");
 if (file::exists("settings.conf")) {
     auto logFiles = file::getFiles("./logs", "data_", ".log");
@@ -54,16 +54,15 @@ if (file::exists("settings.conf")) {
 ```c
 #include "CBridge.h"
 
-cb_string_t* s = cb_str.create("Generic_String");
-cb_str.append(s, "_Suffix");
-printf("%s\n", cb_str.c_str(s));
-cb_str.free(s);
+string_t* s = cbridge_string.create("Generic_String");
+cbridge_string.append(s, "_Suffix");
+printf("%s\n", cbridge_string.c_str(s));
+cbridge_string.free(s);
 ```
 
 ## Documentation
 
-For a full API reference and detailed module guides, visit the **[Documentation Hub](.
-/doc/README.md)**.
+For a full API reference and detailed module guides, visit the **[Documentation Hub](./doc/README.md)**.
 
 ## Contact
 
