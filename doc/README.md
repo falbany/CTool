@@ -2,7 +2,9 @@
 
 This folder contains the complete technical documentation for the CTool and CBridge modules. Use the tables below to navigate the API references and usage guides.
 
-## 🟢 CBridge (Pure C Modules)
+## �️ Global Guides
+- [**Shared Library (DLL) Usage Guide**](dll_usage.md)- [**Direct Source Usage Guide**](direct_source_usage.md)
+## �🟢 CBridge (Pure C Modules)
 *High-portability modules designed for C environments.*
 
 | File                                  | Description                                                  | Documentation                    |

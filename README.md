@@ -64,6 +64,13 @@ cbridge_string.free(s);
 
 For a full API reference and detailed module guides, visit the **[Documentation Hub](./doc/README.md)**.
 
+### 🗂️ Documentation Reference
+- [**Installation Guide**](INSTALL.md)
+- [**DLL Usage Guide**](doc/dll_usage.md)
+- [**Direct Source Guide**](doc/direct_source_usage.md)
+- [**CBridge Documentation**](doc/cbridge/README.md)
+- [**CTool Documentation**](doc/ctool/README.md)
+
 ## Contact
 
   - **Author:** Florent ALBANY (FAL)
