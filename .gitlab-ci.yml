@@ -20,8 +20,8 @@ clang_format_check:
     - echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg] http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-22 main" | tee /etc/apt/sources.list.d/llvm.list
     - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y clang-format-22
     - ln -sf /usr/bin/clang-format-22 /usr/bin/clang-format
-    - chmod +x format.sh
-    - ./format.sh --check
+    - chmod +x ./scripts/format.sh
+    - ./scripts/format.sh --check
   
   rules:
     - if: $CI_COMMIT_BRANCH

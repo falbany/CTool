@@ -24,7 +24,18 @@ All headers must include:
 - Update `doc/README.md` and the root `README.md` tables with the new module.
 - Update `CHANGELOG.md` following the [Keep a Changelog](https://keepachangelog.com/) format.
 
-## 5. Implementation Workflow
+## 5. Formatting Standards
+All code **must** be formatted using `clang-format`.
+-   Run `./scripts/format.sh` to apply formatting.
+-   The CI pipeline will enforce this with `./scripts/format.sh --check`.
+
+## 6. Build and Test Standards
+All modules are built and tested using CMake.
+-   **Environment-Specific Toolchains:** Use the appropriate CMake toolchain file for your operating system. Refer to [cmake/README.md](cmake/README.md) for detailed instructions on how to select and use toolchains like `cmake/macOS-Clang.cmake`, `cmake/MSYS2-UCRT64.cmake`, or `cmake/MinGW.cmake`.
+-   **Building:** `cmake -B build && cmake --build build`
+-   **Testing:** `ctest --test-dir build`
+
+## 7. Implementation Workflow
 1. Create implementation (`.c`/`.cpp`) and headers.
 2. Link in `src/CBridge.h/c` or `src/CTool.hpp/cpp`.
 3. Draft the Markdown guide in `doc/`.

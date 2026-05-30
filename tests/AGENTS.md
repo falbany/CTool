@@ -17,7 +17,12 @@ This document defines the mandatory conventions for adding or modifying tests in
 - Test case names are PascalCase (e.g., `CreateNullString`, `TrimBothSides`).
 - File must include a Doxygen header (`@file`, `@author`, `@brief`, `@version`, `@date`).
 
-## 3. Conventions
+## 3. Formatting Standards
+All test code **must** be formatted using `clang-format`.
+-   Run `./scripts/format.sh` from the root directory to apply formatting to all tests.
+-   The CI pipeline will enforce this with `./scripts/format.sh --check`.
+
+## 4. Conventions
 
 ### Assertions
 - Prefer **`EXPECT_*`** over `ASSERT_*` (non-fatal gives more feedback per run).
