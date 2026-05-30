@@ -151,10 +151,10 @@ namespace ctool {
 
             // --- Utility ---
             /**
-             * @brief Returns a copy of the underlying vector of vectors.
-             * @return std::vector<std::vector<T>>
+             * @brief Returns the underlying vector of vectors as a const reference.
+             * @return const std::vector<std::vector<T>>&
              */
-            std::vector<std::vector<T>> toVector() const;
+            const std::vector<std::vector<T>>& toVector() const;
 
             /**
              * @brief Extracts a specific row as a 1D vector.

@@ -180,7 +180,7 @@ namespace ctool {
 
         // --- Utility ---
         template <typename T>
-        std::vector<std::vector<T>> Array2D<T>::toVector() const {
+        const std::vector<std::vector<T>>& Array2D<T>::toVector() const {
             return m_data;
         }
 

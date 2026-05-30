@@ -1,0 +1,10 @@
+---
+Checks:          'clang-diagnostic-*,clang-analyzer-*,bugprone-*,modernize-*,readability-*,performance-*'
+WarningsAsErrors: ''
+HeaderFilterRegex: 'src/.*'
+CheckOptions:
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.VariableCase
+    value:           lower_case
+...

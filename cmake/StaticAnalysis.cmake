@@ -50,7 +50,7 @@ if(ENABLE_STATIC_ANALYSIS)
                 --enable=warning,performance,portability
                 --suppress=missingIncludeSystem
                 --quiet
-                --project "${CMAKE_BINARY_DIR}"
+                ${CMAKE_SOURCE_DIR}/src
             WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
             COMMENT "Running cppcheck static analysis..."
             VERBATIM

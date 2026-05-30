@@ -29,10 +29,7 @@ namespace ctool {
         long long getUptimeNs() { return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count(); }
 
         // Timer Implementation
-        Timer::Timer(const std::string& label) : label_(label) {
-            start_ = std::chrono::steady_clock::now();
-            std::cout << "[Timer Start] " << label_ << std::endl;
-        }
+        Timer::Timer(const std::string& label) : label_(label), start_(std::chrono::steady_clock::now()) { std::cout << "[Timer Start] " << label_ << std::endl; }
 
         Timer::~Timer() {
             auto end  = std::chrono::steady_clock::now();

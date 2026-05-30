@@ -73,7 +73,7 @@ namespace ctool {
                 // 1. Remove comments
                 size_t commentPos = line.find_first_of("/#*;!");
                 if (commentPos != std::string::npos) {
-                    line = line.substr(0, commentPos);
+                    line.resize(commentPos);
                 }
 
                 // 2. Search for key

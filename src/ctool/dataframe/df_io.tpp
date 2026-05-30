@@ -197,7 +197,7 @@ inline std::ostream& operator<<(std::ostream& os, const ctool::data::DataFrame& 
                 case ctool::data::Cell::STRING: val = cell.asString(); break;
                 default:                     val = "NaN"; break;
             }
-            if (val.length() > 13) val = val.substr(0, 10) + "...";
+            if (val.length() > 13) val.replace(10, 3, "...");
             os << std::left << std::setw(15) << val;
         }
         os << "\n";

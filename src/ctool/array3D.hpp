@@ -155,10 +155,10 @@ namespace ctool {
 
             // --- Utility ---
             /**
-             * @brief Returns a copy of the underlying nested vectors.
-             * @return std::vector<std::vector<std::vector<T>>>
+             * @brief Returns the underlying nested vectors as a const reference.
+             * @return const std::vector<std::vector<std::vector<T>>>&
              */
-            std::vector<std::vector<std::vector<T>>> toVector() const;
+            const std::vector<std::vector<std::vector<T>>>& toVector() const;
 
             /**
              * @brief Returns the maximum value in the array.

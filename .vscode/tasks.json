@@ -2,40 +2,382 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "cmake",
-			"label": "CMake: test",
-			"command": "test",
-			"problemMatcher": [],
-			"detail": "CMake template test task"
+			"label": "CMake: Configure (Default)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-B",
+				"${workspaceFolder}/build",
+				"-S",
+				"${workspaceFolder}"
+			],
+			"group": "build",
+			"problemMatcher": []
 		},
 		{
-			"type": "cmake",
-			"label": "CMake: clean",
-			"command": "clean",
-			"problemMatcher": [],
-			"detail": "CMake template clean task"
+			"label": "CMake: Configure (macOS-Clang)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-B",
+				"${workspaceFolder}/build-mac",
+				"-S",
+				"${workspaceFolder}",
+				"-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/cmake/macOS-Clang.cmake"
+			],
+			"group": "build",
+			"problemMatcher": []
 		},
 		{
-			"type": "cmake",
-			"label": "CMake: build",
-			"command": "build",
-			"targets": [
-				"all"
+			"label": "CMake: Configure (MSYS2-UCRT64)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-B",
+				"${workspaceFolder}/build-msys2",
+				"-S",
+				"${workspaceFolder}",
+				"-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/cmake/MSYS2-UCRT64.cmake"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Configure (MinGW)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-B",
+				"${workspaceFolder}/build-mingw",
+				"-S",
+				"${workspaceFolder}",
+				"-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/cmake/MinGW.cmake"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Configure (Clang-LLVM)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-B",
+				"${workspaceFolder}/build-clang",
+				"-S",
+				"${workspaceFolder}",
+				"-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/cmake/Clang-LLVM.cmake"
+			],
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Build (Default)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"dependsOn": [
+				"CMake: Configure (Default)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Build (macOS-Clang)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build-mac"
+			],
+			"group": "build",
+			"dependsOn": [
+				"CMake: Configure (macOS-Clang)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Build (MSYS2-UCRT64)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build-msys2"
+			],
+			"group": "build",
+			"dependsOn": [
+				"CMake: Configure (MSYS2-UCRT64)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Build (MinGW)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build-mingw"
+			],
+			"group": "build",
+			"dependsOn": [
+				"CMake: Configure (MinGW)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Build (Clang-LLVM)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build-clang"
+			],
+			"group": "build",
+			"dependsOn": [
+				"CMake: Configure (Clang-LLVM)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Test (Default)",
+			"type": "shell",
+			"command": "ctest",
+			"args": [
+				"--test-dir",
+				"${workspaceFolder}/build"
+			],
+			"group": "test",
+			"dependsOn": [
+				"CMake: Build (Default)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Test (macOS-Clang)",
+			"type": "shell",
+			"command": "ctest",
+			"args": [
+				"--test-dir",
+				"${workspaceFolder}/build-mac"
+			],
+			"group": "test",
+			"dependsOn": [
+				"CMake: Build (macOS-Clang)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Test (MSYS2-UCRT64)",
+			"type": "shell",
+			"command": "ctest",
+			"args": [
+				"--test-dir",
+				"${workspaceFolder}/build-msys2"
+			],
+			"group": "test",
+			"dependsOn": [
+				"CMake: Build (MSYS2-UCRT64)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Test (MinGW)",
+			"type": "shell",
+			"command": "ctest",
+			"args": [
+				"--test-dir",
+				"${workspaceFolder}/build-mingw"
+			],
+			"group": "test",
+			"dependsOn": [
+				"CMake: Build (MinGW)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Test (Clang-LLVM)",
+			"type": "shell",
+			"command": "ctest",
+			"args": [
+				"--test-dir",
+				"${workspaceFolder}/build-clang"
+			],
+			"group": "test",
+			"dependsOn": [
+				"CMake: Build (Clang-LLVM)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Clean (Default)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--target",
+				"clean"
+			],
+			"group": "build",
+			"dependsOn": [
+				"CMake: Configure (Default)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Clean (macOS-Clang)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build-mac",
+				"--target",
+				"clean"
+			],
+			"group": "build",
+			"dependsOn": [
+				"CMake: Configure (macOS-Clang)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Clean (MSYS2-UCRT64)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build-msys2",
+				"--target",
+				"clean"
+			],
+			"group": "build",
+			"dependsOn": [
+				"CMake: Configure (MSYS2-UCRT64)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Clean (MinGW)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build-mingw",
+				"--target",
+				"clean"
+			],
+			"group": "build",
+			"dependsOn": [
+				"CMake: Configure (MinGW)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "CMake: Clean (Clang-LLVM)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build-clang",
+				"--target",
+				"clean"
+			],
+			"group": "build",
+			"dependsOn": [
+				"CMake: Configure (Clang-LLVM)"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Static Analysis: Run Clang-Tidy (Direct)",
+			"type": "shell",
+			"command": "clang-tidy",
+			"args": [
+				"-p",
+				"${workspaceFolder}/build",
+				"${workspaceFolder}/src/**.{h,cpp,c,hpp}"
+			],
+			"group": "build",
+			"problemMatcher": ["$clang-tidy"],
+			"detail": "Runs clang-tidy directly on src files using the build database."
+		},
+		{
+			"label": "Static Analysis: Run Cppcheck (Direct)",
+			"type": "shell",
+			"command": "cppcheck",
+			"args": [
+				"--std=c99",
+				"--std=c++11",
+				"--enable=warning,performance,portability",
+				"--suppress=missingIncludeSystem",
+				"--quiet",
+				"${workspaceFolder}/src"
 			],
 			"group": "build",
 			"problemMatcher": [],
-			"detail": "CMake template build task"
+			"detail": "Runs cppcheck directly on the src directory."
 		},
 		{
-			"type": "cmake",
-			"label": "CMake: clean rebuild",
-			"command": "cleanRebuild",
-			"targets": [
-				"all"
+			"label": "Static Analysis: Run Cppcheck",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--target",
+				"run_cppcheck"
+			],
+			"group": "build",
+			"dependsOn": [
+				"Static Analysis: Enable & Reconfigure"
+			],
+			"problemMatcher": [],
+			"detail": "Reconfigures CMake with static analysis enabled, then runs cppcheck."
+		},
+		{
+			"label": "Static Analysis: Enable & Reconfigure",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-B",
+				"${workspaceFolder}/build",
+				"-S",
+				"${workspaceFolder}",
+				"-DENABLE_STATIC_ANALYSIS=ON"
 			],
 			"group": "build",
 			"problemMatcher": [],
-			"detail": "CMake template clean rebuild task"
+			"detail": "Enables static analysis and reconfigures the CMake project"
+		},
+		{
+			"label": "Formatting: Run clang-format",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"${workspaceFolder}/scripts/format.sh",
+				"${workspaceFolder}"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Recursively formats C/C++ files using clang-format via the format.sh script."
+		},
+		{
+			"label": "Formatting: Check clang-format",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"${workspaceFolder}/scripts/format.sh",
+				"--check",
+				"${workspaceFolder}"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Checks C/C++ file formatting without applying changes."
 		}
 	]
 }

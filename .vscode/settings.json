@@ -6,5 +6,29 @@
         "mv": true,
         "mkdir": true,
         "ctest": true
-    }
+    },
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null,
+    "cmake.configureOnOpen": true,
+    "cmake.generator": "Unix Makefiles",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configureArgs": [],
+    "cmake.buildArgs": [],
+    "cmake.launchArgs": [],
+    "cmake.debugConfig": {
+        "symbolSearchPath": "${workspaceFolder}/build",
+        "externalConsole": false,
+        "logging": {
+            "engineLogging": false
+        }
+    },
+    "files.associations": {
+        "*.h": "c",
+        "*.hpp": "cpp",
+        "*.c": "c",
+        "*.cpp": "cpp"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.intelliSenseEngineFallback": "enabled",
+    "C_Cpp.intelliSenseEngineDefault": "default"
 }
