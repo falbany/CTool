@@ -14,7 +14,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "../libctool.h"
+#include "../internal/libctool.h"
 
 namespace ctool {
     /**

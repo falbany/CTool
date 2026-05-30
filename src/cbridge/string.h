@@ -11,7 +11,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "../libctool.h"
+#include "../internal/libctool.h"
 
 /**
  * @brief Returned by search functions to indicate no matches were found.

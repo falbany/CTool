@@ -15,7 +15,7 @@
     #include <stdexcept>
     #include <ostream>
     #include "array2d.hpp"
-    #include "../libctool.h"
+    #include "../internal/libctool.h"
 
 namespace ctool {
     // ------------------------------------------------------------------------

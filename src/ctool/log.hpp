@@ -13,7 +13,7 @@
 
     #include <iostream>
     #include <string>
-    #include "../libctool.h"
+    #include "../internal/libctool.h"
 
 namespace ctool {
     // ------------------------------------------------------------------------

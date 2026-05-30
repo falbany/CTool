@@ -16,7 +16,7 @@
     #include "../num.hpp"
     #include <vector>
     #include <string>
-    #include "../../libctool.h"
+    #include "../../internal/libctool.h"
 
 namespace ctool {
     // ------------------------------------------------------------------------

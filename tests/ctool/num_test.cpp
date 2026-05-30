@@ -7,7 +7,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../ctool/num.hpp"
+#include "ctool/num.hpp"
 
 /* ============================================================================
  * Construction & Basic Properties

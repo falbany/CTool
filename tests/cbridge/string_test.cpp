@@ -12,7 +12,7 @@
 
 /* The CBridge C header has no __cplusplus guards, so wrap with extern "C" */
 extern "C" {
-#include "../../cbridge/string.h"
+#include "cbridge/string.h"
 }
 
 /* ============================================================================

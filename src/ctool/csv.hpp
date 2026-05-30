@@ -15,7 +15,7 @@
     #include <vector>
     #include <fstream>
     #include <mutex>
-    #include "../libctool.h"
+    #include "../internal/libctool.h"
 
 namespace ctool {
     // ------------------------------------------------------------------------

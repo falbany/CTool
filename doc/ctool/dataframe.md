@@ -182,8 +182,8 @@ The module supports direct conversion from `DataFrame` to `ctool::num::NumArray`
 
 #### Example: Complete Data Science Pipeline (Import → Process → Export)
 ```cpp
-#include "ctool/dataframe.hpp"
-#include "ctool/num.hpp"
+#include "src/ctool/dataframe.hpp"
+#include "src/ctool/num.hpp"
 
 int main() {
     // 1. IMPORT Data from CSV
@@ -270,7 +270,7 @@ Prints a formatted table to any `std::ostream` (e.g., `std::cout`).
 ### 1. Creating and Populating a DataFrame
 
 ```cpp
-#include "ctool/dataframe.hpp"
+#include "src/ctool/dataframe.hpp"
 
 ctool::data::DataFrame df;
 df.addColumn("ID");
@@ -285,7 +285,7 @@ df.pushRow({103, "Charlie", 92.3});
 ### 2. Filtering Data
 
 ```cpp
-#include "ctool/dataframe.hpp"
+#include "src/ctool/dataframe.hpp"
 
 // Get only rows where Score > 90.0
 auto highPerformers = ctool::data::filterGt(df, "Score", 90.0); 
@@ -297,7 +297,7 @@ auto midRange = ctool::data::filter(df, "Score", 85.0, ctool::data::CompareOp::G
 ### 3. Importing Data
 
 ```cpp
-#include "ctool/dataframe.hpp"
+#include "src/ctool/dataframe.hpp"
 
 // Load from CSV
 auto df1 = ctool::data::fromCSV("input_data.csv");
@@ -314,8 +314,8 @@ auto df3 = ctool::data::fromNumArray(num_data, {"X", "Y"});
 ### 4. Export and Conversion
 
 ```cpp
-#include "ctool/dataframe.hpp"
-#include "ctool/num.hpp"
+#include "src/ctool/dataframe.hpp"
+#include "src/ctool/num.hpp"
 
 ctool::data::DataFrame df;
 df.addColumn("X");
@@ -345,8 +345,8 @@ auto roots = ctool::num::sqrt(num_arr);
 ### 5. NumArray Integration with Ufuncs
 
 ```cpp
-#include "ctool/dataframe.hpp"
-#include "ctool/num.hpp"
+#include "src/ctool/dataframe.hpp"
+#include "src/ctool/num.hpp"
 
 // 1. Load Data
 auto df = ctool::data::fromCSV("sensor_data.csv");
@@ -373,7 +373,7 @@ double avg_pressure = ctool::num::mean(matrix); // Average
 ### 6. Pretty Printing
 
 ```cpp
-#include "ctool/dataframe.hpp"
+#include "src/ctool/dataframe.hpp"
 #include <iostream>
 
 ctool::data::DataFrame df;

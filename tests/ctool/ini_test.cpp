@@ -11,7 +11,7 @@
 #include <filesystem>
 #include <algorithm>
 
-#include "../../ctool/ini.hpp"
+#include "ctool/ini.hpp"
 
 namespace fs = std::filesystem;
 

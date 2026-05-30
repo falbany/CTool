@@ -4,7 +4,7 @@
 
     #include <vector>
     #include <stdexcept>
-    #include "../libctool.h"
+    #include "../internal/libctool.h"
 
 /**
  * @namespace ctool

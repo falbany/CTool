@@ -17,7 +17,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include "../libctool.h"
+#include "../internal/libctool.h"
 
 /**
  * @brief Cross-platform socket descriptor.

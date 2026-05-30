@@ -21,7 +21,7 @@ typedef int socklen_t;
     #define closesocket close
 #endif
 
-#include "../platform.h"
+#include "internal/platform.h"
 
 #include <cstdio>
 #include <cstring>

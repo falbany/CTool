@@ -13,7 +13,7 @@
 
     #include <string>
     #include <chrono>
-    #include "../libctool.h"
+    #include "../internal/libctool.h"
 
 namespace ctool {
     // ------------------------------------------------------------------------

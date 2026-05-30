@@ -11,7 +11,7 @@
 
 #include <string>
 #include <memory>
-#include "../libctool.h"
+#include "../internal/libctool.h"
 
 namespace ctool {
     /**

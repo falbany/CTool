@@ -10,7 +10,7 @@
     #define CT_UNIT_HPP
 
     #include <string>
-    #include "../libctool.h"
+    #include "../internal/libctool.h"
 
 namespace ctool {
     namespace unit {

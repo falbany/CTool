@@ -11,7 +11,7 @@
 #ifndef CBRIDGE_MAIN_HPP
     #define CBRIDGE_MAIN_HPP
 
-    #include "libctool.h"
+    #include "internal/libctool.h"
 
     #include "cbridge/string.h"
     #include "cbridge/vector.h"

@@ -7,7 +7,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../ctool/string.hpp"
+#include "ctool/string.hpp"
 #include <string>
 #include <vector>
 

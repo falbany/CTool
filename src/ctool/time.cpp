@@ -1,6 +1,6 @@
 #include "time.hpp"
 #include "log.hpp"
-#include "../platform.h"
+#include "internal/platform.h"
 #include <chrono>
 #include <thread>
 #include <ctime>

@@ -42,7 +42,7 @@ Generic functions supporting `int`, `double`, `float`, etc.
 
 ### 1. Basic Statistics (Double Vector)
 ```cpp
-#include "ctool/math.hpp"
+#include "src/ctool/math.hpp"
 #include <vector>
 #include <iostream>
 
@@ -72,7 +72,7 @@ int main() {
 These functions work with `int`, `double`, `float`, etc.
 
 ```cpp
-#include "ctool/math.hpp"
+#include "src/ctool/math.hpp"
 #include <vector>
 #include <iostream>
 
@@ -108,7 +108,7 @@ int main() {
 Normalizes data to the [0, 1] range. Useful for machine learning inputs.
 
 ```cpp
-#include "ctool/math.hpp"
+#include "src/ctool/math.hpp"
 #include <vector>
 #include <iostream>
 
@@ -132,7 +132,7 @@ int main() {
 Fits a line to x/y data points.
 
 ```cpp
-#include "ctool/math.hpp"
+#include "src/ctool/math.hpp"
 #include <vector>
 #include <iostream>
 
@@ -156,7 +156,7 @@ int main() {
 Fits $y = A e^{Bx}$ by performing linear regression on $\ln(y)$.
 
 ```cpp
-#include "ctool/math.hpp"
+#include "src/ctool/math.hpp"
 #include <vector>
 #include <iostream>
 
@@ -181,7 +181,7 @@ int main() {
 Calculates the difference between actual and predicted values for a given linear model.
 
 ```cpp
-#include "ctool/math.hpp"
+#include "src/ctool/math.hpp"
 #include <vector>
 #include <iostream>
 
@@ -205,7 +205,7 @@ int main() {
 Fits a polynomial $y = a_0 + a_1 x + \dots + a_n x^n$. Supports degrees 1 to 4.
 
 ```cpp
-#include "ctool/math.hpp"
+#include "src/ctool/math.hpp"
 #include <vector>
 #include <iostream>
 

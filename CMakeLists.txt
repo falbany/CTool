@@ -27,12 +27,14 @@ option(BUILD_TESTS "Build tests" ON)
 # For static library builds, use the existing Makefile.
 # ============================================================================
 file(GLOB_RECURSE CB_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/cbridge/*.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/CBridge.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/internal/platform.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/internal/libctool.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cbridge/*.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/CBridge.c
 )
 
 add_library(ctool_cb SHARED ${CB_SOURCES})
-target_include_directories(ctool_cb PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(ctool_cb PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(ctool_cb PRIVATE -Wall -Wextra)
 
 # Link Windows Sockets library on Windows
@@ -45,12 +47,14 @@ endif()
 # Used internally for test linking.
 # ============================================================================
 file(GLOB_RECURSE CT_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/ctool/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/CTool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/internal/platform.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/internal/libctool.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ctool/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/CTool.cpp
 )
 
 add_library(ctool_ct SHARED ${CT_SOURCES})
-target_include_directories(ctool_ct PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(ctool_ct PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(ctool_ct PRIVATE -Wall -Wextra)
 if(WIN32)
     target_link_libraries(ctool_ct PRIVATE ws2_32)

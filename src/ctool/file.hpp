@@ -13,7 +13,7 @@
 
     #include <string>
     #include <vector>
-    #include "../libctool.h"
+    #include "../internal/libctool.h"
 
 namespace ctool {
     namespace file {

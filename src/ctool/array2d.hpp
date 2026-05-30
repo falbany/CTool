@@ -17,7 +17,7 @@
     #include <string>
     #include <ostream>
     #include <cmath>
-    #include "../libctool.h"
+    #include "../internal/libctool.h"
 
 namespace ctool {
     // ------------------------------------------------------------------------

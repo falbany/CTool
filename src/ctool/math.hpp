@@ -13,7 +13,7 @@
 
     #include <vector>
     #include <cmath>
-    #include "../libctool.h"
+    #include "../internal/libctool.h"
 
 namespace ctool {
     // ------------------------------------------------------------------------

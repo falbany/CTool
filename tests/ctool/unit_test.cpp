@@ -7,7 +7,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../ctool/unit.hpp"
+#include "ctool/unit.hpp"
 #include <string>
 
 /* ============================================================================

@@ -11,7 +11,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "../libctool.h"
+#include "../internal/libctool.h"
 
 /**
  * @struct cbridge_reg_result

@@ -16,7 +16,7 @@ The `/unit` module provides utilities for handling engineering notation (SI pref
 Convert raw numbers into human-readable strings with SI prefixes.
 
 ```cpp
-#include "ctool/unit.hpp"
+#include "src/ctool/unit.hpp"
 
 // Standard formatting
 std::string s1 = ctool::unit::format(1200.0, 1, "Hz");   // "1.2 kHz"

@@ -14,7 +14,7 @@ The `/num` module provides a high-performance, contiguous memory 2D array contai
 
 ### 1. Inclusion
 ```cpp
-#include "ctool/num.hpp"
+#include "src/ctool/num.hpp"
 ```
 
 ### 2. Construction

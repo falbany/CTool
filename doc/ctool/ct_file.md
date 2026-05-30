@@ -22,7 +22,7 @@ The `ctool::file` module provides high-level filesystem utilities, configuration
 
 ### Basic File I/O
 ```cpp
-#include "ctool/file.hpp"
+#include "src/ctool/file.hpp"
 #include <iostream>
 
 // Write content to a file

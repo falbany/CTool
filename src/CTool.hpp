@@ -11,7 +11,7 @@
 #ifndef CTOOL_MAIN_HPP
     #define CTOOL_MAIN_HPP
 
-    #include "libctool.h"
+    #include "internal/libctool.h"
 
     #include "ctool/core.hpp"
     #include "ctool/array2d.hpp"

@@ -7,7 +7,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../ctool/time.hpp"
+#include "ctool/time.hpp"
 #include <string>
 #include <type_traits>
 

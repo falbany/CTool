@@ -25,8 +25,8 @@ The project is structured into two distinct layers:
 
 ```text
 .
-├── cbridge/                # CBridge: Pure C Modules (Namespace Pattern)
-├── ctool/                # CTool: C++11 Utility Modules
+├── src/cbridge/                # CBridge: Pure C Modules (Namespace Pattern)
+├── src/ctool/                # CTool: C++11 Utility Modules
 │   └── data/          # C++11 Data Analysis Module (DataFrame)
 ├── doc/               # Dedicated Markdown Documentation
 ├── examples/          # Non-compiled usage examples
