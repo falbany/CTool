@@ -144,5 +144,5 @@ std::cout << m << std::endl;
 Part of the CTool project.
 
 ## 📚 References
-- [Python NumPy Documentation](https://numpy.org/doc/stable/)
+- [Python NumPy Documentation](https://numpy.org/docs/stable/)
 - [C++ Standard Template Library](https://en.cppreference.com/w/cpp/container/vector)

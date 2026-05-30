@@ -72,7 +72,7 @@ graph TB
 │   ├── internal/      # Private core utilities and platform abstractions
 │   ├── CBridge.h/c    # C entry point
 │   └── CTool.hpp/cpp  # C++ entry point
-├── doc/               # Comprehensive API documentation
+├── docs/               # Comprehensive API documentation
 ├── examples/          # Usage examples and tutorials
 ├── tests/             # CTest-based testing suite
 └── CMakeLists.txt     # Main build configuration
@@ -144,14 +144,14 @@ int main() {
 
 ## Documentation
 
-For a full API reference and detailed module guides, visit the **[Documentation Hub](./doc/README.md)**.
+For a full API reference and detailed module guides, visit the **[Documentation Hub](./docs/README.md)**.
 
 ### 🗂️ Documentation Reference
 - [**Installation Guide**](INSTALL.md)
-- [**DLL Usage Guide**](doc/dll_usage.md)
-- [**Direct Source Guide**](doc/direct_source_usage.md)
-- [**CBridge Documentation**](doc/cbridge/README.md)
-- [**CTool Documentation**](doc/ctool/README.md)
+- [**DLL Usage Guide**](docs/dll_usage.md)
+- [**Direct Source Guide**](docs/direct_source_usage.md)
+- [**CBridge Documentation**](docs/cbridge/README.md)
+- [**CTool Documentation**](docs/ctool/README.md)
 
 ## Contact
 

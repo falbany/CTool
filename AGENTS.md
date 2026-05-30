@@ -6,7 +6,7 @@ This document defines the mandatory steps for adding new features or modules to 
 - **Pure C (CBridge):** Source in `src/cbridge/`, headers in `src/cbridge/`.
 - **C++ (CTool):** Source in `src/ctool/`, headers in `src/ctool/`, templates in `src/ctool/*.tpp`.
 - **Internal:** Private headers and core utilities in `src/internal/`. These are not part of the public API.
-- **Documentation:** Every new module **must** have a corresponding `.md` file in `doc/src/cbridge/` or `doc/src/ctool/`.
+- **Documentation:** Every new module **must** have a corresponding `.md` file in `docs/src/cbridge/` or `docs/src/ctool/`.
 
 ## 2. Namespace Integration
 Every new module must be "registered" in the unified entry points:
@@ -20,8 +20,8 @@ All headers must include:
 - A `@note` regarding memory ownership (especially for CBridge).
 
 ## 4. Documentation Standards
-- Create `doc/src/cbridge/module_name.md` or `doc/src/ctool/module_name.md`.
-- Update `doc/README.md` and the root `README.md` tables with the new module.
+- Create `docs/src/cbridge/module_name.md` or `docs/src/ctool/module_name.md`.
+- Update `docs/README.md` and the root `README.md` tables with the new module.
 - Update `CHANGELOG.md` following the [Keep a Changelog](https://keepachangelog.com/) format.
 
 ## 5. Formatting Standards
@@ -38,5 +38,5 @@ All modules are built and tested using CMake.
 ## 7. Implementation Workflow
 1. Create implementation (`.c`/`.cpp`) and headers.
 2. Link in `src/CBridge.h/c` or `src/CTool.hpp/cpp`.
-3. Draft the Markdown guide in `doc/`.
+3. Draft the Markdown guide in `docs/`.
 4. Update the Documentation Hub and the Changelog.

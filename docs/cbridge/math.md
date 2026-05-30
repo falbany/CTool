@@ -1,4 +1,4 @@
-doc//math.md
+docs//math.md
 # CTool Math Module
 
 This module provides a comprehensive suite of statistical utilities, data preprocessing tools, and mathematical operations for numerical analysis and linear modeling.
