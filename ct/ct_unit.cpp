@@ -39,20 +39,26 @@ namespace ct {
         double parse(const std::string& input) {
             if (input.empty()) return 0.0;
 
-            std::string trimmed    = ct::str::trim(input);
-            char        last       = trimmed.back();
-            double      multiplier = 1.0;
-
-            for (const auto& p : prefixes) {
-                if (p.symbol != ' ' && p.symbol == last) {
-                    multiplier = p.factor;
-                    trimmed.pop_back();
-                    break;
-                }
-            }
+            std::string trimmed = ct::str::trim(input);
+            if (trimmed.empty()) return 0.0;
 
             try {
-                return std::stod(trimmed) * multiplier;
+                size_t pos   = 0;
+                double value = std::stod(trimmed, &pos);
+
+                // Extract the part after the numeric value (e.g., "mV", " kOhm", "uA")
+                std::string suffix = ct::str::trim(trimmed.substr(pos));
+
+                if (!suffix.empty()) {
+                    char pChar = suffix[0];
+                    for (const auto& p : prefixes) {
+                        if (p.symbol != ' ' && p.symbol == pChar) {
+                            return value * p.factor;
+                        }
+                    }
+                }
+
+                return value;
             } catch (...) {
                 return 0.0;
             }

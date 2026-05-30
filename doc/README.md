@@ -36,7 +36,7 @@ This folder contains the complete technical documentation for the CTool and CBri
 | [`ct/ct_log.hpp`](../ct/ct_log.hpp)             | Multi-level, thread-safe logging system.            | *Coming Soon*                          |
 | [`ct/ct_time.hpp`](../ct/ct_time.hpp)           | High-precision timestamps and sleep utilities.      | *Coming Soon*                          |
 | [`ct/ct_sys.hpp`](../ct/ct_sys.hpp)             | Cross-platform system and environment tools.        | *Coming Soon*                          |
-| [`ct/ct_unit.hpp`](../ct/ct_unit.hpp)           | Flexible unit conversion and handling.              | *Coming Soon*                          |
+| [`ct/ct_unit.hpp`](../ct/ct_unit.hpp)           | Flexible unit conversion and handling.              | [**ct_unit.md**](ct_unit.md)           |
 | [`ct/ct_core.hpp`](../ct/ct_core.hpp)           | Framework core definitions and templates.           | *Coming Soon*                          |
 
 ---
