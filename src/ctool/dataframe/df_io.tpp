@@ -78,7 +78,7 @@ namespace ctool {
             }
 
             // Access contiguous data directly for performance
-            const double* raw_data = array.data();
+            const double* rawData = array.data();
 
             // Fill rows
             for (size_t i = 0; i < rows; ++i) {
@@ -87,7 +87,7 @@ namespace ctool {
                 for (size_t j = 0; j < cols; ++j) {
                     // Calculate 1D index manually or use operator()
                     // Since NumArray uses contiguous storage: index = i * cols + j
-                    double val = raw_data[i * cols + j];
+                    double val = rawData[i * cols + j];
                     row.push_back(Cell(val));
                 }
                 df.pushRow(row);
@@ -151,7 +151,7 @@ namespace ctool {
             const size_t cols_count = columnNames.size();
 
             ctool::array::ArrayND<double> matrix(rows_count, cols_count);
-            double*                   data_ptr = matrix.data();
+            double*                   dataPtr = matrix.data();
 
             for (size_t j = 0; j < cols_count; ++j) {
                 const std::string&       colName = columnNames[j];
@@ -163,7 +163,7 @@ namespace ctool {
                     }
 
                     double val                   = colData[i].asDouble();
-                    data_ptr[i * cols_count + j] = val;
+                    dataPtr[i * cols_count + j] = val;
                 }
             }
             return matrix;

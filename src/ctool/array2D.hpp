@@ -46,10 +46,10 @@ namespace ctool {
              * @brief Constructs a 2D array with specified dimensions.
              * @param rows Number of rows (height).
              * @param cols Number of columns (width).
-             * @param init_value Value to initialize elements with (default: default constructed T).
+             * @param initValue Value to initialize elements with (default: default constructed T).
              * @throws std::invalid_argument if rows or cols are negative.
              */
-            Array2D(size_t rows, size_t cols, const T& init_value = T());
+            Array2D(size_t rows, size_t cols, const T& initValue = T());
 
             /**
              * @brief Creates an array from a vector of vectors.
@@ -84,18 +84,18 @@ namespace ctool {
              * @return Reference to the element.
              * @throws std::out_of_range if indices are invalid.
              */
-            T&       at(size_t r, size_t c);
-            const T& at(size_t r, size_t c) const;
+            T&       at(size_t row, size_t col);
+            const T& at(size_t row, size_t col) const;
 
             /**
              * @brief Unchecked access (no bounds checking, faster).
-             * @param r Row index.
-             * @param c Column index.
+             * @param row Row index.
+             * @param col Column index.
              * @return Reference to the element.
              * @note Only use if bounds are guaranteed.
              */
-            T&       operator()(size_t r, size_t c);
-            const T& operator()(size_t r, size_t c) const;
+            T&       operator()(size_t row, size_t col);
+            const T& operator()(size_t row, size_t col) const;
 
             // --- Operations ---
             /**
@@ -106,17 +106,17 @@ namespace ctool {
 
             /**
              * @brief Fills a specific row with a value.
-             * @param r Row index.
+             * @param row Row index.
              * @param val Value to set.
              */
-            void fillRow(size_t r, const T& val);
+            void fillRow(size_t row, const T& val);
 
             /**
              * @brief Fills a specific column with a value.
-             * @param c Column index.
+             * @param col Column index.
              * @param val Value to set.
              */
-            void fillColumn(size_t c, const T& val);
+            void fillColumn(size_t col, const T& val);
 
             /**
              * @brief Adds a new row with specified size.
@@ -158,30 +158,30 @@ namespace ctool {
 
             /**
              * @brief Extracts a specific row as a 1D vector.
-             * @param r Row index (0 to rows()-1).
+             * @param row Row index (0 to rows()-1).
              * @return std::vector<T> The row data.
              * @throws std::out_of_range if index is invalid.
              */
-            std::vector<T> sliceRow(size_t r) const;
+            std::vector<T> sliceRow(size_t row) const;
 
             /**
              * @brief Extracts a specific column as a 1D vector.
-             * @param c Column index (0 to cols()-1).
+             * @param col Column index (0 to cols()-1).
              * @return std::vector<T> The column data.
              * @throws std::out_of_range if index is invalid.
              */
-            std::vector<T> sliceColumn(size_t c) const;
+            std::vector<T> sliceColumn(size_t col) const;
 
             /**
              * @brief Extracts a sub-array (sub-matrix) from the current array.
-             * @param r Top-left row index.
-             * @param c Top-left column index.
+             * @param row Top-left row index.
+             * @param col Top-left column index.
              * @param rows Number of rows in the sub-array.
              * @param cols Number of columns in the sub-array.
              * @return Array2D<T> The extracted sub-array.
              * @throws std::out_of_range if the sub-array exceeds bounds.
              */
-            Array2D<T> subArray(size_t r, size_t c, size_t rows, size_t cols) const;
+            Array2D<T> subArray(size_t row, size_t col, size_t rows, size_t cols) const;
 
             /**
              * @brief Finds the coordinates of the first occurrence of a value.

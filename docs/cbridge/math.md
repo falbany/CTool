@@ -113,10 +113,10 @@ Normalizes data to the [0, 1] range. Useful for machine learning inputs.
 #include <iostream>
 
 int main() {
-    std::vector<int> raw_data = {20, 25, 30, 35, 40};
+    std::vector<int> rawData = {20, 25, 30, 35, 40};
 
     // Returns a new vector of doubles scaled to [0, 1]
-    std::vector<double> scaled = ctool::math::minMaxScale(raw_data);
+    std::vector<double> scaled = ctool::math::minMaxScale(rawData);
 
     std::cout << "Scaled Data: ";
     for (double val : scaled) {

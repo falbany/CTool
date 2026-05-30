@@ -49,7 +49,7 @@ namespace ctool {
 
           private:
             std::map<std::string, std::map<std::string, std::string>> _data;
-            std::string                                               _trim(const std::string& s) const;
+            std::string                                               _trim(const std::string& inputString) const;
         };
 
     }    // namespace ini

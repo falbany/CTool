@@ -53,7 +53,7 @@ struct cbridge_vector_namespace {
     bool (*empty)(const cbridge_vector_t* self);
 
     /** @brief Pre-allocates memory to prevent multiple reallocations. */
-    void (*reserve)(cbridge_vector_t* self, size_t new_cap);
+    void (*reserve)(cbridge_vector_t* self, size_t newCapacity);
 
     // --- ELEMENT ACCESS ---
 

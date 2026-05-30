@@ -76,7 +76,8 @@
 			"command": "cmake",
 			"args": [
 				"--build",
-				"${workspaceFolder}/build"
+				"${workspaceFolder}/build",
+				"-j4"
 			],
 			"group": {
 				"kind": "build",
@@ -93,7 +94,8 @@
 			"command": "cmake",
 			"args": [
 				"--build",
-				"${workspaceFolder}/build-mac"
+				"${workspaceFolder}/build-mac",
+				"-j4"
 			],
 			"group": "build",
 			"dependsOn": [
@@ -107,7 +109,8 @@
 			"command": "cmake",
 			"args": [
 				"--build",
-				"${workspaceFolder}/build-msys2"
+				"${workspaceFolder}/build-msys2",
+				"-j4"
 			],
 			"group": "build",
 			"dependsOn": [
@@ -121,7 +124,8 @@
 			"command": "cmake",
 			"args": [
 				"--build",
-				"${workspaceFolder}/build-mingw"
+				"${workspaceFolder}/build-mingw",
+				"-j4"
 			],
 			"group": "build",
 			"dependsOn": [

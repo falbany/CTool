@@ -17,6 +17,13 @@
 
 namespace ctool {
     // ------------------------------------------------------------------------
+    // MATH CONSTANTS
+    // ------------------------------------------------------------------------
+    
+    /** @brief Default tolerance for floating-point comparisons. */
+    constexpr double kDefaultEpsilon = 1e-9;
+    
+    // ------------------------------------------------------------------------
     // MATH API
     // ------------------------------------------------------------------------
 
@@ -41,7 +48,7 @@ namespace ctool {
          * @param y Vector of dependent values (e.g., Drain-Source Current).
          * @return RegResult containing the calculated model.
          */
-        LIBCTOOL_API RegResult linearFit(const std::vector<double>& x, const std::vector<double>& y);
+        LIBCTOOL_API RegResult linearFit(const std::vector<double>& inputX, const std::vector<double>& inputY);
 
 
         /**
@@ -55,7 +62,7 @@ namespace ctool {
          *         - intercept corresponds to $\ln(A)$.
          *         - rSquared is the goodness of fit for the log-transformed data.
          */
-        LIBCTOOL_API RegResult logLinearFit(const std::vector<double>& x, const std::vector<double>& y);
+        LIBCTOOL_API RegResult logLinearFit(const std::vector<double>& xValues, const std::vector<double>& yValues);
 
         /**
          * @brief Calculates residuals (errors) for a linear model.
@@ -65,7 +72,7 @@ namespace ctool {
          * @param intercept Y-intercept of the linear model ($c$).
          * @return std::vector<double> Vector of residuals: $y_{actual} - y_{predicted}$.
          */
-        LIBCTOOL_API std::vector<double> residuals(const std::vector<double>& x, const std::vector<double>& y, double slope, double intercept);
+        LIBCTOOL_API std::vector<double> residuals(const std::vector<double>& xValues, const std::vector<double>& yValues, double slope, double intercept);
 
         /**
          * @brief Fits a polynomial of degree $n$ to the data using the Normal Equation.
@@ -80,7 +87,7 @@ namespace ctool {
          * @return Returns empty vector if input sizes mismatch or degree is invalid.
          * @throw std::invalid_argument if degree is outside [1, 4].
          */
-        LIBCTOOL_API std::vector<double> polynomialFit(const std::vector<double>& x, const std::vector<double>& y, int degree);
+        LIBCTOOL_API std::vector<double> polynomialFit(const std::vector<double>& xValues, const std::vector<double>& yValues, int degree);
 
         /**
          * @brief Calculates the minimum value in a dataset.
@@ -89,7 +96,7 @@ namespace ctool {
          * @param data Vector of numeric values.
          * @return double The minimum value.
          */
-        LIBCTOOL_API double min(const std::vector<double>& data);
+        LIBCTOOL_API double min(const std::vector<double>& inputData);
 
         /**
          * @brief Calculates the maximum value in a dataset.
@@ -98,12 +105,12 @@ namespace ctool {
          * @param data Vector of numeric values.
          * @return double The maximum value.
          */
-        LIBCTOOL_API double max(const std::vector<double>& data);
+        LIBCTOOL_API double max(const std::vector<double>& inputValues);
 
         /**
          * @brief Calculates the arithmetic mean (average) of a dataset.
          */
-        LIBCTOOL_API double mean(const std::vector<double>& data);
+        LIBCTOOL_API double mean(const std::vector<double>& inputValues);
 
         /**
          * @brief Calculates the variance of a dataset (population variance).
@@ -112,21 +119,21 @@ namespace ctool {
          * @param data Vector of numeric values.
          * @return double The variance.
          */
-        LIBCTOOL_API double variance(const std::vector<double>& data);
+        LIBCTOOL_API double variance(const std::vector<double>& inputValues);
 
         /**
          * @brief Calculates the standard deviation of a dataset.
          */
-        LIBCTOOL_API double standardDeviation(const std::vector<double>& data);
+        LIBCTOOL_API double standardDeviation(const std::vector<double>& inputValues);
 
         /**
          * @brief Checks if two floating-point values are approximately equal within a tolerance.
-         * @param a First value.
-         * @param b Second value.
+         * @param firstValue First value.
+         * @param secondValue Second value.
          * @param epsilon The maximum allowable difference.
          * @return true if the values are near each other.
          */
-        LIBCTOOL_API bool isNear(double a, double b, double epsilon = 1e-9);
+        LIBCTOOL_API bool isNear(double firstValue, double secondValue, double epsilon = kDefaultEpsilon);
 
         /**
          * @brief Clamps a value within a specified range.
@@ -166,25 +173,25 @@ namespace ctool {
          * @brief Calculates the $k$-th percentile of a dataset.
          * @note Uses linear interpolation between values if the percentile falls between indices.
          * @tparam T Numeric type.
-         * @param data Vector of numeric values.
-         * @param k The percentile to calculate (0.0 to 100.0).
+         * @param inputValues Vector of numeric values.
+         * @param percentileK The percentile to calculate (0.0 to 100.0).
          * @return double The value at the specified percentile.
          * @return 0.0 if the vector is empty.
          * @throw std::invalid_argument if $k$ is outside [0, 100].
          */
         template <typename T>
-        double percentile(const std::vector<T>& data, double k);
+        double percentile(const std::vector<T>& inputValues, double percentileK);
 
         /**
          * @brief Normalizes a dataset to a range [0, 1] using Min-Max scaling.
          * @note Formula: $x_{scaled} = \frac{x - min}{max - min}$.
          *       If $max == min$, all values are set to 0.5 (or 0.0 if all are same).
          * @tparam T Numeric type.
-         * @param data Vector of numeric values.
+         * @param inputData Vector of numeric values.
          * @return std::vector<double> The normalized values.
          */
         template <typename T>
-        std::vector<double> minMaxScale(const std::vector<T>& data);
+        std::vector<double> minMaxScale(const std::vector<T>& inputData);
 
     }    // namespace math
 }    // namespace ctool

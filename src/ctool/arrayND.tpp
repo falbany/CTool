@@ -77,25 +77,25 @@ namespace ctool {
 
         // --- Access ---
         template <typename T>
-        T& ArrayND<T>::at(size_t r, size_t c) {
-            if (r >= m_rows || c >= m_cols) throw std::out_of_range("ctool::num::ArrayND::at");
-            return m_data[index(r, c)];
+        T& ArrayND<T>::at(size_t row, size_t col) {
+            if (row >= m_rows || col >= m_cols) throw std::out_of_range("ctool::num::ArrayND::at");
+            return m_data[index(row, col)];
         }
 
         template <typename T>
-        const T& ArrayND<T>::at(size_t r, size_t c) const {
-            if (r >= m_rows || c >= m_cols) throw std::out_of_range("ctool::num::ArrayND::at");
-            return m_data[index(r, c)];
+        const T& ArrayND<T>::at(size_t row, size_t col) const {
+            if (row >= m_rows || col >= m_cols) throw std::out_of_range("ctool::num::ArrayND::at");
+            return m_data[index(row, col)];
         }
 
         template <typename T>
-        T& ArrayND<T>::operator()(size_t r, size_t c) {
-            return m_data[index(r, c)];
+        T& ArrayND<T>::operator()(size_t row, size_t col) {
+            return m_data[index(row, col)];
         }
 
         template <typename T>
-        const T& ArrayND<T>::operator()(size_t r, size_t c) const {
-            return m_data[index(r, c)];
+        const T& ArrayND<T>::operator()(size_t row, size_t col) const {
+            return m_data[index(row, col)];
         }
 
         template <typename T>

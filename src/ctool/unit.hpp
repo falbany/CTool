@@ -14,6 +14,21 @@
 
 namespace ctool {
     namespace unit {
+        // ------------------------------------------------------------------------
+        // TEMPERATURE CONSTANTS
+        // ------------------------------------------------------------------------
+        
+        /** @brief Absolute zero in Celsius, used for Celsius to Kelvin conversion. */
+        constexpr double kAbsoluteZeroCelsius = 273.15;
+        
+        // ------------------------------------------------------------------------
+        // API
+        // ------------------------------------------------------------------------
+
+        /**
+         * @brief Constant for Celsius to Kelvin conversion offset.
+         */
+        constexpr double kKelvinOffset = kAbsoluteZeroCelsius;
 
         /**
          * @brief Formats a number into engineering notation (e.g., 0.0012 -> "1.20 m").
@@ -33,13 +48,15 @@ namespace ctool {
 
         /**
          * @brief Converts Celsius to Kelvin.
+         * @param celsiusValue The temperature in Celsius.
          */
-        LIBCTOOL_API inline double cToK(double c) { return c + 273.15; }
+        LIBCTOOL_API inline double cToK(double celsiusValue) { return celsiusValue + kAbsoluteZeroCelsius; }
 
         /**
          * @brief Converts Kelvin to Celsius.
+         * @param kelvinValue The temperature in Kelvin.
          */
-        LIBCTOOL_API inline double kToC(double k) { return k - 273.15; }
+        LIBCTOOL_API inline double kToC(double kelvinValue) { return kelvinValue - kAbsoluteZeroCelsius; }
 
     }    // namespace unit
 }    // namespace ctool

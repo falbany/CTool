@@ -11,9 +11,21 @@
 
 #include <string>
 #include <memory>
+#include <cstdint>
 #include "../internal/libctool.h"
 
 namespace ctool {
+    // ------------------------------------------------------------------------
+    // NETWORK CONSTANTS
+    // ------------------------------------------------------------------------
+    
+    /** @brief Default buffer size for receiving data. */
+    constexpr size_t DEFAULT_BUFFER_SIZE = 4096;
+    
+    // ------------------------------------------------------------------------
+    // NET API
+    // ------------------------------------------------------------------------
+    
     /**
      * @namespace ctool::net
      * @brief High-level networking interfaces for C++11.
@@ -21,7 +33,7 @@ namespace ctool {
     namespace net {
 
         /** @brief Error codes for networking operations. */
-        enum class Status { Ok = 0, Error, Timeout, Disconnected };
+        enum class Status : std::uint8_t { Ok = 0, Error, Timeout, Disconnected };
 
         /**
          * @class TcpClient
@@ -39,7 +51,7 @@ namespace ctool {
             Status send(const std::string& data);
 
             /** @brief Receives data with a blocking wait. */
-            std::string receive(size_t max_len = 4096);
+            std::string receive(size_t maxLen = DEFAULT_BUFFER_SIZE);
 
             /** @brief Checks if the client is currently connected. */
             bool isConnected() const { return _socket != -1; }

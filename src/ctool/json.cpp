@@ -5,12 +5,12 @@
 namespace ctool {
     namespace json {
 
-        std::string stringify(const std::map<std::string, std::string>& kv_pairs) {
+        std::string stringify(const std::map<std::string, std::string>& kvPairs) {
             std::stringstream ss;
             ss << "{";
-            for (auto it = kv_pairs.begin(); it != kv_pairs.end(); ++it) {
+            for (auto it = kvPairs.begin(); it != kvPairs.end(); ++it) {
                 ss << "\"" << it->first << "\":\"" << it->second << "\"";
-                if (std::next(it) != kv_pairs.end()) ss << ",";
+                if (std::next(it) != kvPairs.end()) ss << ",";
             }
             ss << "}";
             return ss.str();

@@ -46,10 +46,10 @@ namespace ctool {
              * @param depth Number of slices (depth).
              * @param rows Number of rows per slice.
              * @param cols Number of columns per slice.
-             * @param init_value Value to initialize elements with (default: default constructed T).
+             * @param initValue Value to initialize elements with (default: default constructed T).
              * @throws std::invalid_argument if dimensions are negative.
              */
-            Array3D(size_t depth, size_t rows, size_t cols, const T& init_value = T());
+            Array3D(size_t depth, size_t rows, size_t cols, const T& initValue = T());
 
             /**
              * @brief Creates a 3D array from a nested vector of vectors of vectors.
@@ -87,19 +87,19 @@ namespace ctool {
              * @return Reference to the element.
              * @throws std::out_of_range if indices are invalid.
              */
-            T&       at(size_t d, size_t r, size_t c);
-            const T& at(size_t d, size_t r, size_t c) const;
+            T&       at(size_t depth, size_t row, size_t col);
+            const T& at(size_t depth, size_t row, size_t col) const;
 
             /**
              * @brief Unchecked access (no bounds checking, faster).
-             * @param d Slice (depth) index.
-             * @param r Row index.
-             * @param c Column index.
+             * @param depth Slice (depth) index.
+             * @param row Row index.
+             * @param col Column index.
              * @return Reference to the element.
              * @note Only use if bounds are guaranteed.
              */
-            T&       operator()(size_t d, size_t r, size_t c);
-            const T& operator()(size_t d, size_t r, size_t c) const;
+            T&       operator()(size_t depth, size_t row, size_t col);
+            const T& operator()(size_t depth, size_t row, size_t col) const;
 
             // --- Operations ---
             /**
@@ -110,24 +110,24 @@ namespace ctool {
 
             /**
              * @brief Fills a specific slice (depth) with a value.
-             * @param d Slice index.
+             * @param depth Slice index.
              * @param val Value to set.
              */
-            void fillDepth(size_t d, const T& val);
+            void fillDepth(size_t depth, const T& val);
 
             /**
-             * @brief Fills a specific row across all slices at a given row index.
-             * @param r Row index.
+             * @brief Fills a specific row with a value.
+             * @param row Row index.
              * @param val Value to set.
              */
-            void fillRow(size_t r, const T& val);
+            void fillRow(size_t row, const T& val);
 
             /**
-             * @brief Fills a specific column across all slices at a given column index.
-             * @param c Column index.
+             * @brief Fills a specific column with a value.
+             * @param col Column index.
              * @param val Value to set.
              */
-            void fillColumn(size_t c, const T& val);
+            void fillColumn(size_t col, const T& val);
 
             /**
              * @brief Resizes the array.

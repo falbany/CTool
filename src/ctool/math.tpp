@@ -16,8 +16,12 @@ namespace ctool {
     namespace math {
         template <typename T>
         T clamp(T val, T min, T max) {
-            if (val < min) return min;
-            if (val > max) return max;
+            if (val < min) {
+                return min;
+            }
+            if (val > max) {
+                return max;
+            }
             return val;
         }
 
@@ -29,15 +33,15 @@ namespace ctool {
 
             // Create a copy to sort without modifying the original const reference
             std::vector<T> sortedData = data;
-            size_t         n          = sortedData.size();
+            size_t         dataSize   = sortedData.size();
 
             // Sort the data
             std::sort(sortedData.begin(), sortedData.end());
 
-            if (n % 2 == 0) {
+            if (dataSize % 2 == 0) {
                 // Even number of elements: average of the two middle ones
-                T mid1 = sortedData[n / 2 - 1];
-                T mid2 = sortedData[n / 2];
+                T mid1 = sortedData[dataSize / 2 - 1];
+                T mid2 = sortedData[dataSize / 2];
 
                 // Use double for intermediate calculation to ensure precision for integer inputs
                 // unless the user specifically wants integer division behavior (unlikely for median).
@@ -47,86 +51,91 @@ namespace ctool {
 
                 // Note: If T is integral, (mid1 + mid2) / 2 truncates.
                 // If exact median is needed for integers, the caller should use double inputs.
-                return static_cast<T>((static_cast<double>(mid1) + static_cast<double>(mid2)) / 2.0);
-            } else {
-                // Odd number of elements: the middle one
-                return sortedData[n / 2];
+                const double median_computed = (static_cast<double>(mid1) + static_cast<double>(mid2)) / 2.0;
+                return static_cast<T>(median_computed);
             }
+            
+            // Odd number of elements: the middle one
+            return sortedData[dataSize / 2];
         }
 
         template <typename T>
-        T sum(const std::vector<T>& data) {
+        T sum(const std::vector<T>& inputData) {
             double accumulator = 0.0;
-            for (const auto& val : data) {
+            for (const auto& val : inputData) {
                 accumulator += static_cast<double>(val);
             }
             return static_cast<T>(accumulator);
         }
 
         template <typename T>
-        double percentile(const std::vector<T>& data, double k) {
-            if (data.empty()) {
+        double percentile(const std::vector<T>& inputData, double percentileK) {
+            if (inputData.empty()) {
                 return 0.0;
             }
-            if (k < 0.0 || k > 100.0) {
+            if (percentileK < 0.0 || percentileK > 100.0) {
                 throw std::invalid_argument("Percentile k must be between 0.0 and 100.0.");
             }
 
-            if (data.size() == 1) {
-                return static_cast<double>(data[0]);
+            if (inputData.size() == 1) {
+                return static_cast<double>(inputData[0]);
             }
 
-            std::vector<double> sortedData(data.begin(), data.end());
+            std::vector<double> sortedData(inputData.begin(), inputData.end());
             std::sort(sortedData.begin(), sortedData.end());
 
-            size_t n = sortedData.size();
+            size_t dataSize = sortedData.size();
 
             // Linear interpolation method (similar to NumPy 'linear')
-            // Rank = (k / 100) * (n - 1)
-            double rank = (k / 100.0) * (n - 1.0);
+            // Rank = (percentileK / 100) * (dataSize - 1)
+            double rank = (percentileK / 100.0) * (dataSize - 1.0);
 
-            size_t lower_idx = static_cast<size_t>(std::floor(rank));
-            size_t upper_idx = static_cast<size_t>(std::ceil(rank));
+            size_t lowerIdx = static_cast<size_t>(std::floor(rank));
+            size_t upperIdx = static_cast<size_t>(std::ceil(rank));
 
-            double fraction = rank - static_cast<double>(lower_idx);
+            double fraction = rank - static_cast<double>(lowerIdx);
 
-            if (lower_idx == upper_idx) {
-                return sortedData[lower_idx];
+            if (lowerIdx == upperIdx) {
+                return sortedData[lowerIdx];
             }
 
-            return sortedData[lower_idx] * (1.0 - fraction) + sortedData[upper_idx] * fraction;
+            return sortedData[lowerIdx] * (1.0 - fraction) + sortedData[upperIdx] * fraction;
         }
 
         template <typename T>
-        std::vector<double> minMaxScale(const std::vector<T>& data) {
+        std::vector<double> minMaxScale(const std::vector<T>& inputData) {
             std::vector<double> result;
-            result.reserve(data.size());
+            result.reserve(inputData.size());
 
-            if (data.empty()) {
+            if (inputData.empty()) {
                 return result;
             }
 
             // Find min and max
-            double val_min = static_cast<double>(data[0]);
-            double val_max = static_cast<double>(data[0]);
+            auto minValue = static_cast<double>(inputData[0]);
+            auto maxValue = static_cast<double>(inputData[0]);
 
-            for (const auto& val : data) {
+            for (const auto& val : inputData) {
                 double v = static_cast<double>(val);
-                if (v < val_min) val_min = v;
-                if (v > val_max) val_max = v;
+                if (v < minValue) {
+                    minValue = v;
+                } else if (v > maxValue) {
+                    maxValue = v;
+                }
             }
 
-            double range = val_max - val_min;
+            double range = maxValue - minValue;
 
             if (range == 0.0) {
                 // If all values are identical, return 0.0 (or 0.5 depending on preference)
                 // Returning 0.0 to indicate "no variation".
-                result.assign(data.size(), 0.0);
-            } else {
-                for (const auto& val : data) {
-                    double v = static_cast<double>(val);
-                    result.push_back((v - val_min) / range);
-                }
+                result.assign(inputData.size(), 0.0);
+                return result;
+            }
+
+            for (const auto& val : inputData) {
+                double v = static_cast<double>(val);
+                result.push_back((v - minValue) / range);
             }
 
             return result;

@@ -58,10 +58,10 @@ struct cbridge_string_namespace {
 
     /**
      * @brief Creates a dynamically resizing string object.
-     * @param init_str Initial C-string (can be NULL).
+     * @param initString Initial C-string (can be NULL).
      * @return Pointer to a newly allocated string_t.
      */
-    string_t* (*create)(const char* init_str);
+    string_t* (*create)(const char* initString);
 
     /**
      * @brief Safely frees the string and its internal buffer.
@@ -74,9 +74,9 @@ struct cbridge_string_namespace {
     /**
      * @brief Explicitly increases the internal capacity of the string.
      * @param self The string object.
-     * @param new_cap The new capacity in bytes.
+     * @param newCapacity The new capacity in bytes.
      */
-    void (*reserve)(string_t* self, size_t new_cap);
+    void (*reserve)(string_t* self, size_t newCapacity);
 
     /**
      * @brief Empties the string (length becomes 0) without freeing the allocated capacity.
@@ -130,7 +130,7 @@ struct cbridge_string_namespace {
     /**
      * @brief Replaces all occurrences of a search string with a replace string.
      */
-    void (*replace_all)(string_t* self, const char* search_str, const char* replace_str);
+    void (*replace_all)(string_t* self, const char* searchString, const char* replaceString);
 
     // --- OPERATIONS ---
 
@@ -181,7 +181,7 @@ struct cbridge_string_namespace {
      * @brief Extracts a substring trapped between two delimiter strings.
      * @return A new string_t containing the caught text.
      */
-    string_t* (*catch_in_range)(const string_t* self, const char* start_str, const char* end_str);
+    string_t* (*catch_in_range)(const string_t* self, const char* startString, const char* endString);
 };
 
 /**

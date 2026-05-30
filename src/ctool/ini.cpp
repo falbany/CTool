@@ -4,11 +4,11 @@
 namespace ctool {
     namespace ini {
 
-        std::string Profile::_trim(const std::string& s) const {
-            size_t first = s.find_first_not_of(" \t\r\n");
+        std::string Profile::_trim(const std::string& inputString) const {
+            size_t first = inputString.find_first_not_of(" \t\r\n");
             if (first == std::string::npos) return "";
-            size_t last = s.find_last_not_of(" \t\r\n");
-            return s.substr(first, (last - first + 1));
+            size_t last = inputString.find_last_not_of(" \t\r\n");
+            return inputString.substr(first, (last - first + 1));
         }
 
         bool Profile::load(const std::string& filepath) {

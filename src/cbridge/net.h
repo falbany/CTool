@@ -91,11 +91,11 @@ struct cbridge_net_namespace {
      * 
      * @param[in] sock The socket to receive data from.
      * @param[out] buffer A pointer to the buffer where received data will be stored.
-     * @param[in] max_len The maximum number of bytes to receive.
+     * @param[in] maxLen The maximum number of bytes to receive.
      * @return The number of bytes received on success.
      * @return -1 on error. Returns 0 if the peer has closed the connection.
      */
-    int (*receive)(cbridge_socket_t sock, char* buffer, size_t max_len);
+    int (*receive)(cbridge_socket_t sock, char* buffer, size_t maxLen);
 
     /**
      * @brief Closes a socket.

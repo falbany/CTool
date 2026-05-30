@@ -105,12 +105,12 @@ namespace ctool {
             return (bytes != -1) ? Status::Ok : Status::Error;
         }
 
-        std::string TcpClient::receive(size_t max_len) {
+        std::string TcpClient::receive(size_t maxLen) {
             if (!isConnected()) {
                 return "";
             }
-            std::vector<char> buffer(max_len);
-            int               bytes = ::recv(_socket, buffer.data(), static_cast<int>(max_len), 0);
+            std::vector<char> buffer(maxLen);
+            int               bytes = ::recv(_socket, buffer.data(), static_cast<int>(maxLen), 0);
             if (bytes <= 0) {
                 disconnect();
                 return "";

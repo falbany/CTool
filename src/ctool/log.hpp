@@ -13,6 +13,7 @@
 
     #include <iostream>
     #include <string>
+    #include <cstdint>
     #include "../internal/libctool.h"
 
 namespace ctool {
@@ -30,7 +31,7 @@ namespace ctool {
          * @enum Level
          * @brief Defines the verbosity levels for the logging system.
          */
-        enum class Level {
+        enum class Level : std::uint8_t {
             Quiet   = 0,    ///< No output generated.
             Error   = 1,    ///< Only critical errors are logged.
             Warning = 2,    ///< Errors and warnings are logged.

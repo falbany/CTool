@@ -98,7 +98,7 @@ static int impl_send(cbridge_socket_t sock, const char* data, size_t len) { retu
  * @brief Platform-specific implementation for receiving data.
  * @see cbridge_net_namespace::receive
  */
-static int impl_receive(cbridge_socket_t sock, char* buffer, size_t max_len) { return recv(sock, buffer, (int)max_len, 0); }
+static int impl_receive(cbridge_socket_t sock, char* buffer, size_t maxLen) { return recv(sock, buffer, (int)maxLen, 0); }
 
 /**
  * @brief Platform-specific implementation for closing a socket.

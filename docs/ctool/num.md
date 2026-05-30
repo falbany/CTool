@@ -43,7 +43,7 @@ matrix.at(0, 1) = 100.0;
 matrix(1, 2) = 200.0;
 
 // Raw pointer access (for interoperability with C APIs)
-double* data_ptr = matrix.data(); 
+double* dataPtr = matrix.data(); 
 ```
 
 ### 4. Arithmetic (Element-wise)

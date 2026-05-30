@@ -25,10 +25,10 @@ namespace ctool {
 
         /**
          * @brief Converts a flat map of strings into a JSON object string.
-         * @param kv_pairs Map of Key-Value pairs.
+         * @param kvPairs Map of Key-Value pairs.
          * @return std::string Formatted JSON: {"key": "value"}.
          */
-        LIBCTOOL_API std::string stringify(const std::map<std::string, std::string>& kv_pairs);
+        LIBCTOOL_API std::string stringify(const std::map<std::string, std::string>& kvPairs);
 
         /**
          * @brief Serializes a list of strings into a JSON array.

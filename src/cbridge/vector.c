@@ -8,13 +8,13 @@
 static void impl_grow(cbridge_vector_t* self, size_t min_cap) {
     if (min_cap <= self->capacity) return;
 
-    size_t new_cap = self->capacity == 0 ? 4 : self->capacity * 2;
-    if (new_cap < min_cap) new_cap = min_cap;
+    size_t newCapacity = self->capacity == 0 ? 4 : self->capacity * 2;
+    if (newCapacity < min_cap) newCapacity = min_cap;
 
-    void** new_items = (void**)realloc(self->items, new_cap * sizeof(void*));
+    void** new_items = (void**)realloc(self->items, newCapacity * sizeof(void*));
     if (new_items) {
         self->items    = new_items;
-        self->capacity = new_cap;
+        self->capacity = newCapacity;
     }
 }
 
@@ -45,12 +45,12 @@ static size_t impl_size(const cbridge_vector_t* self) { return self ? self->leng
 
 static bool impl_empty(const cbridge_vector_t* self) { return !self || self->length == 0; }
 
-static void impl_reserve(cbridge_vector_t* self, size_t new_cap) {
-    if (self && new_cap > self->capacity) {
-        void** new_items = (void**)realloc(self->items, new_cap * sizeof(void*));
+static void impl_reserve(cbridge_vector_t* self, size_t newCapacity) {
+    if (self && newCapacity > self->capacity) {
+        void** new_items = (void**)realloc(self->items, newCapacity * sizeof(void*));
         if (new_items) {
             self->items    = new_items;
-            self->capacity = new_cap;
+            self->capacity = newCapacity;
         }
     }
 }

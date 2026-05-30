@@ -10,12 +10,12 @@ static void impl_append_len(string_t* self, const char* str, size_t len) {
     if (!self || !str || len == 0) return;
     size_t required_capacity = self->length + len;
     if (required_capacity > self->capacity) {
-        size_t new_cap = self->capacity * 2;
-        if (new_cap < required_capacity) new_cap = required_capacity;
-        char* new_data = (char*)realloc(self->data, new_cap + 1);
+        size_t newCapacity = self->capacity * 2;
+        if (newCapacity < required_capacity) newCapacity = required_capacity;
+        char* new_data = (char*)realloc(self->data, newCapacity + 1);
         if (new_data) {
             self->data     = new_data;
-            self->capacity = new_cap;
+            self->capacity = newCapacity;
         } else
             return;
     }
@@ -27,15 +27,15 @@ static void impl_append_len(string_t* self, const char* str, size_t len) {
 // ============================================================================
 // Lifecycle & State
 // ============================================================================
-static string_t* impl_create(const char* init_str) {
+static string_t* impl_create(const char* initString) {
     string_t* self = (string_t*)malloc(sizeof(string_t));
     if (!self) return NULL;
-    self->length   = init_str ? strlen(init_str) : 0;
+    self->length   = initString ? strlen(initString) : 0;
     self->capacity = self->length > 0 ? self->length * 2 : 16;
     self->data     = (char*)malloc(self->capacity + 1);
     if (self->data) {
-        if (init_str)
-            strcpy(self->data, init_str);
+        if (initString)
+            strcpy(self->data, initString);
         else
             self->data[0] = '\0';
     }
@@ -49,12 +49,12 @@ static void impl_free(string_t* self) {
     }
 }
 
-static void impl_reserve(string_t* self, size_t new_cap) {
-    if (!self || new_cap <= self->capacity) return;
-    char* new_data = (char*)realloc(self->data, new_cap + 1);
+static void impl_reserve(string_t* self, size_t newCapacity) {
+    if (!self || newCapacity <= self->capacity) return;
+    char* new_data = (char*)realloc(self->data, newCapacity + 1);
     if (new_data) {
         self->data     = new_data;
-        self->capacity = new_cap;
+        self->capacity = newCapacity;
     }
 }
 
@@ -130,18 +130,18 @@ static void impl_trim(string_t* self) {
     self->length        = new_len;
 }
 
-static void impl_replace_all(string_t* self, const char* search_str, const char* replace_str) {
-    if (!self || !self->data || !search_str || !replace_str) return;
-    size_t search_len = strlen(search_str);
+static void impl_replace_all(string_t* self, const char* searchString, const char* replaceString) {
+    if (!self || !self->data || !searchString || !replaceString) return;
+    size_t search_len = strlen(searchString);
     if (search_len == 0) return;
 
     string_t*   temp    = impl_create("");
     const char* current = self->data;
     char*       match;
 
-    while ((match = strstr(current, search_str)) != NULL) {
+    while ((match = strstr(current, searchString)) != NULL) {
         impl_append_len(temp, current, match - current);
-        impl_append(temp, replace_str);
+        impl_append(temp, replaceString);
         current = match + search_len;
     }
     impl_append(temp, current);
@@ -195,12 +195,12 @@ static string_t* impl_substr(const string_t* self, size_t pos, size_t len) {
     return result;
 }
 
-static string_t* impl_catch_in_range(const string_t* self, const char* start_str, const char* end_str) {
-    if (!self || !self->data || !start_str || !end_str) return impl_create("");
-    const char* start_pos = strstr(self->data, start_str);
+static string_t* impl_catch_in_range(const string_t* self, const char* startString, const char* endString) {
+    if (!self || !self->data || !startString || !endString) return impl_create("");
+    const char* start_pos = strstr(self->data, startString);
     if (!start_pos) return impl_create("");
-    start_pos += strlen(start_str);
-    const char* end_pos = strstr(start_pos, end_str);
+    start_pos += strlen(startString);
+    const char* end_pos = strstr(start_pos, endString);
     if (!end_pos) return impl_create("");
 
     string_t* result = impl_create("");

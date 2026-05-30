@@ -81,12 +81,12 @@ namespace ctool {
              * @brief Element access with bounds checking.
              * @exception std::out_of_range if indices are invalid.
              */
-            T&       at(size_t r, size_t c);
-            const T& at(size_t r, size_t c) const;
+            T&       at(size_t row, size_t col);
+            const T& at(size_t row, size_t col) const;
 
             /** @brief Unchecked element access (faster). */
-            T&       operator()(size_t r, size_t c);
-            const T& operator()(size_t r, size_t c) const;
+            T&       operator()(size_t row, size_t col);
+            const T& operator()(size_t row, size_t col) const;
 
             /** @brief Raw pointer access to contiguous data (interoperability). */
             T*       data() noexcept;
@@ -110,7 +110,7 @@ namespace ctool {
             size_t         m_cols;
 
             // Helper to calculate 1D index
-            inline size_t index(size_t r, size_t c) const { return r * m_cols + c; }
+            inline size_t index(size_t row, size_t col) const { return row * m_cols + col; }
         };
 
         // ------------------------------------------------------------------------

@@ -20,7 +20,7 @@
     #include "cbridge/net.h"
 
 /**
- * @struct CBridge_Namespace
+ * @struct CBridgeNamespace
  * @brief Global singleton struct holding pointers to all module namespaces.
  * 
  * This struct serves as the unified entry point for accessing the functionalities
@@ -46,7 +46,7 @@
  * float pi = math->get_pi();
  * @endcode
  */
-struct CBridge_Namespace {
+struct CBridgeNamespace {
     const struct cbridge_string_namespace* str;
     const struct cbridge_vector_namespace* vector;
     const struct cbridge_file_namespace*   file;
@@ -54,6 +54,6 @@ struct CBridge_Namespace {
     const struct cbridge_net_namespace*    net;
 };
 
-extern const struct CBridge_Namespace CBridge;
+extern const struct CBridgeNamespace CBridge;
 
 #endif    // CBRIDGE_MAIN_HPP

@@ -23,12 +23,12 @@ namespace ctool {
         Array2D<T>::Array2D() : m_data() {}
 
         template <typename T>
-        Array2D<T>::Array2D(size_t rows, size_t cols, const T& init_value) {
+        Array2D<T>::Array2D(size_t rows, size_t cols, const T& initValue) {
             if (rows == 0 || cols == 0) {
                 m_data.clear();
                 return;
             }
-            m_data.resize(rows, std::vector<T>(cols, init_value));
+            m_data.resize(rows, std::vector<T>(cols, initValue));
         }
 
         template <typename T>
@@ -37,9 +37,9 @@ namespace ctool {
                 return;
             }
 
-            size_t expected_cols = data[0].size();
+            size_t expectedCols = data[0].size();
             for (const auto& row : data) {
-                if (row.size() != expected_cols) {
+                if (row.size() != expectedCols) {
                     throw std::invalid_argument("ctool::array: Input data must be a rectangular matrix (consistent row lengths).");
                 }
             }
@@ -74,29 +74,29 @@ namespace ctool {
 
         // --- Element Access ---
         template <typename T>
-        T& Array2D<T>::at(size_t r, size_t c) {
-            if (r >= m_data.size() || c >= m_data[0].size()) {
+        T& Array2D<T>::at(size_t row, size_t col) {
+            if (row >= m_data.size() || col >= m_data[0].size()) {
                 throw std::out_of_range("ctool::array::at: Index out of bounds.");
             }
-            return m_data[r][c];
+            return m_data[row][col];
         }
 
         template <typename T>
-        const T& Array2D<T>::at(size_t r, size_t c) const {
-            if (r >= m_data.size() || c >= m_data[0].size()) {
+        const T& Array2D<T>::at(size_t row, size_t col) const {
+            if (row >= m_data.size() || col >= m_data[0].size()) {
                 throw std::out_of_range("ctool::array::at: Index out of bounds.");
             }
-            return m_data[r][c];
+            return m_data[row][col];
         }
 
         template <typename T>
-        T& Array2D<T>::operator()(size_t r, size_t c) {
-            return m_data[r][c];
+        T& Array2D<T>::operator()(size_t row, size_t col) {
+            return m_data[row][col];
         }
 
         template <typename T>
-        const T& Array2D<T>::operator()(size_t r, size_t c) const {
-            return m_data[r][c];
+        const T& Array2D<T>::operator()(size_t row, size_t col) const {
+            return m_data[row][col];
         }
 
         // --- Operations ---
@@ -108,20 +108,20 @@ namespace ctool {
         }
 
         template <typename T>
-        void Array2D<T>::fillRow(size_t r, const T& val) {
-            if (r >= m_data.size()) {
+        void Array2D<T>::fillRow(size_t row, const T& val) {
+            if (row >= m_data.size()) {
                 throw std::out_of_range("ctool::array::fillRow: Row index out of bounds.");
             }
-            std::fill(m_data[r].begin(), m_data[r].end(), val);
+            std::fill(m_data[row].begin(), m_data[row].end(), val);
         }
 
         template <typename T>
-        void Array2D<T>::fillColumn(size_t c, const T& val) {
-            if (m_data.empty() || c >= m_data[0].size()) {
+        void Array2D<T>::fillColumn(size_t col, const T& val) {
+            if (m_data.empty() || col >= m_data[0].size()) {
                 throw std::out_of_range("ctool::array::fillColumn: Column index out of bounds.");
             }
             for (auto& row : m_data) {
-                row[c] = val;
+                row[col] = val;
             }
         }
 
@@ -185,46 +185,46 @@ namespace ctool {
         }
 
         template <typename T>
-        std::vector<T> Array2D<T>::sliceRow(size_t r) const {
-            if (r >= m_data.size()) {
+        std::vector<T> Array2D<T>::sliceRow(size_t row) const {
+            if (row >= m_data.size()) {
                 throw std::out_of_range("ctool::array::sliceRow: Row index out of bounds.");
             }
-            return m_data[r];    // Returns a copy of the row vector
+            return m_data[row];    // Returns a copy of the row vector
         }
 
         template <typename T>
-        std::vector<T> Array2D<T>::sliceColumn(size_t c) const {
-            if (m_data.empty() || c >= m_data[0].size()) {
+        std::vector<T> Array2D<T>::sliceColumn(size_t col) const {
+            if (m_data.empty() || col >= m_data[0].size()) {
                 throw std::out_of_range("ctool::array::sliceColumn: Column index out of bounds.");
             }
-            std::vector<T> col;
-            col.reserve(m_data.size());
-            for (const auto& row : m_data) {
-                col.push_back(row[c]);
+            std::vector<T> result_col;
+            result_col.reserve(m_data.size());
+            for (const auto& row_vec : m_data) {
+                result_col.push_back(row_vec[col]);
             }
-            return col;
+            return result_col;
         }
 
         template <typename T>
-        Array2D<T> Array2D<T>::subArray(size_t r, size_t c, size_t rows, size_t cols) const {
+        Array2D<T> Array2D<T>::subArray(size_t row, size_t col, size_t rows, size_t cols) const {
             if (m_data.empty()) {
                 return Array2D<T>(0, 0);
             }
 
             // Validate starting position
-            if (r >= m_data.size() || c >= m_data[0].size()) {
+            if (row >= m_data.size() || col >= m_data[0].size()) {
                 throw std::out_of_range("ctool::array::subArray: Top-left index out of bounds.");
             }
 
             // Validate dimensions
-            if (r + rows > m_data.size() || c + cols > m_data[0].size()) {
+            if (row + rows > m_data.size() || col + cols > m_data[0].size()) {
                 throw std::out_of_range("ctool::array::subArray: Requested sub-array dimensions exceed bounds.");
             }
 
             Array2D<T> result(rows, cols);
             for (size_t i = 0; i < rows; ++i) {
                 for (size_t j = 0; j < cols; ++j) {
-                    result(i, j) = m_data[r + i][c + j];
+                    result(i, j) = m_data[row + i][col + j];
                 }
             }
             return result;
@@ -272,22 +272,22 @@ namespace ctool {
             }
 
             // Use double for distance calculation to avoid overflow and handle non-integer types
-            size_t best_r   = 0;
-            size_t best_c   = 0;
-            double min_diff = std::numeric_limits<double>::max();
+            size_t bestRow   = 0;
+            size_t bestCol   = 0;
+            double minDiff = std::numeric_limits<double>::max();
 
             for (size_t i = 0; i < m_data.size(); ++i) {
                 for (size_t j = 0; j < m_data[i].size(); ++j) {
                     double diff = std::abs(static_cast<double>(m_data[i][j]) - static_cast<double>(target));
-                    if (diff < min_diff) {
-                        min_diff = diff;
-                        best_r   = i;
-                        best_c   = j;
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        bestRow   = i;
+                        bestCol   = j;
                     }
                 }
             }
 
-            return std::make_pair(best_r, best_c);
+            return std::make_pair(bestRow, bestCol);
         }
 
         template <typename T>
@@ -298,10 +298,10 @@ namespace ctool {
 
             // Original: rows x cols
             // Transpose: cols x rows
-            size_t new_rows = m_data[0].size();    // Original columns
-            size_t new_cols = m_data.size();       // Original rows
+            size_t newRows = m_data[0].size();    // Original columns
+            size_t newCols = m_data.size();       // Original rows
 
-            Array2D<T> result(new_rows, new_cols);
+            Array2D<T> result(newRows, newCols);
 
             // Map original(r, c) to result(c, r)
             for (size_t r = 0; r < m_data.size(); ++r) {
@@ -343,16 +343,16 @@ namespace ctool {
         template <typename T>
         std::ostream& operator<<(std::ostream& os, const Array2D<T>& arr) {
             os << "[\n";
-            size_t r_count = arr.rows();
-            for (size_t i = 0; i < r_count; ++i) {
+            size_t rowsCount = arr.rows();
+            for (size_t i = 0; i < rowsCount; ++i) {
                 os << "  [";
-                size_t c_count = arr.cols();
-                for (size_t j = 0; j < c_count; ++j) {
+                size_t colsCount = arr.cols();
+                for (size_t j = 0; j < colsCount; ++j) {
                     os << arr(i, j);
-                    if (j < c_count - 1) os << ", ";
+                    if (j < colsCount - 1) os << ", ";
                 }
                 os << "]";
-                if (i < r_count - 1) os << ",";
+                if (i < rowsCount - 1) os << ",";
                 os << "\n";
             }
             os << "]";
