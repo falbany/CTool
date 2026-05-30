@@ -1,0 +1,14 @@
+# CTool Modules
+
+This directory contains documentation for C++ modules.
+
+## Modules
+
+- [array2d](array2d.md) - 2D dynamic arrays.
+- [array3d](array3d.md) - 3D dynamic arrays.
+- [file](ct_file.md) - Filesystem and configuration utilities.
+- [dataframe](dataframe.md) - Data analysis and manipulation.
+- [ini](ini.md) - INI configuration parsing.
+- [json](json.md) - JSON data manipulation.
+- [num](num.md) - Numerical computing and statistics.
+- [unit](unit.md) - Unit testing framework.

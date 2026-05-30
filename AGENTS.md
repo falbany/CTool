@@ -5,7 +5,7 @@ This document defines the mandatory steps for adding new features or modules to 
 ## 1. Directory Standards
 - **Pure C (CBridge):** Source in `cbridge/`, headers in `cbridge/`.
 - **C++ (CTool):** Source in `ctool/`, headers in `ctool/`, templates in `ctool/*.tpp`.
-- **Documentation:** Every new module **must** have a corresponding `.md` file in `doc/`.
+- **Documentation:** Every new module **must** have a corresponding `.md` file in `doc/cbridge/` or `doc/ctool/`.
 
 ## 2. Namespace Integration
 Every new module must be "registered" in the unified entry points:
@@ -19,7 +19,7 @@ All headers must include:
 - A `@note` regarding memory ownership (especially for CBridge).
 
 ## 4. Documentation Standards
-- Create `doc/module_name.md`.
+- Create `doc/cbridge/module_name.md` or `doc/ctool/module_name.md`.
 - Update `doc/README.md` and the root `README.md` tables with the new module.
 - Update `CHANGELOG.md` following the [Keep a Changelog](https://keepachangelog.com/) format.
 

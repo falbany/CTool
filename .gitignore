@@ -197,3 +197,4 @@ $RECYCLE.BIN/
 
 build*
 .cache/
+*.gcov

@@ -27,7 +27,7 @@ check_formatting() {
     # Use a null-separated list to safely handle filenames with spaces and run
     # clang-format only when files are found.
     local not_compliant
-    not_compliant=$(find "$TARGET_DIR" -type d \( -name ".git" -o -name "build" \) -prune -o \
+    not_compliant=$(find "$TARGET_DIR" -type d \( -name ".git" -o -name "build*" -o -name "bin*" -o -name "_deps" \) -prune -o \
             -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.cc" -o -name "*.cxx" -o \
                        -name "*.h" -o -name "*.hpp" -o -name "*.hh" -o -name "*.hxx" \) \
             -print0 | xargs -0 --no-run-if-empty clang-format --dry-run --Werror 2>&1) || true
@@ -51,11 +51,11 @@ if [[ "$CHECK_MODE" == "true" ]]; then
 else
     echo "Formatting C/C++ files in: $TARGET_DIR"
     
-    # Find and format files recursively, skipping .git and build directories
-    find "$TARGET_DIR" -type d \( -name ".git" -o -name "build" \) -prune -o \
+    # Find and format files recursively, skipping .git, build, and bin directories
+    find "$TARGET_DIR" -type d \( -name ".git" -o -name "build*" -o -name "bin*" -o -name "_deps" \) -prune -o \
          -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.cc" -o -name "*.cxx" -o \
                     -name "*.h" -o -name "*.hpp" -o -name "*.hh" -o -name "*.hxx" \) \
-         -print0 | xargs -0 clang-format -i
+         -print0 | xargs -0 clang-format -i --verbose
     
     echo "Formatting complete!"
 fi
