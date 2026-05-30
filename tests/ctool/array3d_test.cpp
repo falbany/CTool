@@ -1,12 +1,12 @@
 /**
- * @file array3d_test.cpp
+ * @file array3D_test.cpp
  * @author Florent ALBANY - FAL
  * @brief Unit tests for Array3D class.
  * @version 1.0
  * @date 2026-05-30
  */
 
-#include "ctool/array3d.hpp"
+#include "ctool/array3D.hpp"
 #include "gtest/gtest.h"
 
 namespace {

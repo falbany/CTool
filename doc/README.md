@@ -28,8 +28,8 @@ This folder contains the complete technical documentation for the CTool and CBri
 | [`src/ctool/ini.hpp`](../src/ctool/ini.hpp)             | Manage standard INI configuration files             | [**ini.md**](src/ctool/ini.md)             |
 | [`src/ctool/net.hpp`](../src/ctool/net.hpp)             | object-oriented interface for TCP networking.       | [**net.md**](src/ctool/net.md)             |
 | [`src/ctool/math.hpp`](../src/ctool/math.hpp)           | Common mathematical and statistical utilities.      | [**math.md**](src/ctool/math.md)           |
-| [`src/ctool/array2d.hpp`](../src/ctool/array2d.hpp)     | Dynamic 2D Array container                          | [**array2d.md**](src/ctool/array2d.md)     |
-| [`src/ctool/array3d.hpp`](../src/ctool/array3d.hpp)     | Dynamic 3D Array container                          | [**array3d.md**](src/ctool/array3d.md)     |
+| [`src/ctool/array2D.hpp`](../src/ctool/array2D.hpp)     | Dynamic 2D Array container                          | [**array2D.md**](src/ctool/array2D.md)     |
+| [`src/ctool/array3D.hpp`](../src/ctool/array3D.hpp)     | Dynamic 3D Array container                          | [**array3D.md**](src/ctool/array3D.md)     |
 | [`src/ctool/dataframe.hpp`](../src/ctool/dataframe.hpp) | A Python Pandas like DataFrame.                     | [**dataframe.md**](src/ctool/dataframe.md) |
 | [`src/ctool/num.hpp`](../src/ctool/num.hpp)             | NumPy-like Array Operations                         | [**num.md**](src/ctool/num.md)             |
 | [`src/ctool/csv.hpp`](../src/ctool/csv.hpp)             | Generic CSV parser and data generator.              | *Coming Soon*                          |

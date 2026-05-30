@@ -60,7 +60,7 @@ namespace ctool {
             return df;
         }
 
-        inline DataFrame fromNumArray(const ctool::num::NumArray<double>& array, const std::vector<std::string>& columnNames) {
+        inline DataFrame fromNumArray(const ctool::array::ArrayND<double>& array, const std::vector<std::string>& columnNames) {
             DataFrame df;
             if (array.size() == 0) return df;    // Empty check
 
@@ -142,15 +142,15 @@ namespace ctool {
             return matrix;
         }
 
-        inline ctool::num::NumArray<double> DataFrame::toNumArray(const std::vector<std::string>& columnNames) const {
+        inline ctool::array::ArrayND<double> DataFrame::toNumArray(const std::vector<std::string>& columnNames) const {
             if (rows() == 0 || columnNames.empty()) {
-                return ctool::num::NumArray<double>(0, 0);
+                return ctool::array::ArrayND<double>(0, 0);
             }
 
             const size_t rows_count = rows();
             const size_t cols_count = columnNames.size();
 
-            ctool::num::NumArray<double> matrix(rows_count, cols_count);
+            ctool::array::ArrayND<double> matrix(rows_count, cols_count);
             double*                   data_ptr = matrix.data();
 
             for (size_t j = 0; j < cols_count; ++j) {

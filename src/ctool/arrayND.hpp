@@ -1,5 +1,5 @@
 /**
- * @file num.hpp
+ * @file arrayND.hpp
  * @author Florent ALBANY - FAL
  * @brief High-performance NumPy-like N-dimensional array container
  * @version 1.0
@@ -9,13 +9,13 @@
  * Provides a contiguous memory block for data storage, mimicking the numpy.ndarray behavior.
  * Supports element-wise arithmetic operators and broadcasting logic (for scalar and matching shapes).
  *
- * @note Memory ownership: NumArray owns the underlying std::vector.
+ * @note Memory ownership: ArrayND owns the underlying std::vector.
  */
 
 #pragma once
 
-#ifndef CT_NUM_HPP
-    #define CT_NUM_HPP
+#ifndef CT_NDARRAY_HPP
+    #define CT_NDARRAY_HPP
 
     #include <vector>
     #include <utility>
@@ -28,39 +28,39 @@
 
 namespace ctool {
     // ------------------------------------------------------------------------
-    // NUM API
+    // ARRAY API
     // ------------------------------------------------------------------------
 
     /**
-     * @namespace ctool::num
-     * @brief Numerical Tool - NumPy-like array operations.
+     * @namespace ctool::array
+     * @brief Array Tool - NumPy-like array operations.
      */
-    namespace num {
+    namespace array {
 
         /**
-         * @brief A contiguous 2D array container with NumPy-like API.
+         * @brief A contiguous N-dimensional array container with NumPy-like API.
          * @tparam T The data type stored (e.g., double, int).
          */
         template <typename T>
-        class NumArray {
+        class LIBCTOOL_API ArrayND {
           public:
             // --- Construction ---
             /** @brief Constructs an empty array. */
-            NumArray();
+            ArrayND();
 
             /**
              * @brief Constructs an array of zeros.
              * @param rows Number of rows.
              * @param cols Number of columns.
              */
-            NumArray(size_t rows, size_t cols);
+            ArrayND(size_t rows, size_t cols);
 
             /**
              * @brief Constructs from nested initializer lists (e.g., {{1, 2}, {3, 4}}).
              * @param list Initializer list.
              * @note Throws if row lengths are inconsistent (jagged).
              */
-            NumArray(const std::initializer_list<std::initializer_list<T>>& list);
+            ArrayND(const std::initializer_list<std::initializer_list<T>>& list);
 
             // --- Size & Shape ---
             /** @brief Returns number of rows (Shape[0]). */
@@ -99,10 +99,10 @@ namespace ctool {
             typename std::vector<T>::const_iterator end() const noexcept { return m_data.end(); }
 
             // --- Copy/Move ---
-            NumArray(const NumArray&)                = default;
-            NumArray& operator=(const NumArray&)     = default;
-            NumArray(NumArray&&) noexcept            = default;
-            NumArray& operator=(NumArray&&) noexcept = default;
+            ArrayND(const ArrayND&)                = default;
+            ArrayND& operator=(const ArrayND&)     = default;
+            ArrayND(ArrayND&&) noexcept            = default;
+            ArrayND& operator=(ArrayND&&) noexcept = default;
 
           private:
             std::vector<T> m_data;
@@ -119,35 +119,35 @@ namespace ctool {
 
         /** @brief Element-wise addition: Array + Array */
         template <typename T>
-        NumArray<T> operator+(const NumArray<T>& lhs, const NumArray<T>& rhs);
+        ArrayND<T> operator+(const ArrayND<T>& lhs, const ArrayND<T>& rhs);
 
         /** @brief Element-wise addition: Array + Scalar */
         template <typename T>
-        NumArray<T> operator+(const NumArray<T>& lhs, const T& scalar);
+        ArrayND<T> operator+(const ArrayND<T>& lhs, const T& scalar);
 
         /** @brief Element-wise addition: Scalar + Array */
         template <typename T>
-        NumArray<T> operator+(const T& scalar, const NumArray<T>& rhs);
+        ArrayND<T> operator+(const T& scalar, const ArrayND<T>& rhs);
 
         /** @brief Element-wise subtraction: Array - Array */
         template <typename T>
-        NumArray<T> operator-(const NumArray<T>& lhs, const NumArray<T>& rhs);
+        ArrayND<T> operator-(const ArrayND<T>& lhs, const ArrayND<T>& rhs);
 
         /** @brief Element-wise subtraction: Array - Scalar */
         template <typename T>
-        NumArray<T> operator-(const NumArray<T>& lhs, const T& scalar);
+        ArrayND<T> operator-(const ArrayND<T>& lhs, const T& scalar);
 
         /** @brief Element-wise multiplication: Array * Array */
         template <typename T>
-        NumArray<T> operator*(const NumArray<T>& lhs, const NumArray<T>& rhs);
+        ArrayND<T> operator*(const ArrayND<T>& lhs, const ArrayND<T>& rhs);
 
         /** @brief Element-wise multiplication: Array * Scalar */
         template <typename T>
-        NumArray<T> operator*(const NumArray<T>& lhs, const T& scalar);
+        ArrayND<T> operator*(const ArrayND<T>& lhs, const T& scalar);
 
         /** @brief Element-wise division: Array / Scalar */
         template <typename T>
-        NumArray<T> operator/(const NumArray<T>& lhs, const T& scalar);
+        ArrayND<T> operator/(const ArrayND<T>& lhs, const T& scalar);
 
         // ------------------------------------------------------------------------
         // UNIVERSAL FUNCTIONS (Ufuncs)
@@ -158,20 +158,20 @@ namespace ctool {
          * @note Equivalent to numpy.sqrt()
          */
         template <typename T>
-        NumArray<double> sqrt(const NumArray<T>& arr);
+        ArrayND<double> sqrt(const ArrayND<T>& arr);
 
         /**
          * @brief Computes the sine of every element.
          * @note Equivalent to numpy.sin()
          */
         template <typename T>
-        NumArray<double> sin(const NumArray<T>& arr);
+        ArrayND<double> sin(const ArrayND<T>& arr);
 
         /**
          * @brief Computes the absolute value of every element.
          */
         template <typename T>
-        NumArray<T> abs(const NumArray<T>& arr);
+        ArrayND<T> abs(const ArrayND<T>& arr);
 
         // ------------------------------------------------------------------------
         // REDUCTION OPERATIONS
@@ -179,27 +179,27 @@ namespace ctool {
 
         /** @brief Sum of all elements. */
         template <typename T>
-        double sum(const NumArray<T>& arr);
+        double sum(const ArrayND<T>& arr);
 
         /** @brief Mean (average) of all elements. */
         template <typename T>
-        double mean(const NumArray<T>& arr);
+        double mean(const ArrayND<T>& arr);
 
         /** @brief Maximum value in the array. */
         template <typename T>
-        T max(const NumArray<T>& arr);
+        T max(const ArrayND<T>& arr);
 
         /** @brief Minimum value in the array. */
         template <typename T>
-        T min(const NumArray<T>& arr);
+        T min(const ArrayND<T>& arr);
 
         /** @brief Stream output (Matrix style). */
         template <typename T>
-        std::ostream& operator<<(std::ostream& os, const NumArray<T>& arr);
+        std::ostream& operator<<(std::ostream& os, const ArrayND<T>& arr);
 
-    }    // namespace num
+    }    // namespace array
 }    // namespace ctool
 
-    #include "num.tpp"
+    #include "arrayND.tpp"
 
 #endif    // CT_NUM_HPP

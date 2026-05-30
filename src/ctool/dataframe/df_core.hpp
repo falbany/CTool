@@ -12,8 +12,8 @@
     #define CT_DF_CORE_HPP
 
     #include "df_column.hpp"
-    #include "../array2d.hpp"
-    #include "../num.hpp"
+    #include "../array2D.hpp"
+    #include "../arrayND.hpp"
     #include <vector>
     #include <string>
     #include "../../internal/libctool.h"
@@ -201,7 +201,7 @@ namespace ctool {
              * @throws std::runtime_error if a column is non-numeric or names are invalid.
              * @note Uses contiguous memory for faster downstream math operations.
              */
-            ctool::num::NumArray<double> toNumArray(const std::vector<std::string>& columnNames) const;
+            ctool::array::ArrayND<double> toNumArray(const std::vector<std::string>& columnNames) const;
 
           private:
             /**

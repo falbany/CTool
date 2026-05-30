@@ -14,9 +14,9 @@
     #include "internal/libctool.h"
 
     #include "ctool/core.hpp"
-    #include "ctool/array2d.hpp"
-    #include "ctool/array3d.hpp"
-    #include "ctool/num.hpp"
+    #include "ctool/array2D.hpp"
+    #include "ctool/array3D.hpp"
+    #include "ctool/arrayND.hpp"
     #include "ctool/log.hpp"
     #include "ctool/time.hpp"
     #include "ctool/string.hpp"

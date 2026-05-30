@@ -4,8 +4,8 @@
  * @brief Implementation of DataFrame core methods.
  */
 
-#include "../array2d.hpp"
-#include "../num.hpp"
+#include "../array2D.hpp"
+#include "../arrayND.hpp"
 #include "../csv.hpp"
 #include <sstream>
 #include <stdexcept>

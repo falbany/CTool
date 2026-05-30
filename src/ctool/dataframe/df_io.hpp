@@ -9,8 +9,8 @@
 
 #include "df_core.hpp"
 #include "../csv.hpp"
-#include "../array2d.hpp"
-#include "../num.hpp"
+#include "../array2D.hpp"
+#include "../arrayND.hpp"
 #include <iostream>
 
 namespace ctool {
@@ -53,24 +53,24 @@ namespace ctool {
         ctool::array::Array2D<double> toArray2D(const DataFrame& df, const std::vector<std::string>& columnNames);
 
         /**
-         * @brief Creates a DataFrame from a ctool::num::NumArray<double>.
+         * @brief Creates a DataFrame from a ctool::array::ArrayND<double>.
          * @param array The source numeric matrix (contiguous memory).
          * @param columnNames Optional list of names. If empty, default names "col0", "col1"... are used.
          * @return DataFrame containing the matrix data as numeric Cells.
          * @throws std::invalid_argument if columnNames size doesn't match array width.
          * @note Optimize for contiguous memory access patterns.
          */
-        DataFrame fromNumArray(const ctool::num::NumArray<double>& array, const std::vector<std::string>& columnNames = std::vector<std::string>());
+        DataFrame fromNumArray(const ctool::array::ArrayND<double>& array, const std::vector<std::string>& columnNames = std::vector<std::string>());
 
         /**
-         * @brief Exports numeric columns to a ctool::num::NumArray<double>.
+         * @brief Exports numeric columns to a ctool::array::ArrayND<double>.
          * @param df The source DataFrame.
          * @param columnNames List of numeric columns to extract.
          * @return NumArray<double> A contiguous matrix containing the selected data.
          * @throws std::runtime_error if a column is non-numeric or data is inconsistent.
          * @note Returns a NumArray for high-performance downstream math operations.
          */
-        ctool::num::NumArray<double> toNumArray(const DataFrame& df, const std::vector<std::string>& columnNames);
+        ctool::array::ArrayND<double> toNumArray(const DataFrame& df, const std::vector<std::string>& columnNames);
 
     }    // namespace data
 }    // namespace ctool

@@ -1,6 +1,6 @@
 /**
- * @file num.cpp
+ * @file arrayND.cpp
  * @brief Aggregator for implementation files.
  */
 
-#include "num.hpp"
+#include "arrayND.hpp"

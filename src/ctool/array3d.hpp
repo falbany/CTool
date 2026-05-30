@@ -1,5 +1,5 @@
 /**
- * @file array3d.hpp
+ * @file array3D.hpp
  * @author Florent ALBANY - FAL
  * @brief A type-safe, dynamic 3D array (tensor) container.
  * @version 1.0
@@ -14,7 +14,7 @@
     #include <vector>
     #include <stdexcept>
     #include <ostream>
-    #include "array2d.hpp"
+    #include "array2D.hpp"
     #include "../internal/libctool.h"
 
 namespace ctool {
@@ -197,6 +197,6 @@ namespace ctool {
     }    // namespace array
 }    // namespace ctool
 
-    #include "array3d.tpp"
+    #include "array3D.tpp"
 
 #endif    // CT_ARRAY3D_HPP

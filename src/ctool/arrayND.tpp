@@ -1,7 +1,7 @@
 /**
- * @file num.tpp
+ * @file arrayND.tpp
  * @author Florent ALBANY - FAL
- * @brief Template implementations for ctool_num.hpp.
+ * @brief Template implementations for arrayND.hpp.
  * @version 1.0
  * @date 2026-03-18
  */
@@ -11,17 +11,17 @@
 #include <numeric>
 
 namespace ctool {
-    namespace num {
+    namespace array {
 
         // --- Constructors ---
         template <typename T>
-        NumArray<T>::NumArray() : m_rows(0), m_cols(0) {}
+        ArrayND<T>::ArrayND() : m_rows(0), m_cols(0) {}
 
         template <typename T>
-        NumArray<T>::NumArray(size_t rows, size_t cols) : m_data(rows * cols, T()), m_rows(rows), m_cols(cols) {}
+        ArrayND<T>::ArrayND(size_t rows, size_t cols) : m_data(rows * cols, T()), m_rows(rows), m_cols(cols) {}
 
         template <typename T>
-        NumArray<T>::NumArray(const std::initializer_list<std::initializer_list<T>>& list) {
+        ArrayND<T>::ArrayND(const std::initializer_list<std::initializer_list<T>>& list) {
             if (list.size() == 0) {
                 m_rows = 0;
                 m_cols = 0;
@@ -34,7 +34,7 @@ namespace ctool {
 
             for (const auto& row : list) {
                 if (row.size() != m_cols) {
-                    throw std::invalid_argument("ctool::num::NumArray: Jagged arrays are not supported.");
+                    throw std::invalid_argument("ctool::num::ArrayND: Jagged arrays are not supported.");
                 }
                 for (const auto& val : row) {
                     m_data.push_back(val);
@@ -44,32 +44,32 @@ namespace ctool {
 
         // --- Size & Shape ---
         template <typename T>
-        size_t NumArray<T>::rows() const noexcept {
+        size_t ArrayND<T>::rows() const noexcept {
             return m_rows;
         }
 
         template <typename T>
-        size_t NumArray<T>::cols() const noexcept {
+        size_t ArrayND<T>::cols() const noexcept {
             return m_cols;
         }
 
         template <typename T>
-        size_t NumArray<T>::size() const noexcept {
+        size_t ArrayND<T>::size() const noexcept {
             return m_data.size();
         }
 
         template <typename T>
-        std::pair<size_t, size_t> NumArray<T>::shape() const noexcept {
+        std::pair<size_t, size_t> ArrayND<T>::shape() const noexcept {
             return {m_rows, m_cols};
         }
 
         template <typename T>
-        bool NumArray<T>::empty() const noexcept {
+        bool ArrayND<T>::empty() const noexcept {
             return m_data.empty();
         }
 
         template <typename T>
-        void NumArray<T>::clear() {
+        void ArrayND<T>::clear() {
             m_data.clear();
             m_rows = 0;
             m_cols = 0;
@@ -77,34 +77,34 @@ namespace ctool {
 
         // --- Access ---
         template <typename T>
-        T& NumArray<T>::at(size_t r, size_t c) {
-            if (r >= m_rows || c >= m_cols) throw std::out_of_range("ctool::num::NumArray::at");
+        T& ArrayND<T>::at(size_t r, size_t c) {
+            if (r >= m_rows || c >= m_cols) throw std::out_of_range("ctool::num::ArrayND::at");
             return m_data[index(r, c)];
         }
 
         template <typename T>
-        const T& NumArray<T>::at(size_t r, size_t c) const {
-            if (r >= m_rows || c >= m_cols) throw std::out_of_range("ctool::num::NumArray::at");
+        const T& ArrayND<T>::at(size_t r, size_t c) const {
+            if (r >= m_rows || c >= m_cols) throw std::out_of_range("ctool::num::ArrayND::at");
             return m_data[index(r, c)];
         }
 
         template <typename T>
-        T& NumArray<T>::operator()(size_t r, size_t c) {
+        T& ArrayND<T>::operator()(size_t r, size_t c) {
             return m_data[index(r, c)];
         }
 
         template <typename T>
-        const T& NumArray<T>::operator()(size_t r, size_t c) const {
+        const T& ArrayND<T>::operator()(size_t r, size_t c) const {
             return m_data[index(r, c)];
         }
 
         template <typename T>
-        T* NumArray<T>::data() noexcept {
+        T* ArrayND<T>::data() noexcept {
             return m_data.data();
         }
 
         template <typename T>
-        const T* NumArray<T>::data() const noexcept {
+        const T* ArrayND<T>::data() const noexcept {
             return m_data.data();
         }
 
@@ -112,11 +112,11 @@ namespace ctool {
         // Note: These operations optimize using the contiguous 1D vector.
 
         template <typename T>
-        NumArray<T> operator+(const NumArray<T>& lhs, const NumArray<T>& rhs) {
+        ArrayND<T> operator+(const ArrayND<T>& lhs, const ArrayND<T>& rhs) {
             if (lhs.shape() != rhs.shape()) {
                 throw std::invalid_argument("ctool::num::operator+: Shapes do not match.");
             }
-            NumArray<T> res = lhs;    // Copy LHS
+            ArrayND<T> res = lhs;    // Copy LHS
             for (size_t i = 0; i < lhs.size(); ++i) {
                 res.data()[i] += rhs.data()[i];
             }
@@ -124,8 +124,8 @@ namespace ctool {
         }
 
         template <typename T>
-        NumArray<T> operator+(const NumArray<T>& lhs, const T& scalar) {
-            NumArray<T> res = lhs;
+        ArrayND<T> operator+(const ArrayND<T>& lhs, const T& scalar) {
+            ArrayND<T> res = lhs;
             for (auto& val : res) {
                 val += scalar;
             }
@@ -133,16 +133,16 @@ namespace ctool {
         }
 
         template <typename T>
-        NumArray<T> operator+(const T& scalar, const NumArray<T>& rhs) {
+        ArrayND<T> operator+(const T& scalar, const ArrayND<T>& rhs) {
             return rhs + scalar;    // Commutative
         }
 
         template <typename T>
-        NumArray<T> operator-(const NumArray<T>& lhs, const NumArray<T>& rhs) {
+        ArrayND<T> operator-(const ArrayND<T>& lhs, const ArrayND<T>& rhs) {
             if (lhs.shape() != rhs.shape()) {
                 throw std::invalid_argument("ctool::num::operator-: Shapes do not match.");
             }
-            NumArray<T> res = lhs;
+            ArrayND<T> res = lhs;
             for (size_t i = 0; i < lhs.size(); ++i) {
                 res.data()[i] -= rhs.data()[i];
             }
@@ -150,8 +150,8 @@ namespace ctool {
         }
 
         template <typename T>
-        NumArray<T> operator-(const NumArray<T>& lhs, const T& scalar) {
-            NumArray<T> res = lhs;
+        ArrayND<T> operator-(const ArrayND<T>& lhs, const T& scalar) {
+            ArrayND<T> res = lhs;
             for (size_t i = 0; i < res.size(); ++i) {
                 res.data()[i] -= scalar;
             }
@@ -159,11 +159,11 @@ namespace ctool {
         }
 
         template <typename T>
-        NumArray<T> operator*(const NumArray<T>& lhs, const NumArray<T>& rhs) {
+        ArrayND<T> operator*(const ArrayND<T>& lhs, const ArrayND<T>& rhs) {
             if (lhs.shape() != rhs.shape()) {
                 throw std::invalid_argument("ctool::num::operator*: Shapes do not match.");
             }
-            NumArray<T> res = lhs;
+            ArrayND<T> res = lhs;
             for (size_t i = 0; i < lhs.size(); ++i) {
                 res.data()[i] *= rhs.data()[i];
             }
@@ -171,8 +171,8 @@ namespace ctool {
         }
 
         template <typename T>
-        NumArray<T> operator*(const NumArray<T>& lhs, const T& scalar) {
-            NumArray<T> res = lhs;
+        ArrayND<T> operator*(const ArrayND<T>& lhs, const T& scalar) {
+            ArrayND<T> res = lhs;
             for (size_t i = 0; i < res.size(); ++i) {
                 res.data()[i] *= scalar;
             }
@@ -180,8 +180,8 @@ namespace ctool {
         }
 
         template <typename T>
-        NumArray<T> operator/(const NumArray<T>& lhs, const T& scalar) {
-            NumArray<T> res = lhs;
+        ArrayND<T> operator/(const ArrayND<T>& lhs, const T& scalar) {
+            ArrayND<T> res = lhs;
             for (size_t i = 0; i < res.size(); ++i) {
                 res.data()[i] /= scalar;
             }
@@ -191,8 +191,8 @@ namespace ctool {
         // --- Universal Functions ---
 
         template <typename T>
-        NumArray<double> sqrt(const NumArray<T>& arr) {
-            NumArray<double> res(arr.rows(), arr.cols());
+        ArrayND<double> sqrt(const ArrayND<T>& arr) {
+            ArrayND<double> res(arr.rows(), arr.cols());
             for (size_t i = 0; i < arr.size(); ++i) {
                 res.data()[i] = static_cast<double>(std::sqrt(static_cast<double>(arr.data()[i])));
             }
@@ -200,8 +200,8 @@ namespace ctool {
         }
 
         template <typename T>
-        NumArray<double> sin(const NumArray<T>& arr) {
-            NumArray<double> res(arr.rows(), arr.cols());
+        ArrayND<double> sin(const ArrayND<T>& arr) {
+            ArrayND<double> res(arr.rows(), arr.cols());
             for (size_t i = 0; i < arr.size(); ++i) {
                 res.data()[i] = static_cast<double>(std::sin(static_cast<double>(arr.data()[i])));
             }
@@ -209,8 +209,8 @@ namespace ctool {
         }
 
         template <typename T>
-        NumArray<T> abs(const NumArray<T>& arr) {
-            NumArray<T> res(arr.rows(), arr.cols());
+        ArrayND<T> abs(const ArrayND<T>& arr) {
+            ArrayND<T> res(arr.rows(), arr.cols());
             for (size_t i = 0; i < arr.size(); ++i) {
                 res.data()[i] = static_cast<T>(std::abs(arr.data()[i]));
             }
@@ -220,7 +220,7 @@ namespace ctool {
         // --- Reductions ---
 
         template <typename T>
-        double sum(const NumArray<T>& arr) {
+        double sum(const ArrayND<T>& arr) {
             double result = 0.0;
             for (const auto& val : arr) {
                 result += static_cast<double>(val);
@@ -229,27 +229,27 @@ namespace ctool {
         }
 
         template <typename T>
-        double mean(const NumArray<T>& arr) {
+        double mean(const ArrayND<T>& arr) {
             if (arr.empty()) return 0.0;
             return sum(arr) / static_cast<double>(arr.size());
         }
 
         template <typename T>
-        T max(const NumArray<T>& arr) {
+        T max(const ArrayND<T>& arr) {
             if (arr.empty()) throw std::runtime_error("ctool::num::max: Empty array.");
             return *std::max_element(arr.begin(), arr.end());
         }
 
         template <typename T>
-        T min(const NumArray<T>& arr) {
+        T min(const ArrayND<T>& arr) {
             if (arr.empty()) throw std::runtime_error("ctool::num::min: Empty array.");
             return *std::min_element(arr.begin(), arr.end());
         }
 
         // --- Stream Output ---
         template <typename T>
-        std::ostream& operator<<(std::ostream& os, const NumArray<T>& arr) {
-            os << "NumArray(\n";
+        std::ostream& operator<<(std::ostream& os, const ArrayND<T>& arr) {
+            os << "ArrayND(\n";
             for (size_t i = 0; i < arr.rows(); ++i) {
                 os << "  [";
                 for (size_t j = 0; j < arr.cols(); ++j) {

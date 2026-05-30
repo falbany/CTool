@@ -1,7 +1,7 @@
 # /num: NumPy-like Array Operations
 
 ## 📖 Overview
-The `/num` module provides a high-performance, contiguous memory 2D array container designed to mimic the syntax and behavior of Python's **NumPy** library. Unlike the legacy `/array2d` (which uses a "vector of vectors"), `NumArray` stores data in a single contiguous block, offering superior cache locality and performance for numerical computations.
+The `/num` module provides a high-performance, contiguous memory 2D array container designed to mimic the syntax and behavior of Python's **NumPy** library. Unlike the legacy `/array2D` (which uses a "vector of vectors"), `NumArray` stores data in a single contiguous block, offering superior cache locality and performance for numerical computations.
 
 ## ✨ Key Features
 - **Contiguous Memory Layout:** Data is stored in a single `std::vector<T>`, ensuring cache-friendly access patterns similar to NumPy's `ndarray`.

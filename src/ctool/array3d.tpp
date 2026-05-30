@@ -1,6 +1,6 @@
 /**
- * @file array3d.tpp
- * @brief Template implementations for ctool_array3d.hpp.
+ * @file array3D.tpp
+ * @brief Template implementations for ctool_array3D.hpp.
  * @author Florent ALBANY - FAL
  * @version 1.0
  * @date 2026-03-18
@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <cmath>
-#include "array2d.hpp" // Include the 2D array header to use ctool::array::Array
+#include "array2D.hpp" // Include the 2D array header to use ctool::array::Array
 
 namespace ctool {
     namespace array {

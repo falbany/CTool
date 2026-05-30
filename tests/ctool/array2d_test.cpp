@@ -1,12 +1,12 @@
 /**
- * @file array2d_test.cpp
+ * @file array2D_test.cpp
  * @author Florent ALBANY - FAL
  * @brief Unit tests for Array2D class.
  * @version 1.0
  * @date 2026-05-30
  */
 
-#include "ctool/array2d.hpp"
+#include "ctool/array2D.hpp"
 #include "gtest/gtest.h"
 
 namespace {

@@ -3,4 +3,4 @@
  * @brief Aggregator for implementation files.
  */
 
-#include "array3d.hpp"
+#include "array3D.hpp"

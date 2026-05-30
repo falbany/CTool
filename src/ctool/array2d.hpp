@@ -246,6 +246,6 @@ namespace ctool {
     }    // namespace array
 }    // namespace ctool
 
-    #include "array2d.tpp"
+    #include "array2D.tpp"
 
 #endif    // CT_ARRAY_HPP

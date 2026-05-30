@@ -1,4 +1,4 @@
-doc//array3d.md
+doc//array3D.md
 # CTool Array3D Module
 
 This module provides a type-safe, dynamic 3D array container (`ctool::array::Array3D<T>`). It is designed for volumetric data, time-series of images, or tensor operations.
@@ -8,7 +8,7 @@ This module provides a type-safe, dynamic 3D array container (`ctool::array::Arr
 ### 1. Construction
 
 ```cpp
-#include "/array3d.hpp"
+#include "/array3D.hpp"
 #include <iostream>
 
 int main() {

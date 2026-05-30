@@ -24,7 +24,7 @@ graph TB
 
         subgraph CTool_CPP[CTool C++11 Implementation]
             ctool_tools[ctool:: string, file, num, time, log, net]
-            ctool_data[Data Analysis & Config: DataFrame, array2d, array3d, csv, json, ini]
+            ctool_data[Data Analysis & Config: DataFrame, array2D, array3D, csv, json, ini]
         end
 
         subgraph CBridge_C[CBridge Pure C Implementation]
@@ -58,7 +58,7 @@ graph TB
 - **String Manipulation:** Advanced parsing, trimming, splitting, and recursive find-and-replace (C: `string_t`, C++: `ctool::str`).
 - **Filesystem Management:** Safe I/O, directory traversal, and configuration (`.ini`) parsing.
 - **Data Containers:** Generic dynamic vectors (C: `vector_t`) and efficient C++ templates.
-- **Data Analysis:** Lightweight C++11 DataFrames, CSV/JSON parsers, and multi-dimensional arrays (`array2d`, `array3d`).
+- **Data Analysis:** Lightweight C++11 DataFrames, CSV/JSON parsers, and multi-dimensional arrays (`array2D`, `array3D`).
 - **Networking:** Basic cross-platform socket wrappers (TCP/UDP).
 - **System Utilities:** High-precision timing, thread-safe logging, and unit conversion.
 
