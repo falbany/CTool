@@ -108,6 +108,24 @@ namespace ctool {
         }
 
         template <typename T>
+        void Array2D<T>::fillRow(size_t r, const T& val) {
+            if (r >= m_data.size()) {
+                throw std::out_of_range("ctool::array::fillRow: Row index out of bounds.");
+            }
+            std::fill(m_data[r].begin(), m_data[r].end(), val);
+        }
+
+        template <typename T>
+        void Array2D<T>::fillColumn(size_t c, const T& val) {
+            if (m_data.empty() || c >= m_data[0].size()) {
+                throw std::out_of_range("ctool::array::fillColumn: Column index out of bounds.");
+            }
+            for (auto& row : m_data) {
+                row[c] = val;
+            }
+        }
+
+        template <typename T>
         void Array2D<T>::pushRow(size_t cols, const T& val) {
             m_data.emplace_back(cols, val);
         }

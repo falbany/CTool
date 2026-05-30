@@ -34,7 +34,7 @@ namespace ctool {
          * @note Dimensions are ordered as [depth][rows][cols].
          */
         template <typename T>
-        class Array3D {
+        class LIBCTOOL_API Array3D {
           public:
             /**
              * @brief Constructs an empty array.
@@ -107,6 +107,27 @@ namespace ctool {
              * @param val Value to set.
              */
             void fill(const T& val);
+
+            /**
+             * @brief Fills a specific slice (depth) with a value.
+             * @param d Slice index.
+             * @param val Value to set.
+             */
+            void fillDepth(size_t d, const T& val);
+
+            /**
+             * @brief Fills a specific row across all slices at a given row index.
+             * @param r Row index.
+             * @param val Value to set.
+             */
+            void fillRow(size_t r, const T& val);
+
+            /**
+             * @brief Fills a specific column across all slices at a given column index.
+             * @param c Column index.
+             * @param val Value to set.
+             */
+            void fillColumn(size_t c, const T& val);
 
             /**
              * @brief Resizes the array.

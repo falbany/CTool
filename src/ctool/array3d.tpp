@@ -121,6 +121,39 @@ namespace ctool {
         }
 
         template <typename T>
+        void Array3D<T>::fillDepth(size_t d, const T& val) {
+            if (d >= m_data.size()) {
+                throw std::out_of_range("ctool::array::fillDepth: Slice index out of bounds.");
+            }
+            auto& slice = m_data[d];
+            for (auto& row : slice) {
+                std::fill(row.begin(), row.end(), val);
+            }
+        }
+
+        template <typename T>
+        void Array3D<T>::fillRow(size_t r, const T& val) {
+            if (empty() || r >= m_data[0].size()) {
+                throw std::out_of_range("ctool::array::fillRow: Row index out of bounds.");
+            }
+            for (auto& slice : m_data) {
+                std::fill(slice[r].begin(), slice[r].end(), val);
+            }
+        }
+
+        template <typename T>
+        void Array3D<T>::fillColumn(size_t c, const T& val) {
+            if (empty() || c >= m_data[0][0].size()) {
+                throw std::out_of_range("ctool::array::fillColumn: Column index out of bounds.");
+            }
+            for (auto& slice : m_data) {
+                for (auto& row : slice) {
+                    row[c] = val;
+                }
+            }
+        }
+
+        template <typename T>
         void Array3D<T>::resize(size_t depth, size_t rows, size_t cols, const T& val) {
             if (depth == 0 && rows == 0 && cols == 0) {
                 m_data.clear();

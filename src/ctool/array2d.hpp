@@ -35,7 +35,7 @@ namespace ctool {
          * @tparam T The data type stored in the array (e.g., double, int).
          */
         template <typename T>
-        class Array2D {
+        class LIBCTOOL_API Array2D {
           public:
             /**
              * @brief Constructs an empty array.
@@ -103,6 +103,20 @@ namespace ctool {
              * @param val Value to set.
              */
             void fill(const T& val);
+
+            /**
+             * @brief Fills a specific row with a value.
+             * @param r Row index.
+             * @param val Value to set.
+             */
+            void fillRow(size_t r, const T& val);
+
+            /**
+             * @brief Fills a specific column with a value.
+             * @param c Column index.
+             * @param val Value to set.
+             */
+            void fillColumn(size_t c, const T& val);
 
             /**
              * @brief Adds a new row with specified size.
