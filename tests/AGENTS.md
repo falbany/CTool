@@ -11,10 +11,12 @@ This document defines the mandatory conventions for adding or modifying tests in
 
 ## 2. File & Naming Conventions
 
-- Test file name: `<module>_test.cpp` (e.g., `/str_test.cpp`, `/math_test.cpp`).
+- Test file name: `<module>_test.cpp` (e.g., `string_test.cpp`, `math_test.cpp`).
+- Files for CTool should be in `tests/ctool/` and for CBridge in `tests/cbridge/`.
 - Each test executable maps to one source file.
-- Test suite naming: `TEST(<Module><Section>, TestName)` where `<Module><Section>` is PascalCase (e.g., `CbStrLifecycle`, `CtStrTrim`).
-- Test case names are PascalCase (e.g., `CreateNullString`, `TrimBothSides`).
+- **Suite-Based Categorization:** Use the `test_suite_name` parameter in `TEST(test_suite_name, test_name)` to categorize tests. Instead of a single generic suite like `<Module>Test`, split tests into logical categories (e.g., `LogVerbosity`, `LogFormatting`, `LogConcurrency`).
+- Test suite naming: `TEST(<Module><Category>, TestName)` where `<Module><Category>` is PascalCase.
+- Test case names are PascalCase (e.g., `Addition`, `CreateNullString`).
 - File must include a Doxygen header (`@file`, `@author`, `@brief`, `@version`, `@date`).
 
 ## 3. Formatting Standards
@@ -35,31 +37,36 @@ All test code **must** be formatted using `clang-format`.
 - `EXPECT_EQ(expected, actual)` for numeric equality.
 
 ### Memory & Resources
-- All heap-allocated objects (`/string_t*`, `/str_parts_t`, etc.) **must** be freed in the test body.
-- Use raw `/str.free(s)` / `/str_parts_free(&parts)` — no fixtures or RAII wrappers.
+- All heap-allocated objects (`string_t*`, `str_parts_t`, etc.) **must** be freed in the test body.
+- Use raw functions — no fixtures or RAII wrappers unless absolutely matching custom test suites.
 
 ### NULL / nullptr
 - Use `nullptr` (C++ keyword) in GTest comparisons: `EXPECT_NE(s, nullptr)`.
-- Use `NULL` only when calling C APIs that expect `NULL` (e.g., `/str.create(NULL)`).
+- Use `NULL` only when calling C APIs that expect `NULL`.
 
 ## 4. Build Integration
 
 ### CMake Targets
 - Each test executable is registered in `tests/CMakeLists.txt`:
   ```cmake
-  add_executable(<name> <name>.cpp)
-  target_link_libraries(<name> PRIVATE ctool_cb gtest_main)
-  target_include_directories(<name> PRIVATE ${CMAKE_SOURCE_DIR})
+  add_executable(<name> ctool/<name>.cpp) # or cbridge/<name>.cpp
+  target_link_libraries(<name> PRIVATE ctool_ct gtest_main)
+  target_include_directories(<name> PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR})
   ```
 - Link `ctool_cb` for CBridge tests, `ctool_ct` for CTool tests, or both.
+- Ensure the executable targets are registered with `set_target_properties` to place them in `${CMAKE_BINARY_DIR}`:
+  ```cmake
+  set_target_properties(<name> PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+  ```
 - GTest is fetched automatically via `FetchContent` — no manual installation required.
 - Each executable must be registered with `gtest_discover_tests(<name>)` for CTest integration.
 
 ### Adding a New Test File
-1. Create `<module>_test.cpp` in `tests/`.
+1. Create `<module>_test.cpp` under `tests/ctool/` or `tests/cbridge/`.
 2. Add the CMake target to `tests/CMakeLists.txt`.
 3. Build: `cmake -B build && cmake --build build`.
-4. Run: `ctest --test-dir build` or `./build/tests/<module>_test`.
+4. Run: `ctest --test-dir build` or `./build/<module>_test`.
+
 
 ### CTest Discovery
 Every test target must call `gtest_discover_tests()` so CTest runs individual test cases. Without it, CTest sees only one result per executable.
@@ -85,10 +92,11 @@ Example:
 ```
 
 ## 6. Directory Standards
-- **Test source files** — `tests/*.cpp` (one per module).
+- **Test source files** — `tests/ctool/*.cpp` or `tests/cbridge/*.cpp` (one per module).
 - **CMake integration** — `tests/CMakeLists.txt`.
 - **Documentation** — `tests/README.md` (this directory's guide), `tests/AGENTS.md` (this file).
 - Do **not** place test data or fixtures outside `tests/`.
+
 
 ## 7. What Not To Do
 - Do **not** use `TEST_F` or test fixtures unless shared setup/teardown between tests justifies it.

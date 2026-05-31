@@ -24,9 +24,10 @@ add_executable(ct_array2D_test ctool/array2D_test.cpp)
 add_executable(ct_array3D_test ctool/array3D_test.cpp)
 add_executable(ct_arrayND_test ctool/arraynd_test.cpp)
 add_executable(ct_math_test ctool/math_test.cpp)
+add_executable(ct_log_test ctool/log_test.cpp)
 
 # Place test executables next to shared DLLs so they can resolve them at runtime
-foreach(targ cb_string_test ct_string_test ct_ini_test ct_time_test ct_unit_test ct_file_test ct_array2D_test ct_array3D_test ct_arrayND_test ct_math_test)
+foreach(targ cb_string_test ct_string_test ct_ini_test ct_time_test ct_unit_test ct_file_test ct_array2D_test ct_array3D_test ct_arrayND_test ct_math_test ct_log_test)
     set_target_properties(${targ} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 endforeach()
 
@@ -43,6 +44,7 @@ target_link_libraries(ct_array2D_test PRIVATE ctool_ct gtest_main)
 target_link_libraries(ct_array3D_test PRIVATE ctool_ct gtest_main)
 target_link_libraries(ct_arrayND_test PRIVATE ctool_ct gtest_main)
 target_link_libraries(ct_math_test PRIVATE ctool_ct gtest_main)
+target_link_libraries(ct_log_test PRIVATE ctool_ct gtest_main)
 # Link Windows Sockets library on Windows
 if(WIN32)
     target_link_libraries(ct_time_test PRIVATE ws2_32)
@@ -58,6 +60,7 @@ target_include_directories(ct_file_test PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(ct_array2D_test PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR})
 target_include_directories(ct_array3D_test PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR})
 target_include_directories(ct_arrayND_test PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR})
+target_include_directories(ct_log_test PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR})
 
 # Register GTest so CTest discovers individual tests
 include(GoogleTest)
@@ -70,3 +73,4 @@ gtest_discover_tests(ct_file_test)
 gtest_discover_tests(ct_array2D_test)
 gtest_discover_tests(ct_array3D_test)
 gtest_discover_tests(ct_arrayND_test)
+gtest_discover_tests(ct_log_test)
