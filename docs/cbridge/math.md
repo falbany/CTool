@@ -1,225 +1,146 @@
-docs//math.md
-# CTool Math Module
+# CBridge Math Module
 
-This module provides a comprehensive suite of statistical utilities, data preprocessing tools, and mathematical operations for numerical analysis and linear modeling.
+This module provides a comprehensive suite of statistical utilities and linear modeling functions in pure C. It uses a "namespace" pattern to group functions under the global `cbridge_math` object.
 
-## Function Reference
+## Data Structures
 
-### Basic Statistics (Non-Template)
-These functions operate on `std::vector<double>` and return `double` results.
+### `cbridge_reg_result_t`
 
-| Function            | Description                               | Signature                                                   |
-| :------------------ | :---------------------------------------- | :---------------------------------------------------------- |
-| `mean`              | Arithmetic mean (average).                | `double mean(const std::vector<double>& data)`              |
-| `min`               | Minimum value.                            | `double min(const std::vector<double>& data)`               |
-| `max`               | Maximum value.                            | `double max(const std::vector<double>& data)`               |
-| `variance`          | Population variance ($\sigma^2$).         | `double variance(const std::vector<double>& data)`          |
-| `standardDeviation` | Population standard deviation ($\sigma$). | `double standardDeviation(const std::vector<double>& data)` |
-| `isNear`            | Checks floating-point equality.           | `bool isNear(double a, double b, double epsilon)`           |
+```c
+typedef struct {
+    double slope;        ///< The slope of the line (m).
+    double intercept;    ///< The Y-intercept of the line (b).
+    double r_squared;    ///< Coefficient of determination.
+} cbridge_reg_result_t;
+```
 
-### Advanced Statistics & Preprocessing (Template)
-Generic functions supporting `int`, `double`, `float`, etc.
+### `cbridge_sigma_bounds_t`
 
-| Function      | Description                           | Signature                                           |
-| :------------ | :------------------------------------ | :-------------------------------------------------- |
-| `sum`         | Sum of all elements.                  | `template <T> T sum(const std::vector<T>& data)`    |
-| `median`      | Median value (middle element).        | `template <T> T median(const std::vector<T>& data)` |
-| `percentile`  | $k$-th percentile with interpolation. | `template <T> double percentile(..., double k)`     |
-| `minMaxScale` | Normalize data to [0, 1].             | `template <T> std::vector<double> minMaxScale(...)` |
-| `clamp`       | Constrain value to range [min, max].  | `template <T> T clamp(T val, T min, T max)`         |
+```c
+typedef struct {
+    double lower_bound;    ///< The lower bound (mean - sigma * std_dev).
+    double upper_bound;    ///< The upper bound (mean + sigma * std_dev).
+} cbridge_sigma_bounds_t;
+```
+
+## API Reference
+
+### Basic Statistics
+
+| Function                   | Description                                                                         | Signature                                                                                                   |
+| :------------------------- | :---------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------- |
+| `min`                      | Minimum value.                                                                      | `double (*min)(const double* data, size_t size)`                                                            |
+| `max`                      | Maximum value.                                                                      | `double (*max)(const double* data, size_t size)`                                                            |
+| `mean`                     | Arithmetic mean (average).                                                          | `double (*mean)(const double* data, size_t size)`                                                           |
+| `variance`                 | Population variance ($\sigma^2$).                                                   | `double (*variance)(const double* data, size_t size)`                                                       |
+| `standardDeviation`        | Population standard deviation ($\sigma$).                                           | `double (*standardDeviation)(const double* data, size_t size)`                                              |
+| `isNear`                   | Checks if two values are approximately equal within a tolerance.                    | `bool (*isNear)(double a, double b, double epsilon)`                                                        |
+| `clamp`                    | Clamps a value within a specified range.                                            | `double (*clamp)(double val, double min, double max)`                                                       |
+| `calculateSigmaBounds`     | Calculates lower/upper bounds based on a sigma multiplier (empirical rule).         | `cbridge_sigma_bounds_t (*calculateSigmaBounds)(const double* data, size_t size, double sigma_multiplier)`  |
+| `calculateSigmaLowerBound` | Alias: calls `calculateSigmaBounds` and returns the same result (for API symmetry). | `cbridge_sigma_bounds_t calculateSigmaLowerBound(const double* data, size_t size, double sigma_multiplier)` |
+| `calculateSigmaUpperBound` | Alias: calls `calculateSigmaBounds` and returns the same result (for API symmetry). | `cbridge_sigma_bounds_t calculateSigmaUpperBound(const double* data, size_t size, double sigma_multiplier)` |
 
 ### Modeling
-| Function        | Description                                     | Signature                                                                                                                   |
-| :-------------- | :---------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
-| `linearFit`     | Linear least-squares regression ($y = mx + c$). | `RegResult linearFit(const std::vector<double>& x, const std::vector<double>& y)`                                           |
-| `logLinearFit`  | Exponential regression ($y = A e^{Bx}$).        | `RegResult logLinearFit(const std::vector<double>& x, const std::vector<double>& y)`                                        |
-| `polynomialFit` | Polynomial regression (Degree 1–4).             | `std::vector<double> polynomialFit(const std::vector<double>& x, const std::vector<double>& y, int degree)`                 |
-| `residuals`     | Error analysis for a given linear model.        | `std::vector<double> residuals(const std::vector<double>& x, const std::vector<double>& y, double slope, double intercept)` |
+
+| Function       | Description                                                     | Signature                                                                                                                 |
+| :------------- | :-------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ |
+| `linearFit`    | Linear least-squares regression ($y = mx + c$).                 | `cbridge_reg_result_t (*linearFit)(const double* x, const double* y, size_t size)`                                        |
+| `logLinearFit` | Exponential regression ($y = A e^{Bx}$) via log transformation. | `cbridge_reg_result_t (*logLinearFit)(const double* x, const double* y, size_t size)`                                     |
+| `residuals`    | Error analysis for a given linear model.                        | `void (*residuals)(const double* x, const double* y, size_t size, double slope, double intercept, double* out_residuals)` |
 
 ---
 
 ## Usage Examples
 
-### 1. Basic Statistics (Double Vector)
-```cpp
-#include "src/ctool/math.hpp"
-#include <vector>
-#include <iostream>
+### 1. Basic Statistics
+
+```c
+#include "CBridge.h"
+#include <stdio.h>
 
 int main() {
-    std::vector<double> data = {2.0, 8.0, 3.0, 9.0, 1.0};
+    double data[] = {2.0, 8.0, 3.0, 9.0, 1.0};
+    size_t n = 5;
 
-    // Extremes
-    double minimum = ctool::math::min(data);  // 1.0
-    double maximum = ctool::math::max(data);  // 9.0
+    double minimum = cbridge_math.min(data, n);     // 1.0
+    double maximum = cbridge_math.max(data, n);     // 9.0
+    double average = cbridge_math.mean(data, n);    // 4.6
+    double variance = cbridge_math.variance(data, n);   // 8.96 (Population)
+    double stddev = cbridge_math.standardDeviation(data, n); // ~2.99
 
-    // Central Tendency
-    double average = ctool::math::mean(data); // 4.6
-
-    // Dispersion
-    double variance = ctool::math::variance(data);      // 8.96 (Population)
-    double stddev = ctool::math::standardDeviation(data); // 2.99
-
-    std::cout << "Min: " << minimum << ", Max: " << maximum << "\n";
-    std::cout << "Mean: " << average << ", StdDev: " << stddev << "\n";
-    std::cout << "Variance: " << variance << "\n";
+    printf("Min: %.1f, Max: %.1f\n", minimum, maximum);
+    printf("Mean: %.1f, StdDev: %.2f\n", average, stddev);
+    printf("Variance: %.2f\n", variance);
 
     return 0;
 }
 ```
 
-### 2. Template Functions (Generic Types)
-These functions work with `int`, `double`, `float`, etc.
+### 2. Sigma Bounds (Empirical Rule)
 
-```cpp
-#include "src/ctool/math.hpp"
-#include <vector>
-#include <iostream>
+```c
+#include "CBridge.h"
+#include <stdio.h>
 
 int main() {
-    // --- Sum ---
-    std::vector<int> int_data = {1, 2, 3, 4, 5};
-    int sum_int = ctool::math::sum(int_data); // 15
+    double data[] = {10.0, 20.0, 30.0};
+    size_t n = 3;
 
-    std::vector<double> double_data = {1.5, 2.5, 3.0};
-    double sum_double = ctool::math::sum(double_data); // 7.0
+    // 1-sigma bounds (~68% of data within this range for a normal distribution)
+    cbridge_sigma_bounds_t bounds = cbridge_math.calculateSigmaBounds(data, n, 1.0);
+    printf("1-Sigma — Lower: %.4f, Upper: %.4f\n", bounds.lower_bound, bounds.upper_bound);
 
-    // --- Median (Handles both odd and even lengths) ---
-    std::vector<int> odd_median = {10, 20, 30};          // Returns 20
-    int medOdd = ctool::math::median(odd_median);
+    // 2-sigma bounds (~95%)
+    bounds = cbridge_math.calculateSigmaBounds(data, n, 2.0);
+    printf("2-Sigma — Lower: %.4f, Upper: %.4f\n", bounds.lower_bound, bounds.upper_bound);
 
-    std::vector<int> even_median = {1, 2, 3, 4};         // Returns 2 (truncated from 2.5)
-    int medEven = ctool::math::median(even_median);
-
-    // --- Percentile (Linear Interpolation) ---
-    std::vector<int> scores = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-    double p50 = ctool::math::percentile(scores, 50.0); // 55.0
-    double p90 = ctool::math::percentile(scores, 90.0); // 91.0
-
-    std::cout << "Sum (Int): " << sum_int << ", Sum (Double): " << sum_double << "\n";
-    std::cout << "Median (Odd): " << medOdd << ", Median (Even): " << medEven << "\n";
-    std::cout << "Percentile 50%: " << p50 << ", 90%: " << p90 << "\n";
+    // Using alias functions
+    cbridge_sigma_bounds_t lb = calculateSigmaLowerBound(data, n, 2.0);
+    cbridge_sigma_bounds_t ub = calculateSigmaUpperBound(data, n, 2.0);
+    printf("Alias — Lower: %.4f, Upper: %.4f\n", lb.lower_bound, ub.upper_bound);
 
     return 0;
 }
 ```
 
-### 3. Data Preprocessing: Min-Max Scaling
-Normalizes data to the [0, 1] range. Useful for machine learning inputs.
+### 3. Linear Regression
 
-```cpp
-#include "src/ctool/math.hpp"
-#include <vector>
-#include <iostream>
+```c
+#include "CBridge.h"
+#include <stdio.h>
 
 int main() {
-    std::vector<int> rawData = {20, 25, 30, 35, 40};
+    double x[] = {1.0, 2.0, 3.0, 4.0, 5.0};
+    double y[] = {2.1, 4.0, 5.9, 8.1, 9.9};
+    size_t n = 5;
 
-    // Returns a new vector of doubles scaled to [0, 1]
-    std::vector<double> scaled = ctool::math::minMaxScale(rawData);
+    cbridge_reg_result_t result = cbridge_math.linearFit(x, y);
 
-    std::cout << "Scaled Data: ";
-    for (double val : scaled) {
-        std::cout << val << " "; // Output: 0.0 0.25 0.5 0.75 1.0
+    printf("Slope: %.4f\n", result.slope);
+    printf("Intercept: %.4f\n", result.intercept);
+    printf("R-Squared: %.4f\n", result.r_squared);
+
+    return 0;
+}
+```
+
+### 4. Residuals Analysis
+
+```c
+#include "CBridge.h"
+#include <stdio.h>
+
+int main() {
+    double x[] = {1.0, 2.0, 3.0};
+    double y[] = {2.1, 3.9, 6.2};
+    size_t n = 3;
+    double residuals[3];
+
+    cbridge_math.residuals(x, y, n, 2.0, 0.0, residuals);
+
+    for (size_t i = 0; i < n; i++) {
+        printf("Residual[%zu] = %.6f\n", i, residuals[i]);
     }
-    std::cout << "\n";
-
-    return 0;
-}
-```
-
-### 4. Linear Regression
-Fits a line to x/y data points.
-
-```cpp
-#include "src/ctool/math.hpp"
-#include <vector>
-#include <iostream>
-
-int main() {
-    std::vector<double> x = {1.0, 2.0, 3.0, 4.0, 5.0};
-    std::vector<double> y = {2.1, 4.0, 5.9, 8.1, 9.9};
-
-    ctool::math::RegResult result = ctool::math::linearFit(x, y);
-
-    std::cout << "Slope: " << result.slope << "\n";
-    std::cout << "Intercept: " << result.intercept << "\n";
-    std::cout << "R-Squared: " << result.rSquared << "\n";
-
-    return 0;
-}
-```
-
-## Advanced Modeling Functions
-
-### Exponential Regression (Log-Linear)
-Fits $y = A e^{Bx}$ by performing linear regression on $\ln(y)$.
-
-```cpp
-#include "src/ctool/math.hpp"
-#include <vector>
-#include <iostream>
-
-int main() {
-    std::vector<double> x = {1.0, 2.0, 3.0, 4.0, 5.0};
-    std::vector<double> y = {2.7, 7.4, 20.1, 54.6, 148.4}; // approx exp(1.1x)
-
-    ctool::math::RegResult res = ctool::math::logLinearFit(x, y);
-
-    // Model: y = exp(intercept) * exp(slope * x)
-    double A = std::exp(res.intercept);
-    double B = res.slope;
-
-    std::cout << "Model: y = " << A << " * exp(" << B << " * x)\n";
-    std::cout << "R-Squared: " << res.rSquared << "\n";
-
-    return 0;
-}
-```
-
-### Residual Analysis
-Calculates the difference between actual and predicted values for a given linear model.
-
-```cpp
-#include "src/ctool/math.hpp"
-#include <vector>
-#include <iostream>
-
-int main() {
-    std::vector<double> x = {1.0, 2.0, 3.0};
-    std::vector<double> y = {2.0, 4.0, 6.5}; // Slight noise
-    double m = 2.0;
-    double c = 0.0;
-
-    std::vector<double> resid = ctool::math::residuals(x, y, m, c);
-
-    std::cout << "Residuals: ";
-    for (double r : resid) std::cout << r << " "; // 0.0, 0.0, 0.5
-    std::cout << "\n";
-
-    return 0;
-}
-```
-
-### Polynomial Fitting
-Fits a polynomial $y = a_0 + a_1 x + \dots + a_n x^n$. Supports degrees 1 to 4.
-
-```cpp
-#include "src/ctool/math.hpp"
-#include <vector>
-#include <iostream>
-
-int main() {
-    std::vector<double> x = {1.0, 2.0, 3.0, 4.0, 5.0};
-    std::vector<double> y = {2.1, 4.9, 12.2, 20.1, 30.0}; // approx y = x^2 + 1
-
-    // Fit quadratic (degree 2)
-    std::vector<double> coeffs = ctool::math::polynomialFit(x, y, 2);
-
-    // Coefficients: [a0, a1, a2] -> y = a0 + a1*x + a2*x^2
-    std::cout << "Coefficients: ";
-    for (double c : coeffs) std::cout << c << " "; // approx 1.0 0.0 1.0
-    std::cout << "\n";
 
     return 0;
 }
@@ -229,21 +150,21 @@ int main() {
 
 ## Performance & Memory Notes
 
-| Function             | Complexity    | Memory Overhead | Notes                                        |
-| :------------------- | :------------ | :-------------- | :------------------------------------------- |
-| `min`, `max`         | $O(N)$        | $O(1)$          | Single pass.                                 |
-| `mean`, `sum`        | $O(N)$        | $O(1)$          | Single pass.                                 |
-| `variance`, `stdDev` | $O(N)$        | $O(1)$          | Two passes (mean + deviation).               |
-| `clamp`              | $O(1)$        | $O(1)$          | Direct comparison.                           |
-| `median`             | $O(N \log N)$ | $O(N)$          | Requires a copy for sorting.                 |
-| `percentile`         | $O(N \log N)$ | $O(N)$          | Requires a copy for sorting + interpolation. |
-| `minMaxScale`        | $O(N)$        | $O(N)$          | Returns a new vector.                        |
-| `linearFit`          | $O(N)$        | $O(1)$          | Single pass accumulation.                    |
+| Function                        | Complexity | Memory Overhead | Notes                                               |
+| :------------------------------ | :--------- | :-------------- | :-------------------------------------------------- |
+| `min`, `max`                    | $O(N)$     | $O(1)$          | Single pass.                                        |
+| `mean`                          | $O(N)$     | $O(1)$          | Single pass.                                        |
+| `variance`, `standardDeviation` | $O(N)$     | $O(1)$          | Two passes (mean + deviation).                      |
+| `clamp`                         | $O(1)$     | $O(1)$          | Direct comparison.                                  |
+| `linearFit`                     | $O(N)$     | $O(1)$          | Single pass accumulation.                           |
+| `logLinearFit`                  | $O(N)$     | $O(1)$          | Single pass with `log()` per element.               |
+| `residuals`                     | $O(N)$     | $O(1)$          | Single pass, output buffer pre-allocated by caller. |
+| `calculateSigmaBounds`          | $O(N)$     | $O(1)$          | Delegates to `mean` and `standardDeviation`.        |
 
 ## Error Handling & Edge Cases
 
-- **Empty Vectors**: Functions returning scalar values (`mean`, `sum`, `min`, `max`, `variance`) return `0.0` (or `T(0)` for templates).
-- **Single Element**: `variance` and `standardDeviation` return `0.0` for vectors with fewer than 2 elements.
-- **Invalid Percentile**: `percentile` throws `std::invalid_argument` if $k < 0.0$ or $k > 100.0$.
-- **Division by Zero**: `minMaxScale` handles constant data (max == min) by returning a vector of `0.0`.
-- **Integer Precision**: When calculating statistics for `int` vectors using template functions (like `median`), results are cast back to `T`. For accurate fractional results (e.g., median of `{1, 2}`), use `std::vector<double>` inputs.
+- **Empty Arrays / NULL**: Functions returning scalar values (`mean`, `min`, `max`, `variance`) return `0.0`. Struct results are zeroed.
+- **Single Element**: `variance`, `standardDeviation`, and `calculateSigmaBounds` return `0.0` / zeroed struct for arrays with fewer than 2 elements.
+- **Non-positive y**: `logLinearFit` returns a zeroed result if any `y[i] <= 0`.
+- **Perfect collinearity**: `linearFit` and `logLinearFit` return a zeroed result if the denominator in slope calculation is near zero.
+- **NULL Pointers**: Modeling functions guard against NULL input pointers and return zeroed result structs.
