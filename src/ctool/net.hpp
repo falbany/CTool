@@ -18,14 +18,14 @@ namespace ctool {
     // ------------------------------------------------------------------------
     // NETWORK CONSTANTS
     // ------------------------------------------------------------------------
-    
+
     /** @brief Default buffer size for receiving data. */
     constexpr size_t DEFAULT_BUFFER_SIZE = 4096;
-    
+
     // ------------------------------------------------------------------------
     // NET API
     // ------------------------------------------------------------------------
-    
+
     /**
      * @namespace ctool::net
      * @brief High-level networking interfaces for C++11.

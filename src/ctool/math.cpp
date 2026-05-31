@@ -12,8 +12,8 @@ namespace ctool {
                 return {0.0, 0.0, 0.0};
             }
 
-            double sX = 0;
-            double sY = 0;
+            double sX  = 0;
+            double sY  = 0;
             double sXX = 0;
             double sYY = 0;
             double sXY = 0;
@@ -59,9 +59,9 @@ namespace ctool {
                 }
             }
 
-            double sX = 0;
-            double sYlog = 0;
-            double sXX = 0;
+            double sX     = 0;
+            double sYlog  = 0;
+            double sXX    = 0;
             double sYYlog = 0;
             double sXYlog = 0;
             for (size_t idx = 0; idx < dataSize; ++idx) {
@@ -80,7 +80,7 @@ namespace ctool {
 
             RegResult result;
             result.slope     = ((dataSize * sXYlog) - (sX * sYlog)) / denom;    // This is B
-            result.intercept = (sYlog - (result.slope * sX)) / dataSize;         // This is ln(A)
+            result.intercept = (sYlog - (result.slope * sX)) / dataSize;        // This is ln(A)
 
             // Calculate R-Squared on the log-transformed data
             double ssTot = sYYlog - ((sYlog * sYlog) / dataSize);
