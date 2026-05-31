@@ -142,11 +142,11 @@ const struct cbridge_math_namespace cbridge_math = {.linearFit            = impl
                                                     .residuals            = impl_residuals,
                                                     .min                  = impl_min,
                                                     .max                  = impl_max,
-                                                    .mean                  = impl_mean,
+                                                    .mean                 = impl_mean,
                                                     .variance             = impl_variance,
                                                     .standardDeviation    = impl_standardDeviation,
                                                     .isNear               = impl_isNear,
-                                                    .clamp                 = impl_clamp,
+                                                    .clamp                = impl_clamp,
                                                     .calculateSigmaBounds = impl_calculateSigmaBounds};
 
 LIBCTOOL_API cbridge_sigma_bounds_t calculateSigmaLowerBound(const double* data, size_t size, double sigma_multiplier) {

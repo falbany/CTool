@@ -5,7 +5,7 @@
 // ============================================================================
 // Internal Helpers
 // ============================================================================
-static void impl_grow(cbridge_vector_t* self, size_t min_cap) {
+static void impl_grow(vector_t* self, size_t min_cap) {
     if (min_cap <= self->capacity) return;
 
     size_t newCapacity = self->capacity == 0 ? 4 : self->capacity * 2;
@@ -21,8 +21,8 @@ static void impl_grow(cbridge_vector_t* self, size_t min_cap) {
 // ============================================================================
 // Lifecycle
 // ============================================================================
-static cbridge_vector_t* impl_create() {
-    cbridge_vector_t* self = (cbridge_vector_t*)malloc(sizeof(cbridge_vector_t));
+static vector_t* impl_create() {
+    vector_t* self = (vector_t*)malloc(sizeof(vector_t));
     if (self) {
         self->items    = NULL;
         self->length   = 0;
@@ -31,7 +31,7 @@ static cbridge_vector_t* impl_create() {
     return self;
 }
 
-static void impl_free(cbridge_vector_t* self) {
+static void impl_free(vector_t* self) {
     if (self) {
         if (self->items) free(self->items);
         free(self);
@@ -41,11 +41,11 @@ static void impl_free(cbridge_vector_t* self) {
 // ============================================================================
 // Capacity & Access
 // ============================================================================
-static size_t impl_size(const cbridge_vector_t* self) { return self ? self->length : 0; }
+static size_t impl_size(const vector_t* self) { return self ? self->length : 0; }
 
-static bool impl_empty(const cbridge_vector_t* self) { return !self || self->length == 0; }
+static bool impl_empty(const vector_t* self) { return !self || self->length == 0; }
 
-static void impl_reserve(cbridge_vector_t* self, size_t newCapacity) {
+static void impl_reserve(vector_t* self, size_t newCapacity) {
     if (self && newCapacity > self->capacity) {
         void** new_items = (void**)realloc(self->items, newCapacity * sizeof(void*));
         if (new_items) {
@@ -55,14 +55,14 @@ static void impl_reserve(cbridge_vector_t* self, size_t newCapacity) {
     }
 }
 
-static void* impl_at(const cbridge_vector_t* self, size_t index) {
+static void* impl_at(const vector_t* self, size_t index) {
     if (!self || index >= self->length) return NULL;
     return self->items[index];
 }
 
-static void* impl_front(const cbridge_vector_t* self) { return impl_at(self, 0); }
+static void* impl_front(const vector_t* self) { return impl_at(self, 0); }
 
-static void* impl_back(const cbridge_vector_t* self) {
+static void* impl_back(const vector_t* self) {
     if (!self || self->length == 0) return NULL;
     return self->items[self->length - 1];
 }
@@ -70,7 +70,7 @@ static void* impl_back(const cbridge_vector_t* self) {
 // ============================================================================
 // Modifiers
 // ============================================================================
-static void impl_push_back(cbridge_vector_t* self, void* item) {
+static void impl_push_back(vector_t* self, void* item) {
     if (!self) return;
     if (self->length == self->capacity) {
         impl_grow(self, self->length + 1);
@@ -78,13 +78,13 @@ static void impl_push_back(cbridge_vector_t* self, void* item) {
     self->items[self->length++] = item;
 }
 
-static void impl_pop_back(cbridge_vector_t* self) {
+static void impl_pop_back(vector_t* self) {
     if (self && self->length > 0) {
         self->length--;
     }
 }
 
-static void impl_insert(cbridge_vector_t* self, size_t index, void* item) {
+static void impl_insert(vector_t* self, size_t index, void* item) {
     if (!self) return;
     if (index > self->length) index = self->length;
 
@@ -101,7 +101,7 @@ static void impl_insert(cbridge_vector_t* self, size_t index, void* item) {
     self->length++;
 }
 
-static void impl_erase(cbridge_vector_t* self, size_t index) {
+static void impl_erase(vector_t* self, size_t index) {
     if (!self || index >= self->length) return;
 
     // Shift elements to the left to fill the gap
@@ -111,7 +111,7 @@ static void impl_erase(cbridge_vector_t* self, size_t index) {
     self->length--;
 }
 
-static void impl_clear(cbridge_vector_t* self) {
+static void impl_clear(vector_t* self) {
     if (self) self->length = 0;
 }
 

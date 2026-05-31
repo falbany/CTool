@@ -66,11 +66,9 @@ TEST(DataFrameCore, PushRow) {
 TEST(DataFrameCore, MismatchedRowSize) {
     auto df = createTestDF();
     // Too few
-    EXPECT_THROW(df.pushRow({Cell(105), Cell("Eve")}), std::invalid_argument) 
-        << "Should throw invalid_argument on missing columns";
+    EXPECT_THROW(df.pushRow({Cell(105), Cell("Eve")}), std::invalid_argument) << "Should throw invalid_argument on missing columns";
     // Too many
-    EXPECT_THROW(df.pushRow({Cell(105), Cell("Eve"), Cell(1.0), Cell("Extra")}), std::invalid_argument)
-        << "Should throw invalid_argument on extra columns";
+    EXPECT_THROW(df.pushRow({Cell(105), Cell("Eve"), Cell(1.0), Cell("Extra")}), std::invalid_argument) << "Should throw invalid_argument on extra columns";
 }
 
 TEST(DataFrameCore, Clear) {
@@ -99,7 +97,7 @@ TEST(DataFrameAccess, AtBoundsChecking) {
 }
 
 TEST(DataFrameAccess, GetRow) {
-    auto df = createTestDF();
+    auto              df  = createTestDF();
     std::vector<Cell> row = df.getRow(0);
     ASSERT_EQ(row.size(), 3);
     EXPECT_EQ(row[0].asInt(), 101);
@@ -107,7 +105,7 @@ TEST(DataFrameAccess, GetRow) {
 }
 
 TEST(DataFrameAccess, GetColumn) {
-    auto df = createTestDF();
+    auto              df  = createTestDF();
     std::vector<Cell> col = df.getColumn("Name");
     ASSERT_EQ(col.size(), 3);
     EXPECT_EQ(col[0].asString(), "Alice");
@@ -120,7 +118,7 @@ TEST(DataFrameAccess, GetColumn) {
  * ============================================================================ */
 
 TEST(DataFrameSlicing, Head) {
-    auto df = createTestDF();
+    auto      df   = createTestDF();
     DataFrame top2 = df.head(2);
     EXPECT_EQ(top2.rows(), 2);
     EXPECT_EQ(top2.at(1, "Name").asString(), "Bob");

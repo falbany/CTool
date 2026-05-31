@@ -95,8 +95,8 @@ static string_t* impl_get_parameter(const char* path, const char* key, const cha
     return result;
 }
 
-static cbridge_vector_t* impl_get_files(const char* directory, const char* prefix, const char* suffix) {
-    cbridge_vector_t* vec = cbridge_vector.create();
+static vector_t* impl_get_files(const char* directory, const char* prefix, const char* suffix) {
+    vector_t* vec = cbridge_vector.create();
     if (!directory) return vec;
 
 #ifdef _WIN32

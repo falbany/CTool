@@ -55,9 +55,9 @@ struct cbridge_file_namespace {
      * @param directory The target directory.
      * @param prefix Optional prefix filter (use NULL for none).
      * @param suffix Optional suffix filter (e.g., ".csv", NULL for none).
-     * @return A cbridge_vector_t* containing string_t* objects for each filename.
+     * @return A vector_t* containing string_t* objects for each filename.
      */
-    cbridge_vector_t* (*get_files)(const char* directory, const char* prefix, const char* suffix);
+    vector_t* (*get_files)(const char* directory, const char* prefix, const char* suffix);
 };
 
 LIBCTOOL_API extern const struct cbridge_file_namespace cbridge_file;

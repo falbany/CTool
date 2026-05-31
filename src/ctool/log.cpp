@@ -20,7 +20,7 @@ namespace ctool {
 
         static std::string levelToString(Level level) {
             switch (level) {
-                case Level::Quiet:   return "[QUIET]"; // Should not normally be seen
+                case Level::Quiet:   return "[QUIET]";    // Should not normally be seen
                 case Level::Error:   return "[ERROR]";
                 case Level::Warning: return "[WARN ]";
                 case Level::Info:    return "[INFO ]";

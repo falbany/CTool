@@ -37,7 +37,7 @@ TEST(CtMathBasicStatsTest, SigmaBounds) {
     // Var = ((10-20)^2 + (20-20)^2 + (30-20)^2) / 3 = (100 + 0 + 100) / 3 = 200/3 = 66.666...
     // StdDev = sqrt(200/3) = 8.16496580927726
 
-    auto bounds = calculateSigmaBounds(data, 1.0);
+    auto   bounds         = calculateSigmaBounds(data, 1.0);
     double expectedStdDev = std::sqrt(200.0 / 3.0);
     EXPECT_NEAR(bounds.lowerBound, 20.0 - expectedStdDev, 1e-9);
     EXPECT_NEAR(bounds.upperBound, 20.0 + expectedStdDev, 1e-9);

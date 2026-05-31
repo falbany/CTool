@@ -42,7 +42,7 @@ TEST(CBridgeMathRegression, LogLinearFit) {
 
 TEST(CBridgeMathRegression, LogLinearFitInvalid) {
     double x[] = {1.0, 2.0, 3.0};
-    double y[] = {1.0, 0.0, 3.0}; // Non-positive y
+    double y[] = {1.0, 0.0, 3.0};    // Non-positive y
     size_t n   = 3;
 
     cbridge_reg_result_t res = CBridge.math->logLinearFit(x, y, n);
@@ -53,10 +53,10 @@ TEST(CBridgeMathRegression, LogLinearFitInvalid) {
 }
 
 TEST(CBridgeMathRegression, Residuals) {
-    double x[] = {1.0, 2.0, 3.0};
-    double y[] = {2.1, 3.9, 6.2};
-    size_t n   = 3;
-    double slope = 2.0;
+    double x[]       = {1.0, 2.0, 3.0};
+    double y[]       = {2.1, 3.9, 6.2};
+    size_t n         = 3;
+    double slope     = 2.0;
     double intercept = 0.0;
     double res[3];
 
@@ -119,8 +119,8 @@ TEST(CBridgeMathStats, SigmaBounds) {
     // Variance = ((10-20)^2 + (20-20)^2 + (30-20)^2) / 3 = (100 + 0 + 100) / 3 = 66.66666666666667
     // StdDev = sqrt(200/3) = 8.16496580927726
 
-    cbridge_sigma_bounds_t bounds = CBridge.math->calculateSigmaBounds(data, n, 1.0);
-    double expected_std = sqrt(200.0 / 3.0);
+    cbridge_sigma_bounds_t bounds       = CBridge.math->calculateSigmaBounds(data, n, 1.0);
+    double                 expected_std = sqrt(200.0 / 3.0);
     EXPECT_NEAR(bounds.lower_bound, 20.0 - expected_std, 1e-9);
     EXPECT_NEAR(bounds.upper_bound, 20.0 + expected_std, 1e-9);
 
@@ -135,7 +135,7 @@ TEST(CBridgeMathStats, SigmaBoundsEdgeCases) {
     EXPECT_DOUBLE_EQ(bounds.upper_bound, 0.0);
 
     double single[] = {10.0};
-    bounds = CBridge.math->calculateSigmaBounds(single, 1, 1.0);
+    bounds          = CBridge.math->calculateSigmaBounds(single, 1, 1.0);
     EXPECT_DOUBLE_EQ(bounds.lower_bound, 0.0);
     EXPECT_DOUBLE_EQ(bounds.upper_bound, 0.0);
 }
@@ -143,11 +143,11 @@ TEST(CBridgeMathStats, SigmaBoundsEdgeCases) {
 TEST(CBridgeMathStats, SigmaBoundsAliases) {
     double data[] = {10.0, 20.0, 30.0};
     size_t n      = 3;
-    
+
     // Testing the aliases
     cbridge_sigma_bounds_t lower = calculateSigmaLowerBound(data, n, 1.0);
     cbridge_sigma_bounds_t upper = calculateSigmaUpperBound(data, n, 1.0);
-    
+
     EXPECT_DOUBLE_EQ(lower.lower_bound, upper.lower_bound);
     EXPECT_DOUBLE_EQ(lower.upper_bound, upper.upper_bound);
 }

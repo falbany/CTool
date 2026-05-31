@@ -188,7 +188,7 @@ TEST(ArrayND_Utility, Clear) {
 
 TEST(ArrayND_Utility, Iterators) {
     ctool::array::ArrayND<int> arr = {{1, 2}, {3, 4}};
-    int                       sum = 0;
+    int                        sum = 0;
     for (auto val : arr) {
         sum += val;
     }
@@ -217,4 +217,3 @@ TEST(ArrayND_Arithmetic, MismatchedShapes) {
     EXPECT_THROW(a - b, std::invalid_argument);
     EXPECT_THROW(a * b, std::invalid_argument);
 }
-
