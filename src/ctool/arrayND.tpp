@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "ctool/arrayND.hpp"
 #include <numeric>
 
 namespace ctool {
