@@ -46,6 +46,21 @@ namespace ctool {
             return result;
         }
 
+        SigmaBounds calculateSigmaBounds(const std::vector<double>& inputValues, double sigmaMultiplier) {
+            if (inputValues.size() <= 1) {
+                return {0.0, 0.0};
+            }
+
+            double avg    = mean(inputValues);
+            double stdDev = standardDeviation(inputValues);
+
+            SigmaBounds bounds;
+            bounds.lowerBound = avg - (sigmaMultiplier * stdDev);
+            bounds.upperBound = avg + (sigmaMultiplier * stdDev);
+
+            return bounds;
+        }
+
         RegResult logLinearFit(const std::vector<double>& xValues, const std::vector<double>& yValues) {
             size_t dataSize = xValues.size();
             if (dataSize != yValues.size() || dataSize < 2) {

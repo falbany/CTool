@@ -15,6 +15,7 @@ These functions operate on `std::vector<double>` and return `double` results.
 | `max`               | Maximum value.                            | `double max(const std::vector<double>& data)`               |
 | `variance`          | Population variance ($\sigma^2$).         | `double variance(const std::vector<double>& data)`          |
 | `standardDeviation` | Population standard deviation ($\sigma$). | `double standardDeviation(const std::vector<double>& data)` |
+| `calculateSigmaBounds` | Lower and upper bounds ($mean \pm k\sigma$). | `SigmaBounds calculateSigmaBounds(const std::vector<double>& data, double k)` |
 | `isNear`            | Checks floating-point equality.           | `bool isNear(double a, double b, double epsilon)`           |
 
 ### Advanced Statistics & Preprocessing (Template)
@@ -63,6 +64,10 @@ int main() {
     std::cout << "Min: " << minimum << ", Max: " << maximum << "\n";
     std::cout << "Mean: " << average << ", StdDev: " << stddev << "\n";
     std::cout << "Variance: " << variance << "\n";
+
+    // Sigma Bounds (e.g., 2-sigma range)
+    ctool::math::SigmaBounds bounds = ctool::math::calculateSigmaBounds(data, 2.0);
+    std::cout << "2-Sigma Range: [" << bounds.lowerBound << ", " << bounds.upperBound << "]\n";
 
     return 0;
 }

@@ -43,12 +43,30 @@ namespace ctool {
         };
 
         /**
+         * @brief Result structure for standard deviation bounds (empirical rule).
+         */
+        struct SigmaBounds {
+            double lowerBound;    ///< The lower bound (mean - k * stdDev).
+            double upperBound;    ///< The upper bound (mean + k * stdDev).
+        };
+
+        /**
          * @brief Performs a linear least-squares fit on a dataset.
          * @param x Vector of independent values (e.g., Drain-Source Voltage).
          * @param y Vector of dependent values (e.g., Drain-Source Current).
          * @return RegResult containing the calculated model.
          */
         LIBCTOOL_API RegResult linearFit(const std::vector<double>& inputX, const std::vector<double>& inputY);
+
+        /**
+         * @brief Calculates the lower and upper bounds based on a standard deviation multiplier.
+         * @note Utilizes the existing mean and standard deviation functions.
+         *       If the input dataset has 1 or fewer elements, both bounds are set to 0.0.
+         * @param inputValues Vector of numeric values.
+         * @param sigmaMultiplier The multiplier for the standard deviation (e.g., 1.0, 2.0, 3.0).
+         * @return SigmaBounds containing the lower and upper bounds.
+         */
+        LIBCTOOL_API SigmaBounds calculateSigmaBounds(const std::vector<double>& inputValues, double sigmaMultiplier);
 
 
         /**

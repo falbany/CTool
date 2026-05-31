@@ -31,6 +31,33 @@ TEST(CtMathBasicStatsTest, MinMaxMean) {
     EXPECT_DOUBLE_EQ(mean(empty), 0.0);
 }
 
+TEST(CtMathBasicStatsTest, SigmaBounds) {
+    std::vector<double> data = {10.0, 20.0, 30.0};
+    // Mean = 20.0
+    // Var = ((10-20)^2 + (20-20)^2 + (30-20)^2) / 3 = (100 + 0 + 100) / 3 = 200/3 = 66.666...
+    // StdDev = sqrt(200/3) = 8.16496580927726
+
+    auto bounds = calculateSigmaBounds(data, 1.0);
+    double expectedStdDev = std::sqrt(200.0 / 3.0);
+    EXPECT_NEAR(bounds.lowerBound, 20.0 - expectedStdDev, 1e-9);
+    EXPECT_NEAR(bounds.upperBound, 20.0 + expectedStdDev, 1e-9);
+
+    // 2 sigma
+    auto bounds2 = calculateSigmaBounds(data, 2.0);
+    EXPECT_NEAR(bounds2.lowerBound, 20.0 - 2.0 * expectedStdDev, 1e-9);
+    EXPECT_NEAR(bounds2.upperBound, 20.0 + 2.0 * expectedStdDev, 1e-9);
+
+    // Edge case: empty vector
+    auto emptyBounds = calculateSigmaBounds({}, 3.0);
+    EXPECT_DOUBLE_EQ(emptyBounds.lowerBound, 0.0);
+    EXPECT_DOUBLE_EQ(emptyBounds.upperBound, 0.0);
+
+    // Edge case: 1 element
+    auto singleBounds = calculateSigmaBounds({5.0}, 3.0);
+    EXPECT_DOUBLE_EQ(singleBounds.lowerBound, 0.0);
+    EXPECT_DOUBLE_EQ(singleBounds.upperBound, 0.0);
+}
+
 TEST(CtMathBasicStatsTest, VarianceAndStdDev) {
     std::vector<double> data = {2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0};
     // Mean = 5.0
