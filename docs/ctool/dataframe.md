@@ -83,7 +83,7 @@ The main class storing data in **column-major** format for better cache locality
 | Method                                  | Description                                                |
 | --------------------------------------- | ---------------------------------------------------------- |
 | `DataFrame()`                           | Constructs an empty DataFrame.                             |
-| `addColumn(const std::string& name)`    | Adds a new column header. Case-sensitive, must be unique.  |
+| `addColumn(const std::string& name)`    | Adds a new column header. Case-sensitive.                  |
 | `pushRow(const std::vector<Cell>& row)` | Appends a row. Size must match column count.               |
 | `clear()`                               | Removes all columns and data, resetting to an empty state. |
 
@@ -124,14 +124,8 @@ The main class storing data in **column-major** format for better cache locality
 
 > **Note:** Import functions are free functions in the `ctool::data` namespace, while export functions are member methods of `DataFrame`.
 
-#### Exceptions
-
-| Method        | Exception               | Condition                           |
-| ------------- | ----------------------- | ----------------------------------- |
-| `pushRow()`   | `std::invalid_argument` | Row size doesn't match column count |
-| `at()`        | `std::out_of_range`     | Invalid row index or column name    |
-| `getRow()`    | `std::out_of_range`     | Invalid row index                   |
-| `getColumn()` | `std::out_of_range`     | Column name not found               |
+- **`at()`**, **`getRow()`**, **`getColumn()`**: Throw `std::out_of_range` on invalid indices or column names.
+- **`pushRow()`**: Throws `std::invalid_argument` if row size doesn't match column count.
 
 ---
 
