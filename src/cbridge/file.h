@@ -61,15 +61,43 @@ struct cbridge_file_namespace {
  *       If startLine > endLine (after normalization), returns an empty string.
  *       A value of 0 for startLine or endLine is internally treated as 1.
  */
-string_t* (*read_lines)(const char* path, size_t startLine, size_t endLine);
+    string_t* (*read_lines)(const char* path, size_t startLine, size_t endLine);
 
-/**
+    /**
      * @param directory The target directory.
      * @param prefix Optional prefix filter (use NULL for none).
      * @param suffix Optional suffix filter (e.g., ".csv", NULL for none).
      * @return A vector_t* containing string_t* objects for each filename.
      */
     vector_t* (*get_files)(const char* directory, const char* prefix, const char* suffix);
+
+    /**
+     * @brief Writes the entire string content to a file, creating or overwriting it.
+     * @param path Path to the target file.
+     * @param content Null-terminated string to write. If NULL, treated as an empty string.
+     * @return true on success, false on failure.
+     * @note Returns false if path is NULL. Opens file in text mode ("w").
+     */
+    bool (*write_all)(const char* path, const char* content);
+
+    /**
+     * @brief Appends the entire string content to a file, creating it if it doesn't exist.
+     * @param path Path to the target file.
+     * @param content Null-terminated string to append. If NULL, treated as an empty string.
+     * @return true on success, false on failure.
+     * @note Returns false if path is NULL. Opens file in append mode ("a").
+     */
+    bool (*append_all)(const char* path, const char* content);
+
+    /**
+     * @brief Extracts the file extension (including the dot) from the last '.' in the filename.
+     * @param path Path to the file.
+     * @return A new string_t* containing the extension (e.g., ".csv"), or an empty string_t* if none found.
+     * @note Returns an empty string_t* if path is NULL or no extension exists.
+     *       Only considers the filename portion (after the last '/' or '\\').
+     *       Callers are responsible for cbridge_string.free() on the returned pointer.
+     */
+    string_t* (*get_extension)(const char* path);
 };
 
 LIBCTOOL_API extern const struct cbridge_file_namespace cbridge_file;

@@ -14,6 +14,9 @@ The `cbridge::file` module provides high-level filesystem utilities for pure C. 
 | `get_parameter(path, key, sep)` | Parses a config file for a specific key (ignores comments). |
 | `get_files(dir, pref, suff)`    | Returns a `vector_t*` of filenames.              |
 | `remove(path)`                  | Deletes a file from the disk.                     |
+| `write_all(path, content)`      | Writes a string to a file, overwriting.          |
+| `append_all(path, content)`     | Appends a string to a file, creating if needed.  |
+| `get_extension(path)`           | Extracts the file extension (e.g., `.csv`).      |
 
 ## Usage Examples
 
@@ -57,4 +60,76 @@ cbridge_string.free(lines);
 // - If startLine is 0, it is internally treated as 1
 // - If endLine is 0, it is internally treated as 1
 // - Negative values are not allowed (size_t is unsigned)
+```
+
+### Writing to a File
+```c
+// Write content to a file (creates or overwrites)
+if (cbridge_file.write_all("output.txt", "Hello, World!")) {
+    printf("File written successfully\n");
+}
+
+// NULL content is treated as empty string
+cbridge_file.write_all("empty.txt", NULL);
+
+// Handle NULL path
+if (!cbridge_file.write_all(NULL, "content")) {
+    printf("Error: NULL path returned false\n");
+}
+```
+
+### Appending to a File
+```c
+// Append content to a file (creates if doesn't exist)
+cbridge_file.append_all("log.txt", "New log entry\n");
+
+// Append to existing file preserves previous content
+cbridge_file.append_all("data.txt", "\nAdditional data\n");
+
+// NULL path returns false
+if (!cbridge_file.append_all(NULL, "content")) {
+    printf("Error: NULL path returned false\n");
+}
+```
+
+### Getting File Extension
+```c
+// Extract extension from a simple filename
+string_t* ext = cbridge_file.get_extension("file.txt");
+printf("Extension: %s\n", cbridge_string.c_str(ext));  // Output: .txt
+cbridge_string.free(ext);
+
+// Extract from path with directories
+ext = cbridge_file.get_extension("/path/to/data.csv");
+printf("Extension: %s\n", cbridge_string.c_str(ext));  // Output: .csv
+cbridge_string.free(ext);
+
+// No extension returns empty string
+ext = cbridge_file.get_extension("Makefile");
+if (cbridge_string.empty(ext)) {
+    printf("No extension found\n");
+}
+cbridge_string.free(ext);
+
+// Multiple dots - returns last extension
+ext = cbridge_file.get_extension("archive.tar.gz");
+printf("Extension: %s\n", cbridge_string.c_str(ext));  // Output: .gz
+cbridge_string.free(ext);
+
+// Hidden files (dotfile) have no extension
+ext = cbridge_file.get_extension(".gitignore");
+if (cbridge_string.empty(ext)) {
+    printf("No extension for hidden file\n");
+}
+cbridge_string.free(ext);
+
+// Windows paths work correctly
+ext = cbridge_file.get_extension("C:\\Users\\file.log");
+printf("Extension: %s\n", cbridge_string.c_str(ext));  // Output: .log
+cbridge_string.free(ext);
+
+// NULL path returns empty string
+ext = cbridge_file.get_extension(NULL);
+EXPECT_TRUE(cbridge_string.empty(ext));
+cbridge_string.free(ext);
 ```

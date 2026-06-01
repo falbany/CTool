@@ -161,8 +161,12 @@ static string_t* impl_read_lines(const char* path, size_t startLine, size_t endL
     }
 
     /* Treat 0 as 1 for both startLine and endLine (1-based indexing) */
-    if (startLine == 0) {startLine = 1; }
-    if (endLine == 0) {endLine = 1; }
+    if (startLine == 0) {
+        startLine = 1;
+    }
+    if (endLine == 0) {
+        endLine = 1;
+    }
 
     /* Invalid range: start must not exceed end */
     if (startLine > endLine) {
@@ -176,10 +180,10 @@ static string_t* impl_read_lines(const char* path, size_t startLine, size_t endL
     }
 
     /* --- Single pass: skip to startLine, then collect until endLine --- */
-    char        line[4096];
-    size_t      currentLine = 0;
-    string_t*   result      = NULL;
-    bool        inRange     = false;
+    char      line[4096];
+    size_t    currentLine = 0;
+    string_t* result      = NULL;
+    bool      inRange     = false;
 
     while (fgets(line, sizeof(line), f)) {
         currentLine++;
@@ -227,12 +231,55 @@ static string_t* impl_read_lines(const char* path, size_t startLine, size_t endL
     return result;
 }
 
-const struct cbridge_file_namespace cbridge_file = {
-    .exists                = impl_exists,
-    .get_size              = impl_get_size,
-    .read_all              = impl_read_all,
-    .get_working_directory = impl_get_working_directory,
-    .get_parameter         = impl_get_parameter,
-    .read_lines            = impl_read_lines,
-    .get_files             = impl_get_files
-};
+static bool impl_write_all(const char* path, const char* content) {
+    if (!path) return false;
+        /* Use binary mode to avoid CRLF translation on Windows so tests observe exact bytes */
+        FILE* f = fopen(path, "wb");
+    if (!f) return false;
+    if (content) fputs(content, f);
+    fclose(f);
+    return true;
+}
+
+static bool impl_append_all(const char* path, const char* content) {
+    if (!path) return false;
+        /* Use binary append to avoid CRLF translation on Windows */
+        FILE* f = fopen(path, "ab");
+    if (!f) return false;
+    if (content) fputs(content, f);
+    fclose(f);
+    return true;
+}
+
+static string_t* impl_get_extension(const char* path) {
+    if (!path) return cbridge_string.create("");
+
+    // Find last dot in the filename portion
+    const char* dot = strrchr(path, '.');
+    if (!dot) return cbridge_string.create("");
+
+    // Make sure the dot is in the filename, not just a path separator
+    // e.g., "/path/to/.hidden" should return "" (no extension)
+    const char* lastSlash = NULL;
+    const char* p         = path;
+    while (*p) {
+        if (*p == '/' || *p == '\\') lastSlash = p + 1;
+        p++;
+    }
+    if (!lastSlash) lastSlash = path;
+
+    if (dot <= lastSlash) return cbridge_string.create("");
+
+    return cbridge_string.create(dot);
+}
+
+const struct cbridge_file_namespace cbridge_file = {.exists                = impl_exists,
+                                                    .get_size              = impl_get_size,
+                                                    .read_all              = impl_read_all,
+                                                    .get_working_directory = impl_get_working_directory,
+                                                    .get_parameter         = impl_get_parameter,
+                                                    .read_lines            = impl_read_lines,
+                                                    .get_files             = impl_get_files,
+                                                    .write_all             = impl_write_all,
+                                                    .append_all            = impl_append_all,
+                                                    .get_extension         = impl_get_extension};

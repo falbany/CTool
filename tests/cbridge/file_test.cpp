@@ -49,9 +49,10 @@ static string_t* createTempFile(const char* prefix, const char* content) {
     }
 #endif
     if (content) {
-        FILE* f = fopen(template_buf, "w");
+        FILE* f = fopen(template_buf, "wb");
         if (f) {
-            fprintf(f, "%s", content);
+            /* Write in binary mode to preserve LF line endings on Windows */
+            fwrite(content, 1, strlen(content), f);
             fclose(f);
         }
     }
@@ -734,8 +735,8 @@ TEST(CbFileReadLines, StartExceedsTotalLines) {
 }
 
 TEST(CbFileReadLines, EmptyFile) {
-    string_t*   path    = createTempFile("readlines_empty_test", "");
-    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 5);
+    string_t* path   = createTempFile("readlines_empty_test", "");
+    string_t* result = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 5);
     EXPECT_NE(result, nullptr);
     EXPECT_TRUE(cbridge_string.empty(result));
     remove(cbridge_string.c_str(path));
@@ -834,7 +835,7 @@ TEST(CbFileReadLines, PartialRangeMiddle) {
 }
 
 TEST(CbFileReadLines, LargeNumberedLines) {
-    string_t*   path    = createTempFile("readlines_largenum_test", "");
+    string_t* path = createTempFile("readlines_largenum_test", "");
     /* Create a file with many lines */
     FILE* f = fopen(cbridge_string.c_str(path), "w");
     if (f) {
@@ -851,5 +852,168 @@ TEST(CbFileReadLines, LargeNumberedLines) {
 
     remove(cbridge_string.c_str(path));
     cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+/* ============================================================================
+ * write_all() Tests
+ * ============================================================================ */
+
+TEST(CbFileWriteAll, NullPathReturnsFalse) { EXPECT_FALSE(cbridge_file.write_all(NULL, "content")); }
+
+TEST(CbFileWriteAll, WriteContentSuccessfully) {
+    string_t* path = createTempFile("write_all_test", "");
+    remove(cbridge_string.c_str(path));
+
+    EXPECT_TRUE(cbridge_file.write_all(cbridge_string.c_str(path), "Hello, World!"));
+    EXPECT_TRUE(cbridge_file.exists(cbridge_string.c_str(path)));
+
+    string_t* content = cbridge_file.read_all(cbridge_string.c_str(path));
+    EXPECT_NE(content, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(content), "Hello, World!");
+
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(content);
+}
+
+TEST(CbFileWriteAll, OverwriteExistingFile) {
+    string_t* path = createTempFile("write_overwrite_test", "Original Content");
+
+    EXPECT_TRUE(cbridge_file.write_all(cbridge_string.c_str(path), "New Content"));
+
+    string_t* content = cbridge_file.read_all(cbridge_string.c_str(path));
+    EXPECT_NE(content, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(content), "New Content");
+
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(content);
+}
+
+TEST(CbFileWriteAll, WriteEmptyContent) {
+    string_t* path = createTempFile("write_empty_test", "");
+    remove(cbridge_string.c_str(path));
+
+    EXPECT_TRUE(cbridge_file.write_all(cbridge_string.c_str(path), ""));
+    EXPECT_TRUE(cbridge_file.exists(cbridge_string.c_str(path)));
+    EXPECT_EQ(cbridge_file.get_size(cbridge_string.c_str(path)), 0LL);
+
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+}
+
+TEST(CbFileWriteAll, NullContentTreatedAsEmpty) {
+    string_t* path = createTempFile("write_null_content_test", "");
+    remove(cbridge_string.c_str(path));
+
+    EXPECT_TRUE(cbridge_file.write_all(cbridge_string.c_str(path), NULL));
+    EXPECT_TRUE(cbridge_file.exists(cbridge_string.c_str(path)));
+    EXPECT_EQ(cbridge_file.get_size(cbridge_string.c_str(path)), 0LL);
+
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+}
+
+/* ============================================================================
+ * append_all() Tests
+ * ============================================================================ */
+
+TEST(CbFileAppendAll, NullPathReturnsFalse) { EXPECT_FALSE(cbridge_file.append_all(NULL, "content")); }
+
+TEST(CbFileAppendAll, AppendToNewFile) {
+    string_t* path = createTempFile("append_new_test", "");
+    remove(cbridge_string.c_str(path));
+
+    EXPECT_TRUE(cbridge_file.append_all(cbridge_string.c_str(path), "First Line\n"));
+    EXPECT_TRUE(cbridge_file.exists(cbridge_string.c_str(path)));
+
+    string_t* content = cbridge_file.read_all(cbridge_string.c_str(path));
+    EXPECT_NE(content, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(content), "First Line\n");
+
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(content);
+}
+
+TEST(CbFileAppendAll, AppendToExistingFile) {
+    string_t* path = createTempFile("append_existing_test", "First Line\n");
+
+    EXPECT_TRUE(cbridge_file.append_all(cbridge_string.c_str(path), "Second Line\n"));
+
+    string_t* content = cbridge_file.read_all(cbridge_string.c_str(path));
+    EXPECT_NE(content, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(content), "First Line\nSecond Line\n");
+
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(content);
+}
+
+TEST(CbFileAppendAll, AppendEmptyContent) {
+    string_t* path = createTempFile("append_empty_test", "Original\n");
+
+    EXPECT_TRUE(cbridge_file.append_all(cbridge_string.c_str(path), ""));
+
+    string_t* content = cbridge_file.read_all(cbridge_string.c_str(path));
+    EXPECT_NE(content, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(content), "Original\n");
+
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(content);
+}
+
+/* ============================================================================
+ * get_extension() Tests
+ * ============================================================================ */
+
+TEST(CbFileGetExtension, NullPathReturnsEmpty) {
+    string_t* result = cbridge_file.get_extension(NULL);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetExtension, SimpleExtension) {
+    string_t* result = cbridge_file.get_extension("file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), ".txt");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetExtension, PathWithExtension) {
+    string_t* result = cbridge_file.get_extension("/path/to/file.csv");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), ".csv");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetExtension, NoExtension) {
+    string_t* result = cbridge_file.get_extension("Makefile");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetExtension, MultipleDots) {
+    string_t* result = cbridge_file.get_extension("archive.tar.gz");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), ".gz");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetExtension, HiddenFile) {
+    string_t* result = cbridge_file.get_extension(".gitignore");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetExtension, WindowsPath) {
+    string_t* result = cbridge_file.get_extension("C:\\dir\\file.log");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), ".log");
     cbridge_string.free(result);
 }
