@@ -11,6 +11,7 @@
 #else
     #include <unistd.h>
     #include <dirent.h>
+    #include <sys/stat.h>
     #define GetCurrentDir getcwd
 #endif
 
@@ -233,8 +234,8 @@ static string_t* impl_read_lines(const char* path, size_t startLine, size_t endL
 
 static bool impl_write_all(const char* path, const char* content) {
     if (!path) return false;
-        /* Use binary mode to avoid CRLF translation on Windows so tests observe exact bytes */
-        FILE* f = fopen(path, "wb");
+    /* Use binary mode to avoid CRLF translation on Windows so tests observe exact bytes */
+    FILE* f = fopen(path, "wb");
     if (!f) return false;
     if (content) fputs(content, f);
     fclose(f);
@@ -243,8 +244,8 @@ static bool impl_write_all(const char* path, const char* content) {
 
 static bool impl_append_all(const char* path, const char* content) {
     if (!path) return false;
-        /* Use binary append to avoid CRLF translation on Windows */
-        FILE* f = fopen(path, "ab");
+    /* Use binary append to avoid CRLF translation on Windows */
+    FILE* f = fopen(path, "ab");
     if (!f) return false;
     if (content) fputs(content, f);
     fclose(f);
@@ -273,6 +274,52 @@ static string_t* impl_get_extension(const char* path) {
     return cbridge_string.create(dot);
 }
 
+static bool impl_remove(const char* path) {
+    if (!path) return false;
+    return (remove(path) == 0);
+}
+
+static bool impl_copy(const char* src, const char* dest) {
+    if (!src || !dest) return false;
+
+    FILE* fsrc = fopen(src, "rb");
+    if (!fsrc) return false;
+
+    FILE* fdest = fopen(dest, "wb");
+    if (!fdest) {
+        fclose(fsrc);
+        return false;
+    }
+
+    char   buf[4096];
+    size_t n;
+    while ((n = fread(buf, 1, sizeof(buf), fsrc)) > 0) {
+        if (fwrite(buf, 1, n, fdest) != n) {
+            fclose(fsrc);
+            fclose(fdest);
+            return false;
+        }
+    }
+
+    fclose(fsrc);
+    bool ok = (fclose(fdest) == 0);
+    return ok;
+}
+
+static bool impl_is_directory(const char* path) {
+    if (!path) return false;
+
+#ifdef _WIN32
+    DWORD attrs = GetFileAttributesA(path);
+    if (attrs == INVALID_FILE_ATTRIBUTES) return false;
+    return (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0;
+#else
+    struct stat st;
+    if (stat(path, &st) != 0) return false;
+    return S_ISDIR(st.st_mode);
+#endif
+}
+
 const struct cbridge_file_namespace cbridge_file = {.exists                = impl_exists,
                                                     .get_size              = impl_get_size,
                                                     .read_all              = impl_read_all,
@@ -282,4 +329,7 @@ const struct cbridge_file_namespace cbridge_file = {.exists                = imp
                                                     .get_files             = impl_get_files,
                                                     .write_all             = impl_write_all,
                                                     .append_all            = impl_append_all,
-                                                    .get_extension         = impl_get_extension};
+                                                    .get_extension         = impl_get_extension,
+                                                    .remove                = impl_remove,
+                                                    .copy                  = impl_copy,
+                                                    .is_directory          = impl_is_directory};

@@ -14,6 +14,8 @@ The `cbridge::file` module provides high-level filesystem utilities for pure C. 
 | `get_parameter(path, key, sep)` | Parses a config file for a specific key (ignores comments). |
 | `get_files(dir, pref, suff)`    | Returns a `vector_t*` of filenames.              |
 | `remove(path)`                  | Deletes a file from the disk.                     |
+| `copy(src, dest)`               | Copies a file from `src` to `dest`, overwriting `dest` if it exists. |
+| `is_directory(path)`            | Returns `true` if the path exists and is a directory. |
 | `write_all(path, content)`      | Writes a string to a file, overwriting.          |
 | `append_all(path, content)`     | Appends a string to a file, creating if needed.  |
 | `get_extension(path)`           | Extracts the file extension (e.g., `.csv`).      |
@@ -132,4 +134,67 @@ cbridge_string.free(ext);
 ext = cbridge_file.get_extension(NULL);
 EXPECT_TRUE(cbridge_string.empty(ext));
 cbridge_string.free(ext);
+```
+
+### Deleting a File
+```c
+// Delete a file from disk
+if (cbridge_file.remove("temp_output.txt")) {
+    printf("File deleted successfully\n");
+}
+
+// Returns false if file does not exist
+if (!cbridge_file.remove("nonexistent.txt")) {
+    printf("Failed to delete file (may not exist)\n");
+}
+
+// NULL path returns false
+if (!cbridge_file.remove(NULL)) {
+    printf("Error: NULL path returned false\n");
+}
+```
+
+### Copying a File
+```c
+// Copy a file from source to destination
+if (cbridge_file.copy("source.txt", "backup.txt")) {
+    printf("File copied successfully\n");
+}
+
+// Overwrites destination if it already exists
+cbridge_file.copy("new_data.csv", "data.csv");
+
+// Returns false if source does not exist
+if (!cbridge_file.copy("missing.txt", "dest.txt")) {
+    printf("Failed to copy file\n");
+}
+
+// NULL source or destination returns false
+cbridge_file.copy(NULL, "dest.txt");   // Returns false
+cbridge_file.copy("source.txt", NULL); // Returns false
+```
+
+### Checking for a Directory
+```c
+// Check if a path is a directory
+if (cbridge_file.is_directory("./data")) {
+    printf("Path is a directory\n");
+} else {
+    printf("Path is not a directory or does not exist\n");
+}
+
+// Returns false for files
+if (!cbridge_file.is_directory("config.txt")) {
+    printf("config.txt is not a directory\n");
+}
+
+// Returns false for non-existent paths
+if (!cbridge_file.is_directory("/nonexistent/path")) {
+    printf("Path does not exist\n");
+}
+
+// NULL path returns false
+if (!cbridge_file.is_directory(NULL)) {
+    printf("Error: NULL path returned false\n");
+}
 ```

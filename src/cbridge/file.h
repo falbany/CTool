@@ -98,6 +98,29 @@ struct cbridge_file_namespace {
      *       Callers are responsible for cbridge_string.free() on the returned pointer.
      */
     string_t* (*get_extension)(const char* path);
+
+    /**
+     * @brief Deletes a file from disk.
+     * @param path Path to the file to remove.
+     * @return true on success, false on failure.
+     * @note Returns false if `path` is NULL or removal fails (permissions, not found).
+     */
+    bool (*remove)(const char* path);
+
+    /**
+     * @brief Copies a file from `src` to `dest`, overwriting `dest` if it exists.
+     * @param src Source file path.
+     * @param dest Destination file path.
+     * @return true on success, false on failure.
+     */
+    bool (*copy)(const char* src, const char* dest);
+
+    /**
+     * @brief Returns whether a path exists and is a directory.
+     * @param path Path to test.
+     * @return true if the path exists and is a directory, false otherwise.
+     */
+    bool (*is_directory)(const char* path);
 };
 
 LIBCTOOL_API extern const struct cbridge_file_namespace cbridge_file;

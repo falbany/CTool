@@ -1017,3 +1017,181 @@ TEST(CbFileGetExtension, WindowsPath) {
     EXPECT_STREQ(cbridge_string.c_str(result), ".log");
     cbridge_string.free(result);
 }
+
+/* ============================================================================
+ * remove() Tests
+ * ============================================================================ */
+
+TEST(CbFileRemove, NullPathReturnsFalse) { EXPECT_FALSE(cbridge_file.remove(NULL)); }
+
+TEST(CbFileRemove, NonExistentFileReturnsFalse) { EXPECT_FALSE(cbridge_file.remove("/this/path/should/not/exist_12345.txt")); }
+
+TEST(CbFileRemove, DeletesExistingFile) {
+    string_t* path = createTempFile("remove_test", "delete me");
+    EXPECT_TRUE(cbridge_file.exists(cbridge_string.c_str(path)));
+    EXPECT_TRUE(cbridge_file.remove(cbridge_string.c_str(path)));
+    EXPECT_FALSE(cbridge_file.exists(cbridge_string.c_str(path)));
+    cbridge_string.free(path);
+}
+
+TEST(CbFileRemove, DoubleRemoveReturnsFalse) {
+    string_t* path = createTempFile("remove_double_test", "delete me");
+    EXPECT_TRUE(cbridge_file.remove(cbridge_string.c_str(path)));
+    EXPECT_FALSE(cbridge_file.remove(cbridge_string.c_str(path)));
+    cbridge_string.free(path);
+}
+
+/* ============================================================================
+ * copy() Tests
+ * ============================================================================ */
+
+TEST(CbFileCopy, NullSourceReturnsFalse) { EXPECT_FALSE(cbridge_file.copy(NULL, "dest.txt")); }
+
+TEST(CbFileCopy, NullDestReturnsFalse) {
+    string_t* path = createTempFile("copy_null_dest_test", "source content");
+    EXPECT_FALSE(cbridge_file.copy(cbridge_string.c_str(path), NULL));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+}
+
+TEST(CbFileCopy, NonExistentSourceReturnsFalse) { EXPECT_FALSE(cbridge_file.copy("/this/path/should/not/exist_12345.txt", "dest.txt")); }
+
+TEST(CbFileCopy, CopiesFileSuccessfully) {
+    string_t* src_path = createTempFile("copy_src_test", "Hello, copied world!");
+    char      dest_buf[512];
+#ifdef _WIN32
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "C:\\Temp";
+    sprintf(dest_buf, "%s\\copy_dest_test.tmp", tmpdir);
+#else
+    sprintf(dest_buf, "/tmp/copy_dest_test.tmp");
+#endif
+
+    EXPECT_FALSE(cbridge_file.exists(dest_buf));
+    EXPECT_TRUE(cbridge_file.copy(cbridge_string.c_str(src_path), dest_buf));
+    EXPECT_TRUE(cbridge_file.exists(dest_buf));
+
+    string_t* content = cbridge_file.read_all(dest_buf);
+    EXPECT_NE(content, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(content), "Hello, copied world!");
+
+    remove(cbridge_string.c_str(src_path));
+    remove(dest_buf);
+    cbridge_string.free(src_path);
+    cbridge_string.free(content);
+}
+
+TEST(CbFileCopy, OverwriteExistingDest) {
+    string_t* src_path  = createTempFile("copy_overwrite_src_test", "New Content");
+    string_t* dest_path = createTempFile("copy_overwrite_dest_test", "Old Content");
+
+    EXPECT_TRUE(cbridge_file.copy(cbridge_string.c_str(src_path), cbridge_string.c_str(dest_path)));
+
+    string_t* content = cbridge_file.read_all(cbridge_string.c_str(dest_path));
+    EXPECT_NE(content, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(content), "New Content");
+
+    remove(cbridge_string.c_str(src_path));
+    remove(cbridge_string.c_str(dest_path));
+    cbridge_string.free(src_path);
+    cbridge_string.free(dest_path);
+    cbridge_string.free(content);
+}
+
+TEST(CbFileCopy, CopyEmptyFile) {
+    string_t* src_path = createTempFile("copy_empty_src_test", "");
+    char      dest_buf[512];
+#ifdef _WIN32
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "C:\\Temp";
+    sprintf(dest_buf, "%s\\copy_empty_dest_test.tmp", tmpdir);
+#else
+    sprintf(dest_buf, "/tmp/copy_empty_dest_test.tmp");
+#endif
+
+    EXPECT_TRUE(cbridge_file.copy(cbridge_string.c_str(src_path), dest_buf));
+    EXPECT_TRUE(cbridge_file.exists(dest_buf));
+    EXPECT_EQ(cbridge_file.get_size(dest_buf), 0LL);
+
+    remove(cbridge_string.c_str(src_path));
+    remove(dest_buf);
+    cbridge_string.free(src_path);
+}
+
+TEST(CbFileCopy, CopyBinaryContent) {
+    string_t* src_path = createTempFile("copy_binary_src_test", "");
+    /* Write binary content directly (avoid null bytes so read_all works correctly) */
+    FILE* f = fopen(cbridge_string.c_str(src_path), "wb");
+    if (f) {
+        unsigned char binary_data[] = {0x01, 0x02, 0x03, 0xFF, 0xFE, 0xFD};
+        fwrite(binary_data, 1, sizeof(binary_data), f);
+        fclose(f);
+    }
+
+    char dest_buf[512];
+#ifdef _WIN32
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "C:\\Temp";
+    sprintf(dest_buf, "%s\\copy_binary_dest_test.tmp", tmpdir);
+#else
+    sprintf(dest_buf, "/tmp/copy_binary_dest_test.tmp");
+#endif
+
+    EXPECT_TRUE(cbridge_file.copy(cbridge_string.c_str(src_path), dest_buf));
+    EXPECT_EQ(cbridge_file.get_size(dest_buf), 6LL);
+
+    string_t* content = cbridge_file.read_all(dest_buf);
+    EXPECT_NE(content, nullptr);
+    EXPECT_EQ(cbridge_string.length(content), 6ULL);
+
+    remove(cbridge_string.c_str(src_path));
+    remove(dest_buf);
+    cbridge_string.free(src_path);
+    cbridge_string.free(content);
+}
+
+/* ============================================================================
+ * is_directory() Tests
+ * ============================================================================ */
+
+TEST(CbFileIsDirectory, NullPathReturnsFalse) { EXPECT_FALSE(cbridge_file.is_directory(NULL)); }
+
+TEST(CbFileIsDirectory, NonExistentPathReturnsFalse) { EXPECT_FALSE(cbridge_file.is_directory("/this/path/should/not/exist_12345")); }
+
+TEST(CbFileIsDirectory, FileReturnsFalse) {
+    string_t* path = createTempFile("isdir_file_test", "not a directory");
+    EXPECT_FALSE(cbridge_file.is_directory(cbridge_string.c_str(path)));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+}
+
+TEST(CbFileIsDirectory, CurrentDirReturnsTrue) { EXPECT_TRUE(cbridge_file.is_directory(".")); }
+
+TEST(CbFileIsDirectory, TempDirReturnsTrue) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+    EXPECT_TRUE(cbridge_file.is_directory(tmpdir));
+}
+
+TEST(CbFileIsDirectory, WorkingDirectoryReturnsTrue) {
+    string_t* cwd = cbridge_file.get_working_directory();
+    EXPECT_TRUE(cbridge_file.is_directory(cbridge_string.c_str(cwd)));
+    cbridge_string.free(cwd);
+}
+
+TEST(CbFileIsDirectory, CreatedTempDirectory) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_isdir_test_dir", tmpdir);
+#ifdef _WIN32
+    _mkdir(dir_path);
+#else
+    mkdir(dir_path, 0755);
+#endif
+
+    EXPECT_TRUE(cbridge_file.is_directory(dir_path));
+    rmdir(dir_path);
+    EXPECT_FALSE(cbridge_file.is_directory(dir_path));
+}
