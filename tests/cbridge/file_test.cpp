@@ -1195,3 +1195,396 @@ TEST(CbFileIsDirectory, CreatedTempDirectory) {
     rmdir(dir_path);
     EXPECT_FALSE(cbridge_file.is_directory(dir_path));
 }
+
+/* ============================================================================
+ * get_filename() Tests
+ * ============================================================================ */
+
+TEST(CbFileGetFilename, NullPathReturnsEmpty) {
+    string_t* result = cbridge_file.get_filename(NULL);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, EmptyPathReturnsEmpty) {
+    string_t* result = cbridge_file.get_filename("");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, SimpleFilename) {
+    string_t* result = cbridge_file.get_filename("file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "file.txt");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, UnixPath) {
+    string_t* result = cbridge_file.get_filename("/path/to/file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "file.txt");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, WindowsPath) {
+    string_t* result = cbridge_file.get_filename("C:\\Users\\Documents\\report.csv");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "report.csv");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, MixedSeparators) {
+    string_t* result = cbridge_file.get_filename("/path\\to\\file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "file.txt");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, NoExtension) {
+    string_t* result = cbridge_file.get_filename("/path/to/Makefile");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Makefile");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, HiddenFile) {
+    string_t* result = cbridge_file.get_filename("/home/user/.gitignore");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), ".gitignore");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, TrailingSlash) {
+    // "/path/to/" should return empty string (nothing after last separator)
+    string_t* result = cbridge_file.get_filename("/path/to/");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, RootPath) {
+    string_t* result = cbridge_file.get_filename("/");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, DoubleExtension) {
+    string_t* result = cbridge_file.get_filename("/path/to/archive.tar.gz");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "archive.tar.gz");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetFilename, WindowsRootPath) {
+    string_t* result = cbridge_file.get_filename("C:\\");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+/* ============================================================================
+ * create_directory() Tests
+ * ============================================================================ */
+
+TEST(CbFileCreateDirectory, NullPathReturnsFalse) { EXPECT_FALSE(cbridge_file.create_directory(NULL)); }
+
+TEST(CbFileCreateDirectory, CreatesNewDirectory) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_createdir_test", tmpdir);
+
+    // Ensure it doesn't already exist
+    rmdir(dir_path);
+    remove(dir_path);
+
+    EXPECT_TRUE(cbridge_file.create_directory(dir_path));
+    EXPECT_TRUE(cbridge_file.is_directory(dir_path));
+
+    rmdir(dir_path);
+}
+
+TEST(CbFileCreateDirectory, ExistingDirectoryReturnsFalse) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_createdir_exists_test", tmpdir);
+#ifdef _WIN32
+    _mkdir(dir_path);
+#else
+    mkdir(dir_path, 0755);
+#endif
+
+    EXPECT_FALSE(cbridge_file.create_directory(dir_path));
+
+    rmdir(dir_path);
+}
+
+TEST(CbFileCreateDirectory, PathIsFileReturnsFalse) {
+    string_t* path = createTempFile("cb_createdir_isfile_test", "content");
+    EXPECT_FALSE(cbridge_file.create_directory(cbridge_string.c_str(path)));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+}
+
+TEST(CbFileCreateDirectory, NonExistentParentReturnsFalse) {
+    // Should not create intermediate directories
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\nonexistent_parent_12345\\child_dir", tmpdir);
+
+    EXPECT_FALSE(cbridge_file.create_directory(dir_path));
+}
+
+/* ============================================================================
+ * move() Tests
+ * ============================================================================ */
+
+TEST(CbFileMove, NullSourceReturnsFalse) { EXPECT_FALSE(cbridge_file.move(NULL, "dest.txt")); }
+
+TEST(CbFileMove, NullDestReturnsFalse) {
+    string_t* path = createTempFile("cb_move_null_dest_test", "content");
+    EXPECT_FALSE(cbridge_file.move(cbridge_string.c_str(path), NULL));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+}
+
+TEST(CbFileMove, NonExistentSourceReturnsFalse) { EXPECT_FALSE(cbridge_file.move("/this/path/should/not/exist_12345.txt", "dest.txt")); }
+
+TEST(CbFileMove, MovesFileSuccessfully) {
+    string_t* src_path = createTempFile("cb_move_src_test", "Hello, moved world!");
+    char      dest_buf[512];
+#ifdef _WIN32
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "C:\\Temp";
+    sprintf(dest_buf, "%s\\cb_move_dest_test.tmp", tmpdir);
+#else
+    sprintf(dest_buf, "/tmp/cb_move_dest_test.tmp");
+#endif
+
+    EXPECT_TRUE(cbridge_file.exists(cbridge_string.c_str(src_path)));
+    EXPECT_FALSE(cbridge_file.exists(dest_buf));
+
+    EXPECT_TRUE(cbridge_file.move(cbridge_string.c_str(src_path), dest_buf));
+
+    EXPECT_FALSE(cbridge_file.exists(cbridge_string.c_str(src_path)));
+    EXPECT_TRUE(cbridge_file.exists(dest_buf));
+
+    string_t* content = cbridge_file.read_all(dest_buf);
+    EXPECT_NE(content, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(content), "Hello, moved world!");
+
+    remove(dest_buf);
+    cbridge_string.free(src_path);
+    cbridge_string.free(content);
+}
+
+TEST(CbFileMove, OverwriteExistingDest) {
+    string_t* src_path  = createTempFile("cb_move_overwrite_src_test", "New Content");
+    string_t* dest_path = createTempFile("cb_move_overwrite_dest_test", "Old Content");
+
+    EXPECT_TRUE(cbridge_file.move(cbridge_string.c_str(src_path), cbridge_string.c_str(dest_path)));
+
+    EXPECT_FALSE(cbridge_file.exists(cbridge_string.c_str(src_path)));
+    EXPECT_TRUE(cbridge_file.exists(cbridge_string.c_str(dest_path)));
+
+    string_t* content = cbridge_file.read_all(cbridge_string.c_str(dest_path));
+    EXPECT_NE(content, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(content), "New Content");
+
+    remove(cbridge_string.c_str(dest_path));
+    cbridge_string.free(src_path);
+    cbridge_string.free(dest_path);
+    cbridge_string.free(content);
+}
+
+TEST(CbFileMove, MoveEmptyFile) {
+    string_t* src_path = createTempFile("cb_move_empty_src_test", "");
+    char      dest_buf[512];
+#ifdef _WIN32
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "C:\\Temp";
+    sprintf(dest_buf, "%s\\cb_move_empty_dest_test.tmp", tmpdir);
+#else
+    sprintf(dest_buf, "/tmp/cb_move_empty_dest_test.tmp");
+#endif
+
+    EXPECT_TRUE(cbridge_file.move(cbridge_string.c_str(src_path), dest_buf));
+    EXPECT_FALSE(cbridge_file.exists(cbridge_string.c_str(src_path)));
+    EXPECT_TRUE(cbridge_file.exists(dest_buf));
+    EXPECT_EQ(cbridge_file.get_size(dest_buf), 0LL);
+
+    remove(dest_buf);
+    cbridge_string.free(src_path);
+}
+
+TEST(CbFileMove, MoveThenSourceGone) {
+    string_t* src_path = createTempFile("cb_move_gone_src_test", "temporary");
+    char      dest_buf[512];
+#ifdef _WIN32
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "C:\\Temp";
+    sprintf(dest_buf, "%s\\cb_move_gone_dest_test.tmp", tmpdir);
+#else
+    sprintf(dest_buf, "/tmp/cb_move_gone_dest_test.tmp");
+#endif
+
+    EXPECT_TRUE(cbridge_file.move(cbridge_string.c_str(src_path), dest_buf));
+    EXPECT_FALSE(cbridge_file.exists(cbridge_string.c_str(src_path)));
+
+    remove(dest_buf);
+    cbridge_string.free(src_path);
+}
+
+/* ============================================================================
+ * read_last_lines() Tests
+ * ============================================================================ */
+
+TEST(CbFileReadLastLines, NullPathReturnsEmpty) {
+    string_t* result = cbridge_file.read_last_lines(NULL, 5);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, NonExistentFileReturnsEmpty) {
+    string_t* result = cbridge_file.read_last_lines("/this/path/should/not/exist_12345.txt", 5);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, ZeroCountReturnsEmpty) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlastlines_zero_test", content);
+    string_t*   result  = cbridge_file.read_last_lines(cbridge_string.c_str(path), 0);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, LastLine) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlastlines_one_test", content);
+    string_t*   result  = cbridge_file.read_last_lines(cbridge_string.c_str(path), 1);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line3");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, LastTwoLines) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlastlines_two_test", content);
+    string_t*   result  = cbridge_file.read_last_lines(cbridge_string.c_str(path), 2);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line2\nLine3");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, LastThreeLines) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlastlines_three_test", content);
+    string_t*   result  = cbridge_file.read_last_lines(cbridge_string.c_str(path), 3);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line1\nLine2\nLine3");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, CountExceedsTotalLines) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlastlines_exceeds_test", content);
+    string_t*   result  = cbridge_file.read_last_lines(cbridge_string.c_str(path), 100);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line1\nLine2\nLine3");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, EmptyFile) {
+    string_t* path   = createTempFile("readlastlines_empty_test", "");
+    string_t* result = cbridge_file.read_last_lines(cbridge_string.c_str(path), 5);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, SingleLineFile) {
+    const char* content = "OnlyLine\n";
+    string_t*   path    = createTempFile("readlastlines_singlefile_test", content);
+    string_t*   result  = cbridge_file.read_last_lines(cbridge_string.c_str(path), 5);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "OnlyLine");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, WindowsLineEndings) {
+    const char* content = "Line1\r\nLine2\r\nLine3\r\n";
+    string_t*   path    = createTempFile("readlastlines_windows_test", content);
+    string_t*   result  = cbridge_file.read_last_lines(cbridge_string.c_str(path), 2);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line2\nLine3");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, LargeFile) {
+    string_t* path = createTempFile("readlastlines_large_test", "");
+    FILE* f = fopen(cbridge_string.c_str(path), "w");
+    if (f) {
+        for (int i = 1; i <= 1000; i++) {
+            fprintf(f, "Line %d\n", i);
+        }
+        fclose(f);
+    }
+
+    string_t* result = cbridge_file.read_last_lines(cbridge_string.c_str(path), 5);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line 996\nLine 997\nLine 998\nLine 999\nLine 1000");
+
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, LinesWithSpecialCharacters) {
+    const char* content = "Normal\nSpecial: !@#$%%^&*()\nEnd\n";
+    string_t*   path    = createTempFile("readlastlines_special_test", content);
+    string_t*   result  = cbridge_file.read_last_lines(cbridge_string.c_str(path), 2);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Special: !@#$%%^&*()\nEnd");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLastLines, EmptyLinesIncluded) {
+    const char* content = "Line1\n\nLine3\n";
+    string_t*   path    = createTempFile("readlastlines_emptylines_test", content);
+    string_t*   result  = cbridge_file.read_last_lines(cbridge_string.c_str(path), 2);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "\nLine3");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}

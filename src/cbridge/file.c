@@ -320,6 +320,125 @@ static bool impl_is_directory(const char* path) {
 #endif
 }
 
+static string_t* impl_get_filename(const char* path) {
+    if (!path || *path == '\0') return cbridge_string.create("");
+
+    // Find the last path separator (support both / and \)
+    const char* lastSep = path;
+    const char* p       = path;
+    while (*p) {
+        if (*p == '/' || *p == '\\') lastSep = p + 1;
+        p++;
+    }
+
+    return cbridge_string.create(lastSep);
+}
+
+static bool impl_create_directory(const char* path) {
+    if (!path) return false;
+
+    // If path already exists as a file, return false
+    if (impl_exists(path) && !impl_is_directory(path)) return false;
+
+    // If directory already exists, return false
+    if (impl_is_directory(path)) return false;
+
+#ifdef _WIN32
+    return (_mkdir(path) == 0);
+#else
+    return (mkdir(path, 0755) == 0);
+#endif
+}
+
+static bool impl_move(const char* src, const char* dest) {
+    if (!src || !dest) return false;
+    if (!impl_exists(src)) return false;
+
+    if (rename(src, dest) == 0) return true;
+
+    // Fallback: copy + remove (handles cross-device moves on Windows)
+    if (impl_copy(src, dest)) {
+        impl_remove(src);
+        return true;
+    }
+
+    return false;
+}
+
+static string_t* impl_read_last_lines(const char* path, size_t count) {
+    if (!path || count == 0) return cbridge_string.create("");
+
+    FILE* f = fopen(path, "r");
+    if (!f) return cbridge_string.create("");
+
+    // Single-pass sliding buffer approach:
+    // Maintain a circular buffer of `count` lines.
+    // At the end, the buffer contains the last `count` lines in order.
+
+    // Allocate array of string_t* pointers (circular buffer)
+    string_t** buf     = (string_t**)malloc(sizeof(string_t*) * count);
+    bool*      has_line = (bool*)calloc(count, sizeof(bool));
+    if (!buf || !has_line) {
+        fclose(f);
+        free(buf);
+        free(has_line);
+        return cbridge_string.create("");
+    }
+
+    char     line[4096];
+    size_t   totalLines = 0;
+
+    while (fgets(line, sizeof(line), f)) {
+        // Strip trailing newline/carriage-return
+        size_t len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
+            len--;
+            if (len > 0 && line[len - 1] == '\r') {
+                line[len - 1] = '\0';
+            }
+        }
+
+        size_t pos = totalLines % count;
+        if (has_line[pos]) {
+            cbridge_string.free(buf[pos]);
+        }
+        buf[pos]     = cbridge_string.create(line);
+        has_line[pos] = true;
+        totalLines++;
+    }
+
+    fclose(f);
+
+    // Build result from the circular buffer in correct order
+    string_t* result = cbridge_string.create("");
+
+    if (totalLines == 0) {
+        // Free buffer entries
+        for (size_t i = 0; i < count; i++) {
+            if (has_line[i]) cbridge_string.free(buf[i]);
+        }
+        free(buf);
+        free(has_line);
+        return result;
+    }
+
+    // Starting index in the circular buffer
+    size_t start = (totalLines >= count) ? (totalLines % count) : 0;
+    size_t numLines = (totalLines < count) ? totalLines : count;
+
+    for (size_t i = 0; i < numLines; i++) {
+        size_t pos = (start + i) % count;
+        if (i > 0) cbridge_string.append(result, "\n");
+        cbridge_string.append(result, cbridge_string.c_str(buf[pos]));
+        cbridge_string.free(buf[pos]);
+    }
+
+    free(buf);
+    free(has_line);
+    return result;
+}
+
 const struct cbridge_file_namespace cbridge_file = {.exists                = impl_exists,
                                                     .get_size              = impl_get_size,
                                                     .read_all              = impl_read_all,
@@ -332,4 +451,8 @@ const struct cbridge_file_namespace cbridge_file = {.exists                = imp
                                                     .get_extension         = impl_get_extension,
                                                     .remove                = impl_remove,
                                                     .copy                  = impl_copy,
-                                                    .is_directory          = impl_is_directory};
+                                                    .is_directory          = impl_is_directory,
+                                                    .get_filename          = impl_get_filename,
+                                                    .create_directory      = impl_create_directory,
+                                                    .move                  = impl_move,
+                                                    .read_last_lines       = impl_read_last_lines};

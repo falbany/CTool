@@ -10,15 +10,19 @@ The `cbridge::file` module provides high-level filesystem utilities for pure C. 
 | `get_size(path)`                | Returns the file size in bytes.                   |
 | `read_all(path)`                | Reads a whole file and returns a `string_t*`.    |
 | `read_lines(path, startLine, endLine)` | Reads a range of lines (1-indexed, inclusive). Pass `0` for either parameter to default to line `1`. |
+| `read_last_lines(path, count)`  | Reads the last `count` lines from a file.         |
 | `get_working_directory()`       | Returns the current app path as a `string_t*`.   |
 | `get_parameter(path, key, sep)` | Parses a config file for a specific key (ignores comments). |
 | `get_files(dir, pref, suff)`    | Returns a `vector_t*` of filenames.              |
 | `remove(path)`                  | Deletes a file from the disk.                     |
 | `copy(src, dest)`               | Copies a file from `src` to `dest`, overwriting `dest` if it exists. |
+| `move(src, dest)`               | Moves or renames a file from `src` to `dest`.    |
 | `is_directory(path)`            | Returns `true` if the path exists and is a directory. |
+| `create_directory(path)`        | Creates a single directory at the given path.    |
 | `write_all(path, content)`      | Writes a string to a file, overwriting.          |
 | `append_all(path, content)`     | Appends a string to a file, creating if needed.  |
 | `get_extension(path)`           | Extracts the file extension (e.g., `.csv`).      |
+| `get_filename(path)`            | Extracts the filename (basename) from a path.    |
 
 ## Usage Examples
 
@@ -197,4 +201,112 @@ if (!cbridge_file.is_directory("/nonexistent/path")) {
 if (!cbridge_file.is_directory(NULL)) {
     printf("Error: NULL path returned false\n");
 }
+```
+
+### Getting the Filename from a Path
+```c
+// Extract filename from a Unix path
+string_t* name = cbridge_file.get_filename("/path/to/file.txt");
+printf("Filename: %s\n", cbridge_string.c_str(name));  // Output: file.txt
+cbridge_string.free(name);
+
+// Works with Windows paths
+name = cbridge_file.get_filename("C:\\Users\\Documents\\report.csv");
+printf("Filename: %s\n", cbridge_string.c_str(name));  // Output: report.csv
+cbridge_string.free(name);
+
+// Simple filename (no path) returns as-is
+name = cbridge_file.get_filename("Makefile");
+printf("Filename: %s\n", cbridge_string.c_str(name));  // Output: Makefile
+cbridge_string.free(name);
+
+// NULL or empty path returns empty string
+name = cbridge_file.get_filename(NULL);
+if (cbridge_string.empty(name)) {
+    printf("Empty result for NULL path\n");
+}
+cbridge_string.free(name);
+```
+
+### Creating a Directory
+```c
+// Create a new directory
+if (cbridge_file.create_directory("./output")) {
+    printf("Directory created successfully\n");
+}
+
+// Returns false if directory already exists
+if (!cbridge_file.create_directory("./output")) {
+    printf("Directory already exists or creation failed\n");
+}
+
+// Returns false if path is a file
+if (!cbridge_file.create_directory("config.txt")) {
+    printf("Cannot create directory: path is a file\n");
+}
+
+// Does NOT create intermediate directories
+if (!cbridge_file.create_directory("/nonexistent/parent/child")) {
+    printf("Cannot create: parent directory does not exist\n");
+}
+
+// NULL path returns false
+if (!cbridge_file.create_directory(NULL)) {
+    printf("Error: NULL path returned false\n");
+}
+```
+
+### Moving a File
+```c
+// Move a file from source to destination
+if (cbridge_file.move("source.txt", "destination.txt")) {
+    printf("File moved successfully\n");
+}
+// source.txt no longer exists; destination.txt contains the content
+
+// Overwrites destination if it already exists
+cbridge_file.move("new_data.csv", "data.csv");
+
+// Returns false if source does not exist
+if (!cbridge_file.move("missing.txt", "dest.txt")) {
+    printf("Failed to move file: source not found\n");
+}
+
+// NULL source or destination returns false
+cbridge_file.move(NULL, "dest.txt");   // Returns false
+cbridge_file.move("source.txt", NULL); // Returns false
+```
+
+### Reading the Last N Lines
+```c
+// Read the last 5 lines from a large log file
+string_t* tail = cbridge_file.read_last_lines("logfile.txt", 5);
+if (!cbridge_string.empty(tail)) {
+    printf("Last 5 lines:\n%s\n", cbridge_string.c_str(tail));
+}
+cbridge_string.free(tail);
+
+// If file has fewer lines than count, returns all lines
+tail = cbridge_file.read_last_lines("small.txt", 100);
+printf("All lines:\n%s\n", cbridge_string.c_str(tail));
+cbridge_string.free(tail);
+
+// Edge case handling:
+// - count = 0 returns empty string
+// - NULL path returns empty string
+// - File not found returns empty string
+// - Trailing \n / \r\n are stripped from each line before joining
+// - Lines are joined with '\n' in the output
+
+tail = cbridge_file.read_last_lines(NULL, 5);
+if (cbridge_string.empty(tail)) {
+    printf("Empty result for NULL path\n");
+}
+cbridge_string.free(tail);
+
+tail = cbridge_file.read_last_lines("logfile.txt", 0);
+if (cbridge_string.empty(tail)) {
+    printf("Empty result for count = 0\n");
+}
+cbridge_string.free(tail);
 ```
