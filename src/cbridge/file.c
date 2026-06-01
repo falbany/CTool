@@ -28,13 +28,17 @@ static long long impl_get_size(const char* path) {
     if (!path) return 0;
     FILE* f = fopen(path, "rb");
     if (!f) return 0;
-    fseek(f, 0, SEEK_END);
+    if (fseek(f, 0, SEEK_END) != 0) {
+        fclose(f);
+        return 0;
+    }
     long long size = ftell(f);
     fclose(f);
-    return size;
+    return (size >= 0) ? size : 0;
 }
 
 static string_t* impl_read_all(const char* path) {
+    if (!path) return NULL;
     FILE* f = fopen(path, "rb");
     if (!f) return NULL;
 
@@ -80,12 +84,18 @@ static string_t* impl_get_parameter(const char* path, const char* key, const cha
         }
 
         if (cbridge_string.find(s_line, key, 0) != CBRIDGE_STR_NPOS) {
-            string_t* val = cbridge_string.catch_in_range(s_line, separator, "\n");
-            cbridge_string.trim(val);
+            // Find the separator in the trimmed line, then extract everything after it
+            size_t sep_pos = cbridge_string.find(s_line, separator, 0);
+            if (sep_pos != CBRIDGE_STR_NPOS) {
+                sep_pos += strlen(separator);
+                size_t    remaining = cbridge_string.length(s_line) - sep_pos;
+                string_t* val       = cbridge_string.substr(s_line, sep_pos, remaining);
+                cbridge_string.trim(val);
 
-            // Swap to result and break
-            cbridge_string.free(result);
-            result = val;
+                // Swap to result and break
+                cbridge_string.free(result);
+                result = val;
+            }
             cbridge_string.free(s_line);
             break;
         }
@@ -101,7 +111,7 @@ static vector_t* impl_get_files(const char* directory, const char* prefix, const
 
 #ifdef _WIN32
     char search_path[MAX_PATH];
-    sprintf(search_path, "%s\\*", directory);
+    snprintf(search_path, sizeof(search_path), "%s\\*", directory);
     WIN32_FIND_DATA fd;
     HANDLE          hFind = FindFirstFile(search_path, &fd);
 
