@@ -51,7 +51,19 @@ struct cbridge_file_namespace {
     string_t* (*get_parameter)(const char* path, const char* key, const char* separator);
 
     /**
-     * @brief Lists files in a directory matching specific criteria.
+ * @brief Reads a range of lines from a file (1-indexed, inclusive).
+ * @param path Path to the file.
+ * @param startLine Starting line number (1-based). Pass 0 to default to line 1.
+ * @param endLine Ending line number (1-based, inclusive). Pass 0 to default to line 1.
+ * @return A new string_t* containing the requested lines joined by '\n',
+ *         or an empty string_t* on error (null path, file not found, invalid range).
+ * @note If endLine exceeds the total number of lines, reads until EOF.
+ *       If startLine > endLine (after normalization), returns an empty string.
+ *       A value of 0 for startLine or endLine is internally treated as 1.
+ */
+string_t* (*read_lines)(const char* path, size_t startLine, size_t endLine);
+
+/**
      * @param directory The target directory.
      * @param prefix Optional prefix filter (use NULL for none).
      * @param suffix Optional suffix filter (e.g., ".csv", NULL for none).

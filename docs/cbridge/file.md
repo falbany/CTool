@@ -9,6 +9,7 @@ The `cbridge::file` module provides high-level filesystem utilities for pure C. 
 | `exists(path)`                  | Returns `true` if the file exists.                |
 | `get_size(path)`                | Returns the file size in bytes.                   |
 | `read_all(path)`                | Reads a whole file and returns a `string_t*`.    |
+| `read_lines(path, startLine, endLine)` | Reads a range of lines (1-indexed, inclusive). Pass `0` for either parameter to default to line `1`. |
 | `get_working_directory()`       | Returns the current app path as a `string_t*`.   |
 | `get_parameter(path, key, sep)` | Parses a config file for a specific key (ignores comments). |
 | `get_files(dir, pref, suff)`    | Returns a `vector_t*` of filenames.              |
@@ -39,4 +40,21 @@ for (size_t i = 0; i < cbridge_vector.size(logs); i++) {
     cbridge_string.free(filename);
 }
 cbridge_vector.free(logs);
+```
+
+### Reading a Range of Lines
+```c
+// Read lines 10 to 20 (1-indexed, inclusive) from a large log file
+string_t* lines = cbridge_file.read_lines("logfile.txt", 10, 20);
+if (!cbridge_string.empty(lines)) {
+    printf("Lines 10-20:\n%s\n", cbridge_string.c_str(lines));
+}
+cbridge_string.free(lines);
+
+// Edge case handling:
+// - If endLine > total lines, reads until EOF
+// - If startLine > endLine (after normalization), returns empty string
+// - If startLine is 0, it is internally treated as 1
+// - If endLine is 0, it is internally treated as 1
+// - Negative values are not allowed (size_t is unsigned)
 ```

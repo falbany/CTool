@@ -154,9 +154,85 @@ static vector_t* impl_get_files(const char* directory, const char* prefix, const
     return vec;
 }
 
-const struct cbridge_file_namespace cbridge_file = {.exists                = impl_exists,
-                                                    .get_size              = impl_get_size,
-                                                    .read_all              = impl_read_all,
-                                                    .get_working_directory = impl_get_working_directory,
-                                                    .get_parameter         = impl_get_parameter,
-                                                    .get_files             = impl_get_files};
+static string_t* impl_read_lines(const char* path, size_t startLine, size_t endLine) {
+    /* --- Input validation (before any I/O) --- */
+    if (!path) {
+        return cbridge_string.create("");
+    }
+
+    /* Treat 0 as 1 for both startLine and endLine (1-based indexing) */
+    if (startLine == 0) {startLine = 1; }
+    if (endLine == 0) {endLine = 1; }
+
+    /* Invalid range: start must not exceed end */
+    if (startLine > endLine) {
+        return cbridge_string.create("");
+    }
+
+    /* --- Open file --- */
+    FILE* f = fopen(path, "r");
+    if (!f) {
+        return cbridge_string.create("");
+    }
+
+    /* --- Single pass: skip to startLine, then collect until endLine --- */
+    char        line[4096];
+    size_t      currentLine = 0;
+    string_t*   result      = NULL;
+    bool        inRange     = false;
+
+    while (fgets(line, sizeof(line), f)) {
+        currentLine++;
+
+        /* Check if we have reached the end of the requested range */
+        if (currentLine > endLine) {
+            break;
+        }
+
+        /* Skip lines before the requested range */
+        if (currentLine < startLine) {
+            continue;
+        }
+
+        /* --- We are in the requested range [startLine, endLine] --- */
+
+        /* Remove trailing newline/carriage-return */
+        size_t len = strlen(line);
+        if (len > 0 && line[len - 1] == '\n') {
+            line[len - 1] = '\0';
+            len--;
+            if (len > 0 && line[len - 1] == '\r') {
+                line[len - 1] = '\0';
+                len--;
+            }
+        }
+
+        /* Initialize result on first in-range line */
+        if (!inRange) {
+            result  = cbridge_string.create(line);
+            inRange = true;
+        } else {
+            cbridge_string.append(result, "\n");
+            cbridge_string.append(result, line);
+        }
+    }
+
+    fclose(f);
+
+    /* If no lines were in range (file ended before startLine), return empty */
+    if (!inRange) {
+        return cbridge_string.create("");
+    }
+
+    return result;
+}
+
+const struct cbridge_file_namespace cbridge_file = {
+    .exists                = impl_exists,
+    .get_size              = impl_get_size,
+    .read_all              = impl_read_all,
+    .get_working_directory = impl_get_working_directory,
+    .get_parameter         = impl_get_parameter,
+    .read_lines            = impl_read_lines,
+    .get_files             = impl_get_files
+};

@@ -626,3 +626,230 @@ TEST(CbFileIntegration, ConfigFileRoundTrip) {
     cbridge_string.free(port);
     cbridge_string.free(user);
 }
+
+/* ============================================================================
+ * read_lines() Tests
+ * ============================================================================ */
+
+TEST(CbFileReadLines, NullPathReturnsEmpty) {
+    string_t* result = cbridge_file.read_lines(NULL, 1, 5);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, NonExistentFileReturnsEmpty) {
+    string_t* result = cbridge_file.read_lines("/this/path/should/not/exist_12345.txt", 1, 5);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, StartLineZeroTreatedAsOne) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlines_start0_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 0, 3);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line1\nLine2\nLine3");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, EndLineZeroTreatedAsOne) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlines_end0_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 0);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line1");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, BothLinesZeroTreatedAsOne) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlines_both0_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 0, 0);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line1");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, StartExceedsEndReturnsEmpty) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlines_start_gt_end_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 5, 2);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, SingleLineRange) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlines_single_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 2, 2);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line2");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, RangeWithinFile) {
+    const char* content = "Line1\nLine2\nLine3\nLine4\nLine5\n";
+    string_t*   path    = createTempFile("readlines_within_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 2, 4);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line2\nLine3\nLine4");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, EndExceedsTotalLines) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlines_end_exceeds_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 2, 100);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line2\nLine3");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, StartExceedsTotalLines) {
+    const char* content = "Line1\nLine2\nLine3\n";
+    string_t*   path    = createTempFile("readlines_start_exceeds_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 10, 20);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, EmptyFile) {
+    string_t*   path    = createTempFile("readlines_empty_test", "");
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 5);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, SingleLineFile) {
+    const char* content = "OnlyLine\n";
+    string_t*   path    = createTempFile("readlines_singlefile_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 1);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "OnlyLine");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, ReadsFromFirstLine) {
+    const char* content = "First\nSecond\nThird\n";
+    string_t*   path    = createTempFile("readlines_from_first_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 2);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "First\nSecond");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, ReadsToLastLine) {
+    const char* content = "First\nSecond\nThird\n";
+    string_t*   path    = createTempFile("readlines_to_last_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 2, 3);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Second\nThird");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, LineWithSpecialCharacters) {
+    const char* content = "Line with special: !@#$%^&*()\nNormal line\nAnother: {[]}|\\:\"<>?\n";
+    string_t*   path    = createTempFile("readlines_special_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 3);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line with special: !@#$%^&*()\nNormal line\nAnother: {[]}|\\:\"<>?");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, EmptyLinesInRange) {
+    const char* content = "Line1\n\nLine3\n\nLine5\n";
+    string_t*   path    = createTempFile("readlines_emptylines_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 2, 4);
+    EXPECT_NE(result, nullptr);
+    /* Empty lines should be preserved as empty strings */
+    EXPECT_STREQ(cbridge_string.c_str(result), "\nLine3\n");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, WindowsLineEndings) {
+    const char* content = "Line1\r\nLine2\r\nLine3\r\n";
+    string_t*   path    = createTempFile("readlines_windows_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 3);
+    EXPECT_NE(result, nullptr);
+    /* Line endings should be normalized to \n in output */
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line1\nLine2\nLine3");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, LargeRangeRequest) {
+    const char* content = "Line1\nLine2\nLine3\nLine4\nLine5\n";
+    string_t*   path    = createTempFile("readlines_large_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 1000);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line1\nLine2\nLine3\nLine4\nLine5");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, PartialRangeMiddle) {
+    const char* content = "Line1\nLine2\nLine3\nLine4\nLine5\nLine6\nLine7\nLine8\nLine9\nLine10\n";
+    string_t*   path    = createTempFile("readlines_partial_test", content);
+    string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 4, 7);
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line4\nLine5\nLine6\nLine7");
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
+
+TEST(CbFileReadLines, LargeNumberedLines) {
+    string_t*   path    = createTempFile("readlines_largenum_test", "");
+    /* Create a file with many lines */
+    FILE* f = fopen(cbridge_string.c_str(path), "w");
+    if (f) {
+        for (int i = 1; i <= 100; i++) {
+            fprintf(f, "Line %d\n", i);
+        }
+        fclose(f);
+    }
+
+    /* Read lines 50 to 60 */
+    string_t* result = cbridge_file.read_lines(cbridge_string.c_str(path), 50, 60);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.length(result) > 0);
+
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+    cbridge_string.free(result);
+}
