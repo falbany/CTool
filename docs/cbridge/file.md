@@ -23,6 +23,10 @@ The `cbridge::file` module provides high-level filesystem utilities for pure C. 
 | `append_all(path, content)`     | Appends a string to a file, creating if needed.  |
 | `get_extension(path)`           | Extracts the file extension (e.g., `.csv`).      |
 | `get_filename(path)`            | Extracts the filename (basename) from a path.    |
+| `get_directory(path)`           | Extracts the parent directory from a path.       |
+| `get_basename(path)`            | Extracts the filename without its last extension.|
+| `create_directories(path)`      | Recursively creates intermediate directories.    |
+| `remove_directory(path)`        | Removes a single empty directory.                |
 
 ## Usage Examples
 
@@ -309,4 +313,41 @@ if (cbridge_string.empty(tail)) {
     printf("Empty result for count = 0\n");
 }
 cbridge_string.free(tail);
+```
+
+### Extracting Directory and Basename
+```c
+// Get parent directory
+string_t* dir = cbridge_file.get_directory("/path/to/file.txt");
+printf("Dir: %s\n", cbridge_string.c_str(dir));  // Output: /path/to
+cbridge_string.free(dir);
+
+// Get filename without last extension
+string_t* base = cbridge_file.get_basename("/path/to/archive.tar.gz");
+printf("Basename: %s\n", cbridge_string.c_str(base));  // Output: archive.tar
+cbridge_string.free(base);
+
+// Edge cases:
+// - NULL or empty path returns empty string
+// - Bare filename returns empty for directory, and the filename for basename
+// - Hidden files (leading dot) have no extension, basename returns full filename
+```
+
+### Creating and Removing Directories Recursively
+```c
+// Create intermediate directories (idempotent)
+if (cbridge_file.create_directories("/tmp/my/app/logs")) {
+    printf("Directories created or already exist\n");
+}
+
+// Create_directories returns false if any component exists as a file
+
+// Remove an empty directory (non-recursive)
+if (cbridge_file.remove_directory("/tmp/my/app/logs")) {
+    printf("Directory removed\n");
+} else {
+    printf("Failed to remove directory (may be non-empty)\n");
+}
+
+// Note: remove_directory does not recurse. Callers must empty the directory first.
 ```

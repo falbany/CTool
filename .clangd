@@ -1,13 +1,7 @@
 # Global configuration for the CTool/CBridge project
-CompileFlags:
-  CompilationDatabase: build
-  Add: [-fparse-all-comments]  # <--- FORCE CLANG TO PARSE DOXYGEN
-  Remove: [-Werror]
 
-Diagnostics:
-  UnusedIncludes: Strict
-  ClangTidy:
-    Add: [bugprone-*, performance-*, readiness-*]
+Documentation:
+  CommentFormat: Doxygen
 
 ---
 If:

@@ -165,6 +165,50 @@ struct cbridge_file_namespace {
      *       Callers are responsible for cbridge_string.free() on the returned pointer.
      */
     string_t* (*read_last_lines)(const char* path, size_t count);
+
+    /**
+     * @brief Extracts the parent directory from a given path.
+     * @param path Path to extract the directory from.
+     * @return A new string_t* containing the directory portion (e.g., "/path/to" from "/path/to/file.txt"),
+     *         or an empty string_t* if path is NULL, empty, or has no directory component.
+     * @note Handles both '/' and '\\' as path separators.
+     *       Trailing separators are stripped from the result.
+     *       Callers are responsible for cbridge_string.free() on the returned pointer.
+     */
+    string_t* (*get_directory)(const char* path);
+
+    /**
+     * @brief Extracts the filename without its extension from a given path.
+     * @param path Path to extract the basename from.
+     * @return A new string_t* containing the basename (e.g., "file" from "/path/to/file.txt"),
+     *         or an empty string_t* if path is NULL or empty.
+     * @note Only strips the last extension (after the final '.' in the filename portion).
+     *       If no extension exists, returns the full filename (e.g., "Makefile" -> "Makefile").
+     *       Handles both '/' and '\\' as path separators.
+     *       Callers are responsible for cbridge_string.free() on the returned pointer.
+     */
+    string_t* (*get_basename)(const char* path);
+
+    /**
+     * @brief Recursively creates all intermediate (parent) directories along the path.
+     * @param path Path to the directory tree to create.
+     * @return true on success, false on failure.
+     * @note Returns false if path is NULL, any component already exists as a file, or creation fails.
+     *       If the full path already exists as a directory, returns true (idempotent).
+     *       Walks from root to leaf, creating each missing component one level at a time.
+     *       Uses _mkdir on Windows, mkdir on POSIX.
+     */
+    bool (*create_directories)(const char* path);
+
+    /**
+     * @brief Removes a single empty directory at the given path.
+     * @param path Path to the directory to remove.
+     * @return true on success, false on failure.
+     * @note Returns false if path is NULL, the path doesn't exist, is a file, or is non-empty.
+     *       Does NOT recurse; callers are responsible for emptying the directory first.
+     *       Uses RemoveDirectoryA on Windows, rmdir on POSIX.
+     */
+    bool (*remove_directory)(const char* path);
 };
 
 LIBCTOOL_API extern const struct cbridge_file_namespace cbridge_file;

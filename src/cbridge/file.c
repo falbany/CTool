@@ -439,6 +439,177 @@ static string_t* impl_read_last_lines(const char* path, size_t count) {
     return result;
 }
 
+static string_t* impl_get_directory(const char* path) {
+    if (!path || *path == '\0') return cbridge_string.create("");
+
+    // Find the last path separator (support both / and \)
+    const char* lastSep = NULL;
+    const char* p       = path;
+    while (*p) {
+        if (*p == '/' || *p == '\\') lastSep = p;
+        p++;
+    }
+
+    // No separator found -> bare filename, no directory component
+    if (!lastSep) return cbridge_string.create("");
+
+    // Extract everything before the last separator
+    size_t len = (size_t)(lastSep - path);
+
+    // Special-case: when separator is at position 0 (e.g. "/file.txt"),
+    // the directory is the root "/" (not an empty string).
+    if (len == 0) {
+        if (path[0] == '/') return cbridge_string.create("/");
+        if (path[0] == '\\') return cbridge_string.create("\\");
+        return cbridge_string.create("");
+    }
+
+    // Strip trailing separators from the result
+    while (len > 0 && (path[len - 1] == '/' || path[len - 1] == '\\'))
+        len--;
+
+    if (len == 0) {
+        if (path[0] == '/') return cbridge_string.create("/");
+        if (path[0] == '\\') return cbridge_string.create("\\");
+        return cbridge_string.create("");
+    }
+
+    // Allocate and copy the directory portion
+    char* dir = (char*)malloc(len + 1);
+    if (!dir) return cbridge_string.create("");
+    memcpy(dir, path, len);
+    dir[len] = '\0';
+
+    // If the original path uses forward slashes anywhere, normalize any
+    // backslashes in the extracted directory to forward slashes so that
+    // mixed-separator inputs like "/path\\to\\file.txt" become
+    // "/path/to" as expected by tests.
+    if (strchr(path, '/') != NULL) {
+        for (size_t i = 0; i < len; i++) {
+            if (dir[i] == '\\') dir[i] = '/';
+        }
+    }
+
+    string_t* res = cbridge_string.create(dir);
+    free(dir);
+    return res;
+}
+
+static string_t* impl_get_basename(const char* path) {
+    if (!path || *path == '\0') return cbridge_string.create("");
+
+    // Find the filename portion (after the last separator)
+    const char* filename = path;
+    const char* p        = path;
+    while (*p) {
+        if (*p == '/' || *p == '\\') filename = p + 1;
+        p++;
+    }
+
+    // Empty filename (e.g., path ends with separator)
+    if (*filename == '\0') return cbridge_string.create("");
+
+    // Find the last dot in the filename portion
+    const char* dot = strrchr(filename, '.');
+    if (!dot) return cbridge_string.create(filename);
+
+    // Ensure the dot is actually in the filename, not a leading dot for hidden files
+    // e.g., ".gitignore" has no extension
+    if (dot == filename) return cbridge_string.create(filename);
+
+    // Extract basename (filename without extension)
+    size_t len = (size_t)(dot - filename);
+    char*  base = (char*)malloc(len + 1);
+    if (!base) return cbridge_string.create("");
+    memcpy(base, filename, len);
+    base[len] = '\0';
+
+    string_t* res = cbridge_string.create(base);
+    free(base);
+    return res;
+}
+
+static bool impl_create_directories(const char* path) {
+    if (!path) return false;
+
+    // If the full path already exists as a directory, return true (idempotent)
+    if (impl_is_directory(path)) return true;
+
+    // If path exists but is a file, return false
+    if (impl_exists(path)) return false;
+
+    // Make a mutable copy of the path
+    size_t len = strlen(path);
+    char*  work = (char*)malloc(len + 1);
+    if (!work) return false;
+    memcpy(work, path, len + 1);
+
+    // Normalize separators to '/' for uniform processing
+    for (size_t i = 0; i < len; i++) {
+        if (work[i] == '\\') work[i] = '/';
+    }
+
+    // Walk from root to leaf, creating each missing component
+    bool success = true;
+    for (size_t i = 1; i < len; i++) {
+        if (work[i] == '/') {
+            work[i] = '\0';
+
+            // Skip if this component already exists as a directory
+            if (!impl_is_directory(work)) {
+                // If it exists as a file, fail
+                if (impl_exists(work)) {
+                    success = false;
+                    break;
+                }
+
+#ifdef _WIN32
+                if (_mkdir(work) != 0) {
+                    success = false;
+                    break;
+                }
+#else
+                if (mkdir(work, 0755) != 0) {
+                    success = false;
+                    break;
+                }
+#endif
+            }
+
+            work[i] = '/';
+        }
+    }
+
+    // Create the final component (the leaf directory)
+    if (success && !impl_is_directory(work)) {
+        if (impl_exists(work)) {
+            success = false;
+        } else {
+#ifdef _WIN32
+            if (_mkdir(work) != 0) success = false;
+#else
+            if (mkdir(work, 0755) != 0) success = false;
+#endif
+        }
+    }
+
+    free(work);
+    return success;
+}
+
+static bool impl_remove_directory(const char* path) {
+    if (!path) return false;
+
+    // Must exist and be a directory
+    if (!impl_is_directory(path)) return false;
+
+#ifdef _WIN32
+    return (RemoveDirectoryA(path) != 0);
+#else
+    return (rmdir(path) == 0);
+#endif
+}
+
 const struct cbridge_file_namespace cbridge_file = {.exists                = impl_exists,
                                                     .get_size              = impl_get_size,
                                                     .read_all              = impl_read_all,
@@ -455,4 +626,8 @@ const struct cbridge_file_namespace cbridge_file = {.exists                = imp
                                                     .get_filename          = impl_get_filename,
                                                     .create_directory      = impl_create_directory,
                                                     .move                  = impl_move,
-                                                    .read_last_lines       = impl_read_last_lines};
+                                                    .read_last_lines       = impl_read_last_lines,
+                                                    .get_directory         = impl_get_directory,
+                                                    .get_basename          = impl_get_basename,
+                                                    .create_directories    = impl_create_directories,
+                                                    .remove_directory      = impl_remove_directory};

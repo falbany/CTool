@@ -20,6 +20,13 @@
     #include <fcntl.h>
 #endif
 
+/* Cross-platform mkdir helper for tests */
+#ifndef _WIN32
+#define MAKE_MKDIR(p) mkdir((p), 0755)
+#else
+#define MAKE_MKDIR(p) _mkdir((p))
+#endif
+
 /* The CBridge C headers have no __cplusplus guards, so wrap with extern "C" */
 extern "C" {
 #include "cbridge/file.h"
@@ -342,7 +349,11 @@ TEST(CbFileGetFiles, ListsFilesInDirectory) {
     sprintf(dir_path, "%s\\cb_file_test_dir", tmpdir);
     _mkdir(dir_path);
 #else
-    mkdir(dir_path, 0755);
+#ifdef _WIN32
+    _mkdir(dir_path);
+#else
+    MAKE_MKDIR(dir_path);
+#endif
 #endif
 
     /* Create test files */
@@ -397,7 +408,11 @@ TEST(CbFileGetFiles, FilterBySuffix) {
 #ifdef _WIN32
     _mkdir(dir_path);
 #else
-    mkdir(dir_path, 0755);
+#ifdef _WIN32
+    _mkdir(dir_path);
+#else
+    MAKE_MKDIR(dir_path);
+#endif
 #endif
 
     char file1[600], file2[600], file3[600];
@@ -450,7 +465,11 @@ TEST(CbFileGetFiles, FilterByPrefix) {
 #ifdef _WIN32
     _mkdir(dir_path);
 #else
-    mkdir(dir_path, 0755);
+#ifdef _WIN32
+    _mkdir(dir_path);
+#else
+    MAKE_MKDIR(dir_path);
+#endif
 #endif
 
     char file1[600], file2[600], file3[600];
@@ -503,7 +522,11 @@ TEST(CbFileGetFiles, FilterByPrefixAndSuffix) {
 #ifdef _WIN32
     _mkdir(dir_path);
 #else
-    mkdir(dir_path, 0755);
+#ifdef _WIN32
+    _mkdir(dir_path);
+#else
+    MAKE_MKDIR(dir_path);
+#endif
 #endif
 
     char file1[600], file2[600], file3[600], file4[600];
@@ -564,7 +587,7 @@ TEST(CbFileGetFiles, EmptyDirectoryReturnsEmptyVector) {
 #ifdef _WIN32
     _mkdir(dir_path);
 #else
-    mkdir(dir_path, 0755);
+    MAKE_MKDIR(dir_path);
 #endif
 
     vector_t* vec = cbridge_file.get_files(dir_path, NULL, NULL);
@@ -1188,7 +1211,7 @@ TEST(CbFileIsDirectory, CreatedTempDirectory) {
 #ifdef _WIN32
     _mkdir(dir_path);
 #else
-    mkdir(dir_path, 0755);
+    MAKE_MKDIR(dir_path);
 #endif
 
     EXPECT_TRUE(cbridge_file.is_directory(dir_path));
@@ -1317,7 +1340,7 @@ TEST(CbFileCreateDirectory, ExistingDirectoryReturnsFalse) {
 #ifdef _WIN32
     _mkdir(dir_path);
 #else
-    mkdir(dir_path, 0755);
+    MAKE_MKDIR(dir_path);
 #endif
 
     EXPECT_FALSE(cbridge_file.create_directory(dir_path));
@@ -1588,3 +1611,416 @@ TEST(CbFileReadLastLines, EmptyLinesIncluded) {
     cbridge_string.free(path);
     cbridge_string.free(result);
 }
+/* ============================================================================
+ * get_directory() Tests
+ * ============================================================================ */
+
+TEST(CbFileGetDirectory, NullPathReturnsEmpty) {
+    string_t* result = cbridge_file.get_directory(NULL);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, EmptyPathReturnsEmpty) {
+    string_t* result = cbridge_file.get_directory("");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, BareFilenameReturnsEmpty) {
+    string_t* result = cbridge_file.get_directory("file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, UnixPath) {
+    string_t* result = cbridge_file.get_directory("/path/to/file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "/path/to");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, UnixPathRoot) {
+    string_t* result = cbridge_file.get_directory("/file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "/");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, WindowsPath) {
+    string_t* result = cbridge_file.get_directory("C:\\Users\\Documents\\report.csv");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "C:\\Users\\Documents");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, MixedSeparators) {
+    string_t* result = cbridge_file.get_directory("/path\\to\\file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "/path/to");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, TrailingSeparatorStripped) {
+    string_t* result = cbridge_file.get_directory("/path/to/");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "/path/to");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, MultipleTrailingSeparators) {
+    string_t* result = cbridge_file.get_directory("/path/to///");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "/path/to");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, SingleDirectory) {
+    string_t* result = cbridge_file.get_directory("/to");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "/");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetDirectory, NestedPath) {
+    string_t* result = cbridge_file.get_directory("a/b/c/d/e/file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "a/b/c/d/e");
+    cbridge_string.free(result);
+}
+
+/* ============================================================================
+ * get_basename() Tests
+ * ============================================================================ */
+
+TEST(CbFileGetBasename, NullPathReturnsEmpty) {
+    string_t* result = cbridge_file.get_basename(NULL);
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, EmptyPathReturnsEmpty) {
+    string_t* result = cbridge_file.get_basename("");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, SimpleFilenameWithExtension) {
+    string_t* result = cbridge_file.get_basename("file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "file");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, PathWithExtension) {
+    string_t* result = cbridge_file.get_basename("/path/to/file.csv");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "file");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, NoExtension) {
+    string_t* result = cbridge_file.get_basename("/path/to/Makefile");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Makefile");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, MultipleDots) {
+    string_t* result = cbridge_file.get_basename("/path/to/archive.tar.gz");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "archive.tar");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, HiddenFileNoExtension) {
+    string_t* result = cbridge_file.get_basename("/home/user/.gitignore");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), ".gitignore");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, WindowsPath) {
+    string_t* result = cbridge_file.get_basename("C:\\Users\\Documents\\report.csv");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "report");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, MixedSeparators) {
+    string_t* result = cbridge_file.get_basename("/path\\to\\file.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "file");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, TrailingSlashReturnsEmpty) {
+    string_t* result = cbridge_file.get_basename("/path/to/");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, RootPathReturnsEmpty) {
+    string_t* result = cbridge_file.get_basename("/");
+    EXPECT_NE(result, nullptr);
+    EXPECT_TRUE(cbridge_string.empty(result));
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, SimpleFilenameNoExtension) {
+    string_t* result = cbridge_file.get_basename("Makefile");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "Makefile");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, DoubleExtensionUnix) {
+    string_t* result = cbridge_file.get_basename("/path/to/archive.tar.gz");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "archive.tar");
+    cbridge_string.free(result);
+}
+
+TEST(CbFileGetBasename, SingleDotInFilename) {
+    string_t* result = cbridge_file.get_basename("/path/to/file.name.txt");
+    EXPECT_NE(result, nullptr);
+    EXPECT_STREQ(cbridge_string.c_str(result), "file.name");
+    cbridge_string.free(result);
+}
+
+/* ============================================================================
+ * create_directories() Tests
+ * ============================================================================ */
+
+TEST(CbFileCreateDirectories, NullPathReturnsFalse) {
+    EXPECT_FALSE(cbridge_file.create_directories(NULL));
+}
+
+TEST(CbFileCreateDirectories, EmptyPathReturnsFalse) {
+    EXPECT_FALSE(cbridge_file.create_directories(""));
+}
+
+TEST(CbFileCreateDirectories, CreatesSingleLevelDirectory) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_createdir_single_test", tmpdir);
+
+    EXPECT_TRUE(cbridge_file.create_directories(dir_path));
+    EXPECT_TRUE(cbridge_file.is_directory(dir_path));
+
+    rmdir(dir_path);
+}
+
+TEST(CbFileCreateDirectories, CreatesMultiLevelDirectory) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_createdir_multi\\level\\test", tmpdir);
+
+    EXPECT_TRUE(cbridge_file.create_directories(dir_path));
+    EXPECT_TRUE(cbridge_file.is_directory(dir_path));
+
+    char cmd[1024];
+#ifdef _WIN32
+    sprintf(cmd, "rmdir /s /q \"%s\"", dir_path);
+    system(cmd);
+#else
+    sprintf(cmd, "rm -rf \"%s\"", dir_path);
+    system(cmd);
+#endif
+}
+
+TEST(CbFileCreateDirectories, IdempotentWhenExists) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_createdir_idem_test", tmpdir);
+
+    EXPECT_TRUE(cbridge_file.create_directories(dir_path));
+    EXPECT_TRUE(cbridge_file.create_directories(dir_path));
+
+    rmdir(dir_path);
+}
+
+TEST(CbFileCreateDirectories, PathIsFileReturnsFalse) {
+    string_t* path = createTempFile("cb_cretdir_isfile_test", "content");
+    EXPECT_FALSE(cbridge_file.create_directories(cbridge_string.c_str(path)));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+}
+
+TEST(CbFileCreateDirectories, ComponentIsFileReturnsFalse) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char file_path[512], dir_path[512];
+    sprintf(file_path, "%s\\cb_cretdir_file_component", tmpdir);
+    sprintf(dir_path, "%s\\cb_cretdir_file_component\\subdir", tmpdir);
+
+    FILE* f = fopen(file_path, "w");
+    if (f) {
+        fprintf(f, "content");
+        fclose(f);
+    }
+
+    EXPECT_FALSE(cbridge_file.create_directories(dir_path));
+
+    remove(file_path);
+}
+
+TEST(CbFileCreateDirectories, UnixPath) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s/cb_createdir_unix_test/a/b/c", tmpdir);
+
+    EXPECT_TRUE(cbridge_file.create_directories(dir_path));
+    EXPECT_TRUE(cbridge_file.is_directory(dir_path));
+
+    char cmd[1024];
+    sprintf(cmd, "rm -rf \"%s\"", dir_path);
+    system(cmd);
+}
+
+TEST(CbFileCreateDirectories, MixedSeparators) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s/cb_createdir_mixed\\test\\a/b", tmpdir);
+
+    EXPECT_TRUE(cbridge_file.create_directories(dir_path));
+    EXPECT_TRUE(cbridge_file.is_directory(dir_path));
+
+    char cmd[1024];
+    sprintf(cmd, "rm -rf \"%s\"", dir_path);
+    system(cmd);
+}
+
+TEST(CbFileCreateDirectories, CreatesExistingParentThenChild) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char parent_path[512], child_path[512];
+    sprintf(parent_path, "%s\\cb_cretdir_exists_parent", tmpdir);
+    sprintf(child_path, "%s\\cb_cretdir_exists_parent\\child", tmpdir);
+
+    EXPECT_TRUE(cbridge_file.create_directories(parent_path));
+    EXPECT_TRUE(cbridge_file.is_directory(parent_path));
+    EXPECT_TRUE(cbridge_file.create_directories(child_path));
+    EXPECT_TRUE(cbridge_file.is_directory(child_path));
+
+    char cmd[1024];
+#ifdef _WIN32
+    sprintf(cmd, "rmdir /s /q \"%s\"", parent_path);
+    system(cmd);
+#else
+    sprintf(cmd, "rm -rf \"%s\"", parent_path);
+    system(cmd);
+#endif
+}
+
+/* ============================================================================
+ * remove_directory() Tests
+ * ============================================================================ */
+
+TEST(CbFileRemoveDirectory, NullPathReturnsFalse) {
+    EXPECT_FALSE(cbridge_file.remove_directory(NULL));
+}
+
+TEST(CbFileRemoveDirectory, NonExistentPathReturnsFalse) {
+    EXPECT_FALSE(cbridge_file.remove_directory("/this/path/should/not/exist_12345"));
+}
+
+TEST(CbFileRemoveDirectory, PathIsFileReturnsFalse) {
+    string_t* path = createTempFile("cb_remdir_isfile_test", "content");
+    EXPECT_FALSE(cbridge_file.remove_directory(cbridge_string.c_str(path)));
+    remove(cbridge_string.c_str(path));
+    cbridge_string.free(path);
+}
+
+TEST(CbFileRemoveDirectory, NonEmptyDirectoryReturnsFalse) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_remdir_nonempty_test", tmpdir);
+
+    MAKE_MKDIR(dir_path);
+
+    char file_path[600];
+    sprintf(file_path, "%s\\inside.txt", dir_path);
+    FILE* f = fopen(file_path, "w");
+    if (f) {
+        fprintf(f, "content");
+        fclose(f);
+    }
+
+    EXPECT_FALSE(cbridge_file.remove_directory(dir_path));
+
+    remove(file_path);
+    rmdir(dir_path);
+}
+
+TEST(CbFileRemoveDirectory, RemovesEmptyDirectory) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_remdir_empty_test", tmpdir);
+
+    MAKE_MKDIR(dir_path);
+    EXPECT_TRUE(cbridge_file.is_directory(dir_path));
+
+    EXPECT_TRUE(cbridge_file.remove_directory(dir_path));
+    EXPECT_FALSE(cbridge_file.is_directory(dir_path));
+}
+
+TEST(CbFileRemoveDirectory, UnixPath) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s/cb_remdir_unix_test", tmpdir);
+
+    MAKE_MKDIR(dir_path);
+    EXPECT_TRUE(cbridge_file.remove_directory(dir_path));
+    EXPECT_FALSE(cbridge_file.is_directory(dir_path));
+}
+
+TEST(CbFileRemoveDirectory, WindowsPath) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "C:\\Temp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_remdir_win_test", tmpdir);
+
+    _mkdir(dir_path);
+    EXPECT_TRUE(cbridge_file.remove_directory(dir_path));
+    EXPECT_FALSE(cbridge_file.is_directory(dir_path));
+}
+
+TEST(CbFileRemoveDirectory, TrailingSlashHandled) {
+    const char* tmpdir = getenv("TEMP");
+    if (!tmpdir) tmpdir = "/tmp";
+
+    char dir_path[512];
+    sprintf(dir_path, "%s\\cb_remdir_trail_test\\", tmpdir);
+
+    MAKE_MKDIR(dir_path);
+    EXPECT_TRUE(cbridge_file.remove_directory(dir_path));
+    EXPECT_FALSE(cbridge_file.is_directory(dir_path));
+}
+
+
