@@ -1,6 +1,23 @@
 {
     "cSpell.words": [
-        "LIBCTOOL"
+        "bugprone",
+        "cbridge",
+        "ctest",
+        "ctool",
+        "DCMAKE",
+        "DENABLE",
+        "Florent",
+        "fparse",
+        "Gcov",
+        "LIBCTOOL",
+        "logfile",
+        "nullptr",
+        "offtime",
+        "RAII",
+        "STREQ",
+        "suff",
+        "unfreed",
+        "Werror"
     ],
     "chat.tools.terminal.autoApprove": {
         "mv": true,
@@ -30,5 +47,11 @@
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "C_Cpp.intelliSenseEngineFallback": "enabled",
-    "C_Cpp.intelliSenseEngineDefault": "default"
+    "C_Cpp.intelliSenseEngineDefault": "default",
+    "clangd.arguments": [
+        "--header-insertion=never",
+        "--completion-style=detailed",
+        "--all-scopes-completion"
+    ],
+    "clangd.serverCompletionRanking": true
 }
