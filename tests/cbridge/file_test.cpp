@@ -18,13 +18,14 @@
 #else
     #include <unistd.h>
     #include <fcntl.h>
+    #include <sys/stat.h>
 #endif
 
 /* Cross-platform mkdir helper for tests */
-#ifndef _WIN32
-#define MAKE_MKDIR(p) mkdir((p), 0755)
+#ifdef _WIN32
+    #define MAKE_MKDIR(p) _mkdir((p))
 #else
-#define MAKE_MKDIR(p) _mkdir((p))
+    #define MAKE_MKDIR(p) mkdir((p), 0755)
 #endif
 
 /* The CBridge C headers have no __cplusplus guards, so wrap with extern "C" */
@@ -42,13 +43,13 @@ static string_t* createTempFile(const char* prefix, const char* content) {
     char template_buf[512];
 #ifdef _WIN32
     const char* tmpdir = getenv("TEMP");
-    if (!tmpdir) tmpdir = "C:\\Temp";
-    sprintf(template_buf, "%s\\%s_XXXXXX.tmp", tmpdir, prefix);
+    if (!tmpdir) tmpdir = "/tmp";
+    snprintf(template_buf, sizeof(template_buf), "%s/%s_XXXXXX.tmp", tmpdir, prefix);
     /* On Windows, mkstemp isn't available, use a simple approach */
-    sprintf(template_buf, "%s\\%s_test.tmp", tmpdir, prefix);
+    snprintf(template_buf, sizeof(template_buf), "%s/%s_test.tmp", tmpdir, prefix);
 #else
     const char* tmpdir = "/tmp";
-    sprintf(template_buf, "%s/%s_XXXXXX.tmp", tmpdir, prefix);
+    snprintf(template_buf, sizeof(template_buf), "%s/%s_XXXXXX.tmp", tmpdir, prefix);
     int fd = mkstemp(template_buf);
     if (fd >= 0) {
         write(fd, content, strlen(content));
@@ -341,26 +342,22 @@ TEST(CbFileGetFiles, ListsFilesInDirectory) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_file_test_dir_XXXXXX", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_file_test_dir_XXXXXX", tmpdir);
 
     /* Create unique directory */
 #ifdef _WIN32
     /* Simple approach: use a fixed test directory name */
-    sprintf(dir_path, "%s\\cb_file_test_dir", tmpdir);
-    _mkdir(dir_path);
-#else
-#ifdef _WIN32
-    _mkdir(dir_path);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_file_test_dir", tmpdir);
+    MAKE_MKDIR(dir_path);
 #else
     MAKE_MKDIR(dir_path);
-#endif
 #endif
 
     /* Create test files */
     char file1[600], file2[600], file3[600];
-    sprintf(file1, "%s\\test1.txt", dir_path);
-    sprintf(file2, "%s\\test2.txt", dir_path);
-    sprintf(file3, "%s\\data.csv", dir_path);
+    snprintf(file1, sizeof(file1), "%s/test1.txt", dir_path);
+    snprintf(file2, sizeof(file2), "%s/test2.txt", dir_path);
+    snprintf(file3, sizeof(file3), "%s/data.csv", dir_path);
 
     FILE* f1 = fopen(file1, "w");
     if (f1) {
@@ -404,21 +401,13 @@ TEST(CbFileGetFiles, FilterBySuffix) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_file_suffix_test_dir", tmpdir);
-#ifdef _WIN32
-    _mkdir(dir_path);
-#else
-#ifdef _WIN32
-    _mkdir(dir_path);
-#else
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_file_suffix_test_dir", tmpdir);
     MAKE_MKDIR(dir_path);
-#endif
-#endif
 
     char file1[600], file2[600], file3[600];
-    sprintf(file1, "%s\\test1.txt", dir_path);
-    sprintf(file2, "%s\\test2.txt", dir_path);
-    sprintf(file3, "%s\\data.csv", dir_path);
+    snprintf(file1, sizeof(file1), "%s/test1.txt", dir_path);
+    snprintf(file2, sizeof(file2), "%s/test2.txt", dir_path);
+    snprintf(file3, sizeof(file3), "%s/data.csv", dir_path);
 
     FILE* f1 = fopen(file1, "w");
     if (f1) {
@@ -461,21 +450,13 @@ TEST(CbFileGetFiles, FilterByPrefix) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_file_prefix_test_dir", tmpdir);
-#ifdef _WIN32
-    _mkdir(dir_path);
-#else
-#ifdef _WIN32
-    _mkdir(dir_path);
-#else
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_file_prefix_test_dir", tmpdir);
     MAKE_MKDIR(dir_path);
-#endif
-#endif
 
     char file1[600], file2[600], file3[600];
-    sprintf(file1, "%s\\log_2026_01.txt", dir_path);
-    sprintf(file2, "%s\\log_2026_02.txt", dir_path);
-    sprintf(file3, "%s\\data_2026.txt", dir_path);
+    snprintf(file1, sizeof(file1), "%s/log_2026_01.txt", dir_path);
+    snprintf(file2, sizeof(file2), "%s/log_2026_02.txt", dir_path);
+    snprintf(file3, sizeof(file3), "%s/data_2026.txt", dir_path);
 
     FILE* f1 = fopen(file1, "w");
     if (f1) {
@@ -518,22 +499,14 @@ TEST(CbFileGetFiles, FilterByPrefixAndSuffix) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_file_both_test_dir", tmpdir);
-#ifdef _WIN32
-    _mkdir(dir_path);
-#else
-#ifdef _WIN32
-    _mkdir(dir_path);
-#else
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_file_both_test_dir", tmpdir);
     MAKE_MKDIR(dir_path);
-#endif
-#endif
 
     char file1[600], file2[600], file3[600], file4[600];
-    sprintf(file1, "%s\\data_01.csv", dir_path);
-    sprintf(file2, "%s\\data_02.csv", dir_path);
-    sprintf(file3, "%s\\log_01.csv", dir_path);
-    sprintf(file4, "%s\\data_01.txt", dir_path);
+    snprintf(file1, sizeof(file1), "%s/data_01.csv", dir_path);
+    snprintf(file2, sizeof(file2), "%s/data_02.csv", dir_path);
+    snprintf(file3, sizeof(file3), "%s/log_01.csv", dir_path);
+    snprintf(file4, sizeof(file4), "%s/data_01.txt", dir_path);
 
     FILE* f1 = fopen(file1, "w");
     if (f1) {
@@ -583,12 +556,8 @@ TEST(CbFileGetFiles, EmptyDirectoryReturnsEmptyVector) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_file_empty_dir_test", tmpdir);
-#ifdef _WIN32
-    _mkdir(dir_path);
-#else
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_file_empty_dir_test", tmpdir);
     MAKE_MKDIR(dir_path);
-#endif
 
     vector_t* vec = cbridge_file.get_files(dir_path, NULL, NULL);
     EXPECT_NE(vec, nullptr);
@@ -801,11 +770,11 @@ TEST(CbFileReadLines, ReadsToLastLine) {
 }
 
 TEST(CbFileReadLines, LineWithSpecialCharacters) {
-    const char* content = "Line with special: !@#$%^&*()\nNormal line\nAnother: {[]}|\\:\"<>?\n";
+    const char* content = "Line with special: !@#$%^&*()\nNormal line\nAnother: {[]}|/:\"<>?\n";
     string_t*   path    = createTempFile("readlines_special_test", content);
     string_t*   result  = cbridge_file.read_lines(cbridge_string.c_str(path), 1, 3);
     EXPECT_NE(result, nullptr);
-    EXPECT_STREQ(cbridge_string.c_str(result), "Line with special: !@#$%^&*()\nNormal line\nAnother: {[]}|\\:\"<>?");
+    EXPECT_STREQ(cbridge_string.c_str(result), "Line with special: !@#$%^&*()\nNormal line\nAnother: {[]}|/:\"<>?");
     remove(cbridge_string.c_str(path));
     cbridge_string.free(path);
     cbridge_string.free(result);
@@ -1035,7 +1004,7 @@ TEST(CbFileGetExtension, HiddenFile) {
 }
 
 TEST(CbFileGetExtension, WindowsPath) {
-    string_t* result = cbridge_file.get_extension("C:\\dir\\file.log");
+    string_t* result = cbridge_file.get_extension("C:/dir/file.log");
     EXPECT_NE(result, nullptr);
     EXPECT_STREQ(cbridge_string.c_str(result), ".log");
     cbridge_string.free(result);
@@ -1084,10 +1053,10 @@ TEST(CbFileCopy, CopiesFileSuccessfully) {
     char      dest_buf[512];
 #ifdef _WIN32
     const char* tmpdir = getenv("TEMP");
-    if (!tmpdir) tmpdir = "C:\\Temp";
-    sprintf(dest_buf, "%s\\copy_dest_test.tmp", tmpdir);
+    if (!tmpdir) tmpdir = "/tmp";
+    snprintf(dest_buf, sizeof(dest_buf), "%s/copy_dest_test.tmp", tmpdir);
 #else
-    sprintf(dest_buf, "/tmp/copy_dest_test.tmp");
+    snprintf(dest_buf, sizeof(dest_buf), "/tmp/copy_dest_test.tmp");
 #endif
 
     EXPECT_FALSE(cbridge_file.exists(dest_buf));
@@ -1126,10 +1095,10 @@ TEST(CbFileCopy, CopyEmptyFile) {
     char      dest_buf[512];
 #ifdef _WIN32
     const char* tmpdir = getenv("TEMP");
-    if (!tmpdir) tmpdir = "C:\\Temp";
-    sprintf(dest_buf, "%s\\copy_empty_dest_test.tmp", tmpdir);
+    if (!tmpdir) tmpdir = "/tmp";
+    snprintf(dest_buf, sizeof(dest_buf), "%s/copy_empty_dest_test.tmp", tmpdir);
 #else
-    sprintf(dest_buf, "/tmp/copy_empty_dest_test.tmp");
+    snprintf(dest_buf, sizeof(dest_buf), "/tmp/copy_empty_dest_test.tmp");
 #endif
 
     EXPECT_TRUE(cbridge_file.copy(cbridge_string.c_str(src_path), dest_buf));
@@ -1154,10 +1123,10 @@ TEST(CbFileCopy, CopyBinaryContent) {
     char dest_buf[512];
 #ifdef _WIN32
     const char* tmpdir = getenv("TEMP");
-    if (!tmpdir) tmpdir = "C:\\Temp";
-    sprintf(dest_buf, "%s\\copy_binary_dest_test.tmp", tmpdir);
+    if (!tmpdir) tmpdir = "/tmp";
+    snprintf(dest_buf, sizeof(dest_buf), "%s/copy_binary_dest_test.tmp", tmpdir);
 #else
-    sprintf(dest_buf, "/tmp/copy_binary_dest_test.tmp");
+    snprintf(dest_buf, sizeof(dest_buf), "/tmp/copy_binary_dest_test.tmp");
 #endif
 
     EXPECT_TRUE(cbridge_file.copy(cbridge_string.c_str(src_path), dest_buf));
@@ -1207,12 +1176,8 @@ TEST(CbFileIsDirectory, CreatedTempDirectory) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_isdir_test_dir", tmpdir);
-#ifdef _WIN32
-    _mkdir(dir_path);
-#else
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_isdir_test_dir", tmpdir);
     MAKE_MKDIR(dir_path);
-#endif
 
     EXPECT_TRUE(cbridge_file.is_directory(dir_path));
     rmdir(dir_path);
@@ -1252,14 +1217,14 @@ TEST(CbFileGetFilename, UnixPath) {
 }
 
 TEST(CbFileGetFilename, WindowsPath) {
-    string_t* result = cbridge_file.get_filename("C:\\Users\\Documents\\report.csv");
+    string_t* result = cbridge_file.get_filename("C:/Users/Documents/report.csv");
     EXPECT_NE(result, nullptr);
     EXPECT_STREQ(cbridge_string.c_str(result), "report.csv");
     cbridge_string.free(result);
 }
 
 TEST(CbFileGetFilename, MixedSeparators) {
-    string_t* result = cbridge_file.get_filename("/path\\to\\file.txt");
+    string_t* result = cbridge_file.get_filename("/path/to/file.txt");
     EXPECT_NE(result, nullptr);
     EXPECT_STREQ(cbridge_string.c_str(result), "file.txt");
     cbridge_string.free(result);
@@ -1302,7 +1267,7 @@ TEST(CbFileGetFilename, DoubleExtension) {
 }
 
 TEST(CbFileGetFilename, WindowsRootPath) {
-    string_t* result = cbridge_file.get_filename("C:\\");
+    string_t* result = cbridge_file.get_filename("C:/");
     EXPECT_NE(result, nullptr);
     EXPECT_TRUE(cbridge_string.empty(result));
     cbridge_string.free(result);
@@ -1319,7 +1284,7 @@ TEST(CbFileCreateDirectory, CreatesNewDirectory) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_createdir_test", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_createdir_test", tmpdir);
 
     // Ensure it doesn't already exist
     rmdir(dir_path);
@@ -1336,12 +1301,8 @@ TEST(CbFileCreateDirectory, ExistingDirectoryReturnsFalse) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_createdir_exists_test", tmpdir);
-#ifdef _WIN32
-    _mkdir(dir_path);
-#else
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_createdir_exists_test", tmpdir);
     MAKE_MKDIR(dir_path);
-#endif
 
     EXPECT_FALSE(cbridge_file.create_directory(dir_path));
 
@@ -1361,7 +1322,7 @@ TEST(CbFileCreateDirectory, NonExistentParentReturnsFalse) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\nonexistent_parent_12345\\child_dir", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/nonexistent_parent_12345/child_dir", tmpdir);
 
     EXPECT_FALSE(cbridge_file.create_directory(dir_path));
 }
@@ -1386,10 +1347,10 @@ TEST(CbFileMove, MovesFileSuccessfully) {
     char      dest_buf[512];
 #ifdef _WIN32
     const char* tmpdir = getenv("TEMP");
-    if (!tmpdir) tmpdir = "C:\\Temp";
-    sprintf(dest_buf, "%s\\cb_move_dest_test.tmp", tmpdir);
+    if (!tmpdir) tmpdir = "/tmp";
+    snprintf(dest_buf, sizeof(dest_buf), "%s/cb_move_dest_test.tmp", tmpdir);
 #else
-    sprintf(dest_buf, "/tmp/cb_move_dest_test.tmp");
+    snprintf(dest_buf, sizeof(dest_buf), "/tmp/cb_move_dest_test.tmp");
 #endif
 
     EXPECT_TRUE(cbridge_file.exists(cbridge_string.c_str(src_path)));
@@ -1433,10 +1394,10 @@ TEST(CbFileMove, MoveEmptyFile) {
     char      dest_buf[512];
 #ifdef _WIN32
     const char* tmpdir = getenv("TEMP");
-    if (!tmpdir) tmpdir = "C:\\Temp";
-    sprintf(dest_buf, "%s\\cb_move_empty_dest_test.tmp", tmpdir);
+    if (!tmpdir) tmpdir = "/tmp";
+    snprintf(dest_buf, sizeof(dest_buf), "%s/cb_move_empty_dest_test.tmp", tmpdir);
 #else
-    sprintf(dest_buf, "/tmp/cb_move_empty_dest_test.tmp");
+    snprintf(dest_buf, sizeof(dest_buf), "/tmp/cb_move_empty_dest_test.tmp");
 #endif
 
     EXPECT_TRUE(cbridge_file.move(cbridge_string.c_str(src_path), dest_buf));
@@ -1453,10 +1414,10 @@ TEST(CbFileMove, MoveThenSourceGone) {
     char      dest_buf[512];
 #ifdef _WIN32
     const char* tmpdir = getenv("TEMP");
-    if (!tmpdir) tmpdir = "C:\\Temp";
-    sprintf(dest_buf, "%s\\cb_move_gone_dest_test.tmp", tmpdir);
+    if (!tmpdir) tmpdir = "/tmp";
+    snprintf(dest_buf, sizeof(dest_buf), "%s/cb_move_gone_dest_test.tmp", tmpdir);
 #else
-    sprintf(dest_buf, "/tmp/cb_move_gone_dest_test.tmp");
+    snprintf(dest_buf, sizeof(dest_buf), "/tmp/cb_move_gone_dest_test.tmp");
 #endif
 
     EXPECT_TRUE(cbridge_file.move(cbridge_string.c_str(src_path), dest_buf));
@@ -1573,7 +1534,7 @@ TEST(CbFileReadLastLines, WindowsLineEndings) {
 
 TEST(CbFileReadLastLines, LargeFile) {
     string_t* path = createTempFile("readlastlines_large_test", "");
-    FILE* f = fopen(cbridge_string.c_str(path), "w");
+    FILE*     f    = fopen(cbridge_string.c_str(path), "w");
     if (f) {
         for (int i = 1; i <= 1000; i++) {
             fprintf(f, "Line %d\n", i);
@@ -1651,14 +1612,14 @@ TEST(CbFileGetDirectory, UnixPathRoot) {
 }
 
 TEST(CbFileGetDirectory, WindowsPath) {
-    string_t* result = cbridge_file.get_directory("C:\\Users\\Documents\\report.csv");
+    string_t* result = cbridge_file.get_directory("C:/Users/Documents/report.csv");
     EXPECT_NE(result, nullptr);
-    EXPECT_STREQ(cbridge_string.c_str(result), "C:\\Users\\Documents");
+    EXPECT_STREQ(cbridge_string.c_str(result), "C:/Users/Documents");
     cbridge_string.free(result);
 }
 
 TEST(CbFileGetDirectory, MixedSeparators) {
-    string_t* result = cbridge_file.get_directory("/path\\to\\file.txt");
+    string_t* result = cbridge_file.get_directory("/path/to/file.txt");
     EXPECT_NE(result, nullptr);
     EXPECT_STREQ(cbridge_string.c_str(result), "/path/to");
     cbridge_string.free(result);
@@ -1746,14 +1707,14 @@ TEST(CbFileGetBasename, HiddenFileNoExtension) {
 }
 
 TEST(CbFileGetBasename, WindowsPath) {
-    string_t* result = cbridge_file.get_basename("C:\\Users\\Documents\\report.csv");
+    string_t* result = cbridge_file.get_basename("C:/Users/Documents/report.csv");
     EXPECT_NE(result, nullptr);
     EXPECT_STREQ(cbridge_string.c_str(result), "report");
     cbridge_string.free(result);
 }
 
 TEST(CbFileGetBasename, MixedSeparators) {
-    string_t* result = cbridge_file.get_basename("/path\\to\\file.txt");
+    string_t* result = cbridge_file.get_basename("/path/to/file.txt");
     EXPECT_NE(result, nullptr);
     EXPECT_STREQ(cbridge_string.c_str(result), "file");
     cbridge_string.free(result);
@@ -1798,20 +1759,16 @@ TEST(CbFileGetBasename, SingleDotInFilename) {
  * create_directories() Tests
  * ============================================================================ */
 
-TEST(CbFileCreateDirectories, NullPathReturnsFalse) {
-    EXPECT_FALSE(cbridge_file.create_directories(NULL));
-}
+TEST(CbFileCreateDirectories, NullPathReturnsFalse) { EXPECT_FALSE(cbridge_file.create_directories(NULL)); }
 
-TEST(CbFileCreateDirectories, EmptyPathReturnsFalse) {
-    EXPECT_FALSE(cbridge_file.create_directories(""));
-}
+TEST(CbFileCreateDirectories, EmptyPathReturnsFalse) { EXPECT_FALSE(cbridge_file.create_directories("")); }
 
 TEST(CbFileCreateDirectories, CreatesSingleLevelDirectory) {
     const char* tmpdir = getenv("TEMP");
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_createdir_single_test", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_createdir_single_test", tmpdir);
 
     EXPECT_TRUE(cbridge_file.create_directories(dir_path));
     EXPECT_TRUE(cbridge_file.is_directory(dir_path));
@@ -1824,17 +1781,17 @@ TEST(CbFileCreateDirectories, CreatesMultiLevelDirectory) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_createdir_multi\\level\\test", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_createdir_multi/level/test", tmpdir);
 
     EXPECT_TRUE(cbridge_file.create_directories(dir_path));
     EXPECT_TRUE(cbridge_file.is_directory(dir_path));
 
     char cmd[1024];
 #ifdef _WIN32
-    sprintf(cmd, "rmdir /s /q \"%s\"", dir_path);
+    snprintf(cmd, sizeof(cmd), "rmdir /s /q \"%s\"", dir_path);
     system(cmd);
 #else
-    sprintf(cmd, "rm -rf \"%s\"", dir_path);
+    snprintf(cmd, sizeof(cmd), "rm -rf \"%s\"", dir_path);
     system(cmd);
 #endif
 }
@@ -1844,7 +1801,7 @@ TEST(CbFileCreateDirectories, IdempotentWhenExists) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_createdir_idem_test", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_createdir_idem_test", tmpdir);
 
     EXPECT_TRUE(cbridge_file.create_directories(dir_path));
     EXPECT_TRUE(cbridge_file.create_directories(dir_path));
@@ -1864,8 +1821,8 @@ TEST(CbFileCreateDirectories, ComponentIsFileReturnsFalse) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char file_path[512], dir_path[512];
-    sprintf(file_path, "%s\\cb_cretdir_file_component", tmpdir);
-    sprintf(dir_path, "%s\\cb_cretdir_file_component\\subdir", tmpdir);
+    snprintf(file_path, sizeof(file_path), "%s/cb_cretdir_file_component", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_cretdir_file_component/subdir", tmpdir);
 
     FILE* f = fopen(file_path, "w");
     if (f) {
@@ -1883,13 +1840,13 @@ TEST(CbFileCreateDirectories, UnixPath) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s/cb_createdir_unix_test/a/b/c", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_createdir_unix_test/a/b/c", tmpdir);
 
     EXPECT_TRUE(cbridge_file.create_directories(dir_path));
     EXPECT_TRUE(cbridge_file.is_directory(dir_path));
 
     char cmd[1024];
-    sprintf(cmd, "rm -rf \"%s\"", dir_path);
+    snprintf(cmd, sizeof(cmd), "rm -rf \"%s\"", dir_path);
     system(cmd);
 }
 
@@ -1898,13 +1855,13 @@ TEST(CbFileCreateDirectories, MixedSeparators) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s/cb_createdir_mixed\\test\\a/b", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_createdir_mixed/test/a/b", tmpdir);
 
     EXPECT_TRUE(cbridge_file.create_directories(dir_path));
     EXPECT_TRUE(cbridge_file.is_directory(dir_path));
 
     char cmd[1024];
-    sprintf(cmd, "rm -rf \"%s\"", dir_path);
+    snprintf(cmd, sizeof(cmd), "rm -rf \"%s\"", dir_path);
     system(cmd);
 }
 
@@ -1913,8 +1870,8 @@ TEST(CbFileCreateDirectories, CreatesExistingParentThenChild) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char parent_path[512], child_path[512];
-    sprintf(parent_path, "%s\\cb_cretdir_exists_parent", tmpdir);
-    sprintf(child_path, "%s\\cb_cretdir_exists_parent\\child", tmpdir);
+    snprintf(parent_path, sizeof(parent_path), "%s/cb_cretdir_exists_parent", tmpdir);
+    snprintf(child_path, sizeof(child_path), "%s/cb_cretdir_exists_parent/child", tmpdir);
 
     EXPECT_TRUE(cbridge_file.create_directories(parent_path));
     EXPECT_TRUE(cbridge_file.is_directory(parent_path));
@@ -1923,10 +1880,10 @@ TEST(CbFileCreateDirectories, CreatesExistingParentThenChild) {
 
     char cmd[1024];
 #ifdef _WIN32
-    sprintf(cmd, "rmdir /s /q \"%s\"", parent_path);
+    snprintf(cmd, sizeof(cmd), "rmdir /s /q \"%s\"", parent_path);
     system(cmd);
 #else
-    sprintf(cmd, "rm -rf \"%s\"", parent_path);
+    snprintf(cmd, sizeof(cmd), "rm -rf \"%s\"", parent_path);
     system(cmd);
 #endif
 }
@@ -1935,13 +1892,9 @@ TEST(CbFileCreateDirectories, CreatesExistingParentThenChild) {
  * remove_directory() Tests
  * ============================================================================ */
 
-TEST(CbFileRemoveDirectory, NullPathReturnsFalse) {
-    EXPECT_FALSE(cbridge_file.remove_directory(NULL));
-}
+TEST(CbFileRemoveDirectory, NullPathReturnsFalse) { EXPECT_FALSE(cbridge_file.remove_directory(NULL)); }
 
-TEST(CbFileRemoveDirectory, NonExistentPathReturnsFalse) {
-    EXPECT_FALSE(cbridge_file.remove_directory("/this/path/should/not/exist_12345"));
-}
+TEST(CbFileRemoveDirectory, NonExistentPathReturnsFalse) { EXPECT_FALSE(cbridge_file.remove_directory("/this/path/should/not/exist_12345")); }
 
 TEST(CbFileRemoveDirectory, PathIsFileReturnsFalse) {
     string_t* path = createTempFile("cb_remdir_isfile_test", "content");
@@ -1955,12 +1908,12 @@ TEST(CbFileRemoveDirectory, NonEmptyDirectoryReturnsFalse) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_remdir_nonempty_test", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_remdir_nonempty_test", tmpdir);
 
     MAKE_MKDIR(dir_path);
 
     char file_path[600];
-    sprintf(file_path, "%s\\inside.txt", dir_path);
+    snprintf(file_path, sizeof(file_path), "%s/inside.txt", dir_path);
     FILE* f = fopen(file_path, "w");
     if (f) {
         fprintf(f, "content");
@@ -1978,7 +1931,7 @@ TEST(CbFileRemoveDirectory, RemovesEmptyDirectory) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_remdir_empty_test", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_remdir_empty_test", tmpdir);
 
     MAKE_MKDIR(dir_path);
     EXPECT_TRUE(cbridge_file.is_directory(dir_path));
@@ -1992,7 +1945,7 @@ TEST(CbFileRemoveDirectory, UnixPath) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s/cb_remdir_unix_test", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_remdir_unix_test", tmpdir);
 
     MAKE_MKDIR(dir_path);
     EXPECT_TRUE(cbridge_file.remove_directory(dir_path));
@@ -2000,15 +1953,19 @@ TEST(CbFileRemoveDirectory, UnixPath) {
 }
 
 TEST(CbFileRemoveDirectory, WindowsPath) {
+#ifndef _WIN32
+    GTEST_SKIP() << "WindowsPath test only meaningful on Windows";
+#else
     const char* tmpdir = getenv("TEMP");
-    if (!tmpdir) tmpdir = "C:\\Temp";
+    if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_remdir_win_test", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s\\cb_remdir_win_test", tmpdir);
 
-    _mkdir(dir_path);
+    MAKE_MKDIR(dir_path);
     EXPECT_TRUE(cbridge_file.remove_directory(dir_path));
     EXPECT_FALSE(cbridge_file.is_directory(dir_path));
+#endif
 }
 
 TEST(CbFileRemoveDirectory, TrailingSlashHandled) {
@@ -2016,11 +1973,9 @@ TEST(CbFileRemoveDirectory, TrailingSlashHandled) {
     if (!tmpdir) tmpdir = "/tmp";
 
     char dir_path[512];
-    sprintf(dir_path, "%s\\cb_remdir_trail_test\\", tmpdir);
+    snprintf(dir_path, sizeof(dir_path), "%s/cb_remdir_trail_test/", tmpdir);
 
     MAKE_MKDIR(dir_path);
     EXPECT_TRUE(cbridge_file.remove_directory(dir_path));
     EXPECT_FALSE(cbridge_file.is_directory(dir_path));
 }
-
-

@@ -3,6 +3,7 @@
 #include "vector.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -376,7 +377,7 @@ static string_t* impl_read_last_lines(const char* path, size_t count) {
     // At the end, the buffer contains the last `count` lines in order.
 
     // Allocate array of string_t* pointers (circular buffer)
-    string_t** buf     = (string_t**)malloc(sizeof(string_t*) * count);
+    string_t** buf      = (string_t**)malloc(sizeof(string_t*) * count);
     bool*      has_line = (bool*)calloc(count, sizeof(bool));
     if (!buf || !has_line) {
         fclose(f);
@@ -385,8 +386,8 @@ static string_t* impl_read_last_lines(const char* path, size_t count) {
         return cbridge_string.create("");
     }
 
-    char     line[4096];
-    size_t   totalLines = 0;
+    char   line[4096];
+    size_t totalLines = 0;
 
     while (fgets(line, sizeof(line), f)) {
         // Strip trailing newline/carriage-return
@@ -403,7 +404,7 @@ static string_t* impl_read_last_lines(const char* path, size_t count) {
         if (has_line[pos]) {
             cbridge_string.free(buf[pos]);
         }
-        buf[pos]     = cbridge_string.create(line);
+        buf[pos]      = cbridge_string.create(line);
         has_line[pos] = true;
         totalLines++;
     }
@@ -424,7 +425,7 @@ static string_t* impl_read_last_lines(const char* path, size_t count) {
     }
 
     // Starting index in the circular buffer
-    size_t start = (totalLines >= count) ? (totalLines % count) : 0;
+    size_t start    = (totalLines >= count) ? (totalLines % count) : 0;
     size_t numLines = (totalLines < count) ? totalLines : count;
 
     for (size_t i = 0; i < numLines; i++) {
@@ -465,8 +466,7 @@ static string_t* impl_get_directory(const char* path) {
     }
 
     // Strip trailing separators from the result
-    while (len > 0 && (path[len - 1] == '/' || path[len - 1] == '\\'))
-        len--;
+    while (len > 0 && (path[len - 1] == '/' || path[len - 1] == '\\')) len--;
 
     if (len == 0) {
         if (path[0] == '/') return cbridge_string.create("/");
@@ -518,7 +518,7 @@ static string_t* impl_get_basename(const char* path) {
     if (dot == filename) return cbridge_string.create(filename);
 
     // Extract basename (filename without extension)
-    size_t len = (size_t)(dot - filename);
+    size_t len  = (size_t)(dot - filename);
     char*  base = (char*)malloc(len + 1);
     if (!base) return cbridge_string.create("");
     memcpy(base, filename, len);
@@ -539,7 +539,7 @@ static bool impl_create_directories(const char* path) {
     if (impl_exists(path)) return false;
 
     // Make a mutable copy of the path
-    size_t len = strlen(path);
+    size_t len  = strlen(path);
     char*  work = (char*)malloc(len + 1);
     if (!work) return false;
     memcpy(work, path, len + 1);
