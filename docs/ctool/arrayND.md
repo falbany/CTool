@@ -1,7 +1,7 @@
-# /num: NumPy-like Array Operations
+# /arrayND: NumPy-like N-Dimensional Array Operations
 
 ## 📖 Overview
-The `/num` module provides a high-performance, contiguous memory 2D array container designed to mimic the syntax and behavior of Python's **NumPy** library. Unlike the legacy `/array2D` (which uses a "vector of vectors"), `NumArray` stores data in a single contiguous block, offering superior cache locality and performance for numerical computations.
+The `/arrayND` module provides a high-performance, contiguous memory 2D array container designed to mimic the syntax and behavior of Python's **NumPy** library. Unlike the legacy `/array2D` (which uses a "vector of vectors"), `ArrayND` stores data in a single contiguous block, offering superior cache locality and performance for numerical computations.
 
 ## ✨ Key Features
 - **Contiguous Memory Layout:** Data is stored in a single `std::vector<T>`, ensuring cache-friendly access patterns similar to NumPy's `ndarray`.
@@ -14,18 +14,18 @@ The `/num` module provides a high-performance, contiguous memory 2D array contai
 
 ### 1. Inclusion
 ```cpp
-#include "src/ctool/num.hpp"
+#include "src/ctool/arrayND.hpp"
 ```
 
 ### 2. Construction
 ```cpp
 // Create arrays using the full namespace path
-ctool::num::NumArray<double> empty;
+ctool::array::ArrayND<double> empty;
 
-ctool::num::NumArray<int> zeros(3, 4); 
+ctool::array::ArrayND<int> zeros(3, 4); 
 
-ctool::num::NumArray<double> matrix = {{1.0, 2.0, 3.0}, 
-                                   {4.0, 5.0, 6.0}};
+ctool::array::ArrayND<double> matrix = {{1.0, 2.0, 3.0}, 
+                                        {4.0, 5.0, 6.0}};
 
 // Check shape and size
 size_t rows = matrix.rows();      // 2
@@ -48,60 +48,60 @@ double* dataPtr = matrix.data();
 
 ### 4. Arithmetic (Element-wise)
 ```cpp
-ctool::num::NumArray<double> a = {{1.0, 2.0}, {3.0, 4.0}};
-ctool::num::NumArray<double> b = {{5.0, 6.0}, {7.0, 8.0}};
+ctool::array::ArrayND<double> a = {{1.0, 2.0}, {3.0, 4.0}};
+ctool::array::ArrayND<double> b = {{5.0, 6.0}, {7.0, 8.0}};
 
 // Array + Array (Shapes must match)
-ctool::num::NumArray<double> sum_ab = a + b; 
+ctool::array::ArrayND<double> sum_ab = a + b; 
 // Result: {{6.0, 8.0}, {10.0, 12.0}}
 
 // Array + Scalar (Broadcasting)
-ctool::num::NumArray<double> add_5 = a + 5.0; 
+ctool::array::ArrayND<double> add_5 = a + 5.0; 
 // Result: {{6.0, 7.0}, {8.0, 9.0}}
 
 // Scalar + Array (Commutative)
-ctool::num::NumArray<double> add_5_rev = 5.0 + a; 
+ctool::array::ArrayND<double> add_5_rev = 5.0 + a; 
 // Result: {{6.0, 7.0}, {8.0, 9.0}}
 
 // Array * Array (Shapes must match)
-ctool::num::NumArray<double> prod_ab = a * b;
+ctool::array::ArrayND<double> prod_ab = a * b;
 // Result: {{5.0, 12.0}, {21.0, 32.0}}
 
 // Array * Scalar
-ctool::num::NumArray<double> scaled = a * 2.0;
+ctool::array::ArrayND<double> scaled = a * 2.0;
 // Result: {{2.0, 4.0}, {6.0, 8.0}}
 
 // Array / Scalar
-ctool::num::NumArray<double> divided = b / 2.0;
+ctool::array::ArrayND<double> divided = b / 2.0;
 // Result: {{2.5, 3.0}, {3.5, 4.0}}
 ```
 
 ### 5. Universal Functions (Ufuncs)
 These functions return a **new** array with the transformed values.
 ```cpp
-ctool::num::NumArray<double> data = {{1.0, 4.0}, {9.0, 16.0}};
+ctool::array::ArrayND<double> data = {{1.0, 4.0}, {9.0, 16.0}};
 
 // Square Root
-ctool::num::NumArray<double> roots = ctool::num::sqrt(data); 
+ctool::array::ArrayND<double> roots = ctool::array::sqrt(data); 
 // Result: {{1.0, 2.0}, {3.0, 4.0}}
 
 // Sine (radians)
-ctool::num::NumArray<double> sine_vals = ctool::num::sin(data);
+ctool::array::ArrayND<double> sine_vals = ctool::array::sin(data);
 
 // Absolute Value
-ctool::num::NumArray<int> negatives = {{-1, -2}, {3, -4}};
-ctool::num::NumArray<int> pos = ctool::num::abs(negatives);
+ctool::array::ArrayND<int> negatives = {{-1, -2}, {3, -4}};
+ctool::array::ArrayND<int> pos = ctool::array::abs(negatives);
 // Result: {{1, 2}, {3, 4}}
 ```
 
 ### 6. Reduction Operations
 ```cpp
-ctool::num::NumArray<double> m = {{1.0, 2.0}, {3.0, 4.0}};
+ctool::array::ArrayND<double> m = {{1.0, 2.0}, {3.0, 4.0}};
 
-double s = ctool::num::sum(m);      // 10.0
-double mean_val = ctool::num::mean(m); // 2.5
-double max_val = ctool::num::max(m);   // 4.0
-double min_val = ctool::num::min(m);   // 1.0
+double s = ctool::array::sum(m);      // 10.0
+double mean_val = ctool::array::mean(m); // 2.5
+double max_val = ctool::array::max(m);   // 4.0
+double min_val = ctool::array::min(m);   // 1.0
 ```
 
 ### 7. Utility
@@ -117,15 +117,15 @@ m.clear();
 // Output to stream
 std::cout << m << std::endl;
 // Output:
-// NumArray(
+// ArrayND(
 //   [1, 2]
 //   [3, 4]
 // )
 ```
 
-## 📊 Comparison: `NumArray` vs `Array2D`
+## 📊 Comparison: `ArrayND` vs `Array2D`
 
-| Feature            | `ctool::array::Array2D`               | `ctool::num::NumArray`                    |
+| Feature            | `ctool::array::Array2D`               | `ctool::array::ArrayND`                   |
 | :----------------- | :--------------------------------- | :------------------------------------- |
 | **Memory Layout**  | Vector of Vectors (Non-contiguous) | **Contiguous 1D Block**                |
 | **Performance**    | Slower (Cache misses)              | **High (Cache friendly)**              |
@@ -133,7 +133,7 @@ std::cout << m << std::endl;
 | **Math Functions** | Manual loops                       | **Built-in Ufuncs (`sqrt`, `sin`)**    |
 | **Use Case**       | General grid storage, simple logic | **Scientific computing, Data Science** |
 
-> **Note:** If you are doing heavy numerical calculations, use `ctool::num::NumArray`. If you need a simple grid where rows might have different lengths (jagged arrays), use `ctool::array::Array2D`.
+> **Note:** If you are doing heavy numerical calculations, use `ctool::array::ArrayND`. If you need a simple grid where rows might have different lengths (jagged arrays), use `ctool::array::Array2D`.
 
 ## ⚠️ Limitations & Notes
 1.  **No Views:** Slicing or sub-array operations currently create **copies** of the data (unlike NumPy's zero-copy views).

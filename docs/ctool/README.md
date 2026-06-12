@@ -10,5 +10,5 @@ This directory contains documentation for C++ modules.
 - [dataframe](dataframe.md) - Data analysis and manipulation.
 - [ini](ini.md) - INI configuration parsing.
 - [json](json.md) - JSON data manipulation.
-- [num](num.md) - Numerical computing and statistics.
+- [arrayND](arrayND.md) - Numerical computing and statistics.
 - [unit](unit.md) - Unit testing framework.

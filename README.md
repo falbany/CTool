@@ -23,7 +23,7 @@ graph TB
         CBridge_h[CBridge.h<br/>C Library Entry]
 
         subgraph CTool_CPP[CTool C++11 Implementation]
-            ctool_tools[ctool:: string, file, num, time, log, net]
+            ctool_tools[ctool:: string, file, arrayND, time, log, net]
             ctool_data[Data Analysis & Config: DataFrame, array2D, array3D, csv, json, ini]
         end
 

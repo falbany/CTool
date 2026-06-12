@@ -1,18 +1,15 @@
 #include "file.h"
 #include "string.h"
 #include "vector.h"
+#include "../internal/platform.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _WIN32
-    #include <windows.h>
+#if PLATFORM_WINDOWS
     #include <direct.h>
     #define GetCurrentDir _getcwd
 #else
-    #include <unistd.h>
-    #include <dirent.h>
-    #include <sys/stat.h>
     #define GetCurrentDir getcwd
 #endif
 
@@ -111,7 +108,7 @@ static vector_t* impl_get_files(const char* directory, const char* prefix, const
     vector_t* vec = cbridge_vector.create();
     if (!directory) return vec;
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
     char search_path[MAX_PATH];
     snprintf(search_path, sizeof(search_path), "%s\\*", directory);
     WIN32_FIND_DATA fd;
@@ -310,7 +307,7 @@ static bool impl_copy(const char* src, const char* dest) {
 static bool impl_is_directory(const char* path) {
     if (!path) return false;
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
     DWORD attrs = GetFileAttributesA(path);
     if (attrs == INVALID_FILE_ATTRIBUTES) return false;
     return (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0;
@@ -344,7 +341,7 @@ static bool impl_create_directory(const char* path) {
     // If directory already exists, return false
     if (impl_is_directory(path)) return false;
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
     return (_mkdir(path) == 0);
 #else
     return (mkdir(path, 0755) == 0);
@@ -563,7 +560,7 @@ static bool impl_create_directories(const char* path) {
                     break;
                 }
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
                 if (_mkdir(work) != 0) {
                     success = false;
                     break;
@@ -585,7 +582,7 @@ static bool impl_create_directories(const char* path) {
         if (impl_exists(work)) {
             success = false;
         } else {
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
             if (_mkdir(work) != 0) success = false;
 #else
             if (mkdir(work, 0755) != 0) success = false;
@@ -603,7 +600,7 @@ static bool impl_remove_directory(const char* path) {
     // Must exist and be a directory
     if (!impl_is_directory(path)) return false;
 
-#ifdef _WIN32
+#if PLATFORM_WINDOWS
     return (RemoveDirectoryA(path) != 0);
 #else
     return (rmdir(path) == 0);
