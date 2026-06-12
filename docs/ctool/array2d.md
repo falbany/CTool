@@ -1,14 +1,15 @@
 # CTool Array2D Module
 
-This module provides a type-safe, dynamic 2D array container (`ctool::Array2D<T>`). It offers bounds-checked access, dimension management, and basic mathematical operations, acting as a robust alternative to `std::vector<std::vector<T>>`.
+This module provides a type-safe, dynamic 2D array container (`ctool::array::Array2D<T>`). It offers bounds-checked access, dimension management, and robust mathematical operations, acting as a high-performance alternative to `std::vector<std::vector<T>>`.
 
 ## Class Reference: `ctool::array::Array2D<T>`
 
 ### Features
 - **Safety**: Bounds-checked access via `at(row, col)`.
-- **Flexibility**: Resizable dimensions, dynamic row addition.
-- **Math**: In-place scaling and addition operations.
-- **Performance**: High-level abstraction over `std::vector<std::vector<T>>`.
+- **Flexibility**: Resizable dimensions, dynamic row addition, and sub-array extraction.
+- **Search**: Find exact values or nearest neighbors with coordinate returns.
+- **Math**: In-place scaling, addition, and matrix transposition.
+- **Performance**: Contiguous memory layout for cache-locality.
 
 ## Usage Examples
 
@@ -34,8 +35,6 @@ int main() {
     ctool::array::Array2D<int> arr4(data);
 
     // Print
-    std::cout << "arr2: " << arr2 << "\n";
-    std::cout << "arr3: " << arr3 << "\n";
     std::cout << "arr4: " << arr4 << "\n";
 
     return 0;
@@ -47,56 +46,77 @@ int main() {
 ```cpp
 ctool::array::Array2D<double> matrix(3, 3);
 
-// Safe access (throws if out of bounds)
+// Safe access (throws std::out_of_range if out of bounds)
 matrix.at(0, 0) = 1.0; 
 
 // Fast unchecked access
 matrix(1, 1) = 2.5;
 
-// Resize
-matrix.resize(4, 4, 0.0); // Expands to 4x4, filling new cells with 0.0
+// Resize (preserves existing data, fills new cells with 0.0)
+matrix.resize(4, 4, 0.0); 
 
 // Push a new row
-matrix.pushRow(4, 0.0);
+matrix.pushRow(4, -1.0);
 ```
 
-### 3. Math Operations
+### 3. Math & Transformations
 
 ```cpp
-ctool::array::Array2D<double> data(2, 2);
-data.fill(1.0); // Fills with 1.0
+ctool::array::Array2D<double> data(2, 3);
+data.fill(1.0);
 
-// Scale by 2.0 -> all elements become 2.0
-data.scale(2.0); 
+// Transpose: 2x3 -> 3x2
+ctool::array::Array2D<double> T = data.transpose();
 
-// Add 5.0 -> all elements become 7.0
-data.add(5.0); 
+// Sub-array extraction: top-left (0,0), 2 rows, 2 columns
+ctool::array::Array2D<double> sub = data.subArray(0, 0, 2, 2);
+
+// Math chain
+data.scale(2.0).add(5.0); // (1.0 * 2.0) + 5.0 = 7.0
 
 // Get min/max
 double max_val = data.max(); // 7.0
 double min_val = data.min(); // 7.0
 ```
 
-### 4. Conversion
+### 4. Search and Analysis
+
+```cpp
+ctool::array::Array2D<int> grid(5, 5, 0);
+grid(2, 3) = 42;
+
+// Find first occurrence
+try {
+    std::pair<size_t, size_t> pos = grid.findValue(42);
+    // pos.first = 2, pos.second = 3
+} catch (const std::runtime_error& e) {
+    // Value not found
+}
+
+// Find nearest value (useful for floating point or approximations)
+auto nearest = grid.findNearest(40); // Returns (2, 3) as 42 is closest to 40
+```
+
+### 5. Conversion & Interop
 
 ```cpp
 ctool::array::Array2D<int> arr(2, 2);
-// ... fill data ...
 
 // Convert back to standard vector for compatibility
 std::vector<std::vector<int>> vec = arr.toVector();
+
+// Get raw pointer for C-style API interaction (BLAS, LAPACK, etc.)
+int* raw_ptr = arr.data();
 ```
 
 ## Performance Notes
 
-- **Access**: `at(row, col)` is $O(1)$ but includes bounds checking (slower). `operator()(row, col)` is $O(1)$ with no checks (faster).
-- **Resize**: $O(N)$ where $N$ is the number of elements.
-- **Memory**: Uses a flat `std::vector<T>` for contiguous storage. This ensures high cache-locality and performance, making it suitable for linear algebra and interfacing with C-style APIs via `data()`.
-- **Note**: `toVector()` returns a copy. For read-only access to rows, prefer `sliceRow()`.
+- **Access**: `at(row, col)` is $O(1)$ with bounds checking. `operator()(row, col)` is $O(1)$ without checks.
+- **Memory**: Uses a flat `std::vector<T>` for contiguous storage. This ensures high cache-locality and performance.
+- **Conversion**: `toVector()` returns a copy. For direct row access, prefer `sliceRow(row)`.
 
 ## Error Handling
 
-- **`std::out_of_range`**: Thrown by `at()` if indices exceed dimensions.
-- **`std::invalid_argument`**: Thrown during construction if input vectors are jagged (inconsistent row lengths).
-- **`std::runtime_error`**: Thrown by `min()`/`max()` on empty arrays.
-
+- **`std::out_of_range`**: Thrown by `at()`, `subArray()`, `sliceRow()`, etc., if indices exceed dimensions.
+- **`std::invalid_argument`**: Thrown during construction or `pushRow()` if dimensions are inconsistent.
+- **`std::runtime_error`**: Thrown by `findValue()` or `max()`/`min()` if the array is empty or value is missing.

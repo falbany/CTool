@@ -1,6 +1,15 @@
 # CTool Array3D Module
 
-This module provides a type-safe, dynamic 3D array container (`ctool::array::Array3D<T>`). It is designed for volumetric data, time-series of images, or tensor operations.
+This module provides a type-safe, dynamic 3D array container (`ctool::array::Array3D<T>`). It is designed for volumetric data, time-series, or tensor operations, offering contiguous memory storage for high-performance access.
+
+## Class Reference: `ctool::array::Array3D<T>`
+
+### Features
+- **Safety**: Bounds-checked access via `at(depth, row, col)`.
+- **Flexibility**: Resizable dimensions and 2D slice extraction.
+- **Operations**: Bulk filling by depth (slice), row, or column across all slices.
+- **Math**: In-place scaling and addition operations.
+- **Performance**: Depth-major contiguous memory layout for optimal cache-locality.
 
 ## Usage Examples
 
@@ -9,46 +18,78 @@ This module provides a type-safe, dynamic 3D array container (`ctool::array::Arr
 ```cpp
 #include "src/ctool/array3D.hpp"
 #include <iostream>
+#include <vector>
 
 int main() {
     // Create a 3D volume: 2 slices, 3 rows, 4 columns
-    ctool::array::Array3D<double> volume(2, 3, 4);
+    ctool::array::Array3D<double> volume(2, 3, 4, 0.0);
 
-    // Fill with data
-    volume.fill(0.0);
-    volume(0, 0, 0) = 1.5; // First element
-    volume(1, 2, 3) = 3.14; // Last element
+    // From nested vectors (Depth > Rows > Cols)
+    std::vector<std::vector<std::vector<int>>> data = {
+        {{1, 2}, {3, 4}}, 
+        {{5, 6}, {7, 8}}
+    };
+    ctool::array::Array3D<int> tensor(data);
 
-    std::cout << volume << "\n";
-
-    // Extract a slice (2D array)
-    ctool::array::Array2D<double> slice0 = volume.slice(0);
-    std::cout << "Slice 0:\n" << slice0 << "\n";
+    std::cout << "Tensor size: " << tensor.size() << " elements.\n";
 
     return 0;
 }
 ```
 
-### 2. Math Operations
+### 2. Access and Manipulation
 
 ```cpp
-ctool::array::Array3D<float> data(2, 2, 2);
-data.fill(1.0f);
+ctool::array::Array3D<double> vol(10, 10, 10);
 
-// Scale entire volume
-data.scale(2.0f); // All elements become 2.0f
+// Safe access (throws std::out_of_range)
+vol.at(0, 5, 2) = 12.3;
 
-// Add offset
-data.add(10.0f); // All elements become 12.0f
+// Fast unchecked access
+vol(1, 1, 1) = 3.14;
+
+// Extraction: Get a 2D slice (layer) as Array2D<T>
+ctool::array::Array2D<double> layer2 = vol.slice(2);
 ```
 
-### 3. Performance Note
+### 3. Bulk Operations
 
-- **Memory Layout**: `Array3D` uses a flat `std::vector<T>` with contiguous layout, storing elements in depth-major order (`depth * rows * cols` stride).
-- **Contiguity**: The entire 3D volume is now fully contiguous in memory, providing cache-locality for high-performance operations (FFT, volumetric filtering, tensor math). Access via `data()` for C-style API interop.
+```cpp
+ctool::array::Array3D<float> cube(4, 4, 4);
+
+// Fill a specific slice (depth index 1)
+cube.fillDepth(1, 1.0f);
+
+// Fill row 2 in ALL slices
+cube.fillRow(2, 5.0f);
+
+// Fill column 0 in ALL slices
+cube.fillColumn(0, -1.0f);
+
+// Math operations
+cube.scale(2.0).add(10.0);
+```
+
+### 4. Memory and Interop
+
+```cpp
+ctool::array::Array3D<double> data(5, 5, 5);
+
+// The volume is stored contiguously in memory
+// Indexing: (d * rows * cols) + (r * cols) + c
+double* raw_ptr = data.data();
+
+// Convert to nested vectors
+auto vec = data.toVector();
+```
+
+## Performance Note
+
+- **Memory Layout**: `Array3D` uses a single `std::vector<T>` for contiguous layout. This provides excellent cache-locality for volumetric filtering, FFT, or large-scale tensor math.
+- **Resize**: Resizing with different row/column counts triggers a re-mapping of data, which is an $O(N)$ operation.
 
 ## Error Handling
 
-- **`std::out_of_range`**: Thrown by `at()` or `slice()` if indices exceed dimensions.
-- **`std::invalid_argument`**: Thrown during construction if input data is jagged.
+- **`std::out_of_range`**: Thrown by `at()`, `slice()`, `fillDepth()`, etc., if indices exceed dimensions.
+- **`std::invalid_argument`**: Thrown during construction if input data is non-rectangular (inconsistent dimensions).
 - **`std::runtime_error`**: Thrown by `min()`/`max()` on empty arrays.
