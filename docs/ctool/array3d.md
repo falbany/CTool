@@ -1,4 +1,3 @@
-docs//array3D.md
 # CTool Array3D Module
 
 This module provides a type-safe, dynamic 3D array container (`ctool::array::Array3D<T>`). It is designed for volumetric data, time-series of images, or tensor operations.
@@ -8,7 +7,7 @@ This module provides a type-safe, dynamic 3D array container (`ctool::array::Arr
 ### 1. Construction
 
 ```cpp
-#include "/array3D.hpp"
+#include "src/ctool/array3D.hpp"
 #include <iostream>
 
 int main() {
@@ -45,8 +44,8 @@ data.add(10.0f); // All elements become 12.0f
 
 ### 3. Performance Note
 
-- **Memory Layout**: `Array3D` uses a nested `vector` structure (`depth` -> `rows` -> `cols`).
-- **Contiguity**: Unlike `Array` (which is also nested), 3D arrays are **not** fully contiguous in memory. For high-performance linear algebra on 3D data (e.g., FFT), consider flattening to a 1D `std::vector` with manual indexing, but `Array3D` offers safety and clarity for general use.
+- **Memory Layout**: `Array3D` uses a flat `std::vector<T>` with contiguous layout, storing elements in depth-major order (`depth * rows * cols` stride).
+- **Contiguity**: The entire 3D volume is now fully contiguous in memory, providing cache-locality for high-performance operations (FFT, volumetric filtering, tensor math). Access via `data()` for C-style API interop.
 
 ## Error Handling
 

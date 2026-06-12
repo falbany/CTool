@@ -8,14 +8,14 @@ This module provides a type-safe, dynamic 2D array container (`ctool::Array2D<T>
 - **Safety**: Bounds-checked access via `at(row, col)`.
 - **Flexibility**: Resizable dimensions, dynamic row addition.
 - **Math**: In-place scaling and addition operations.
-- **Performance**: Uses contiguous `std::vector` internally, avoiding overhead of raw pointers.
+- **Performance**: High-level abstraction over `std::vector<std::vector<T>>`.
 
 ## Usage Examples
 
 ### 1. Construction
 
 ```cpp
-#include "/array.hpp"
+#include "src/ctool/array2D.hpp"
 #include <iostream>
 #include <vector>
 
@@ -90,8 +90,9 @@ std::vector<std::vector<int>> vec = arr.toVector();
 ## Performance Notes
 
 - **Access**: `at(row, col)` is $O(1)$ but includes bounds checking (slower). `operator()(row, col)` is $O(1)$ with no checks (faster).
-- **Resize**: $O(N)$ where $N$ is the number of elements to reallocate/initialize.
-- **Memory**: `std::vector<std::vector<T>>` uses non-contiguous memory for rows. For high-performance linear algebra, consider a flat `std::vector<T>` with row-major indexing, but this module prioritizes safety and ease of use.
+- **Resize**: $O(N)$ where $N$ is the number of elements.
+- **Memory**: Uses a flat `std::vector<T>` for contiguous storage. This ensures high cache-locality and performance, making it suitable for linear algebra and interfacing with C-style APIs via `data()`.
+- **Note**: `toVector()` returns a copy. For read-only access to rows, prefer `sliceRow()`.
 
 ## Error Handling
 

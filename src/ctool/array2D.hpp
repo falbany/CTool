@@ -154,7 +154,13 @@ namespace ctool {
              * @brief Returns the underlying vector of vectors as a const reference.
              * @return const std::vector<std::vector<T>>&
              */
-            const std::vector<std::vector<T>>& toVector() const;
+            std::vector<std::vector<T>> toVector() const;
+
+            /**
+             * @brief Raw pointer access to contiguous data (interoperability).
+             */
+            T*       data() noexcept;
+            const T* data() const noexcept;
 
             /**
              * @brief Extracts a specific row as a 1D vector.
@@ -231,7 +237,12 @@ namespace ctool {
             T min() const;
 
           private:
-            std::vector<std::vector<T>> m_data;
+            std::vector<T> m_data;
+            size_t         m_rows;
+            size_t         m_cols;
+
+            // Helper to calculate 1D index
+            inline size_t index(size_t row, size_t col) const { return row * m_cols + col; }
         };
 
         /**

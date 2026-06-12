@@ -11,209 +11,216 @@
 #include <algorithm>
 #include <stdexcept>
 #include <cmath>
-#include "array2D.hpp" // Include the 2D array header to use ctool::array::Array
+#include "array2D.hpp"
 
 namespace ctool {
     namespace array {
 
         // --- Constructors ---
         template <typename T>
-        Array3D<T>::Array3D() = default;
+        Array3D<T>::Array3D() : m_depth(0), m_rows(0), m_cols(0) {}
 
         template <typename T>
-        Array3D<T>::Array3D(size_t depth, size_t rows, size_t cols, const T& initValue) {
-            if (depth == 0 || rows == 0 || cols == 0) {
-                m_data.clear();
-                return;
-            }
-            // Create 2D vector for each slice
-            m_data.resize(depth, std::vector<std::vector<T>>(rows, std::vector<T>(cols, initValue)));
-        }
+        Array3D<T>::Array3D(size_t depth, size_t rows, size_t cols, const T& initValue) 
+            : m_data(depth * rows * cols, initValue), m_depth(depth), m_rows(rows), m_cols(cols) {}
 
         template <typename T>
         Array3D<T>::Array3D(const std::vector<std::vector<std::vector<T>>>& data) {
             if (data.empty()) {
+                m_depth = 0;
+                m_rows = 0;
+                m_cols = 0;
                 return;
             }
 
-            size_t expectedRows = data[0].size();
-            size_t expectedCols = (expectedRows > 0) ? data[0][0].size() : 0;
+            m_depth = data.size();
+            m_rows = data[0].size();
+            m_cols = (m_rows > 0) ? data[0][0].size() : 0;
+            m_data.reserve(m_depth * m_rows * m_cols);
 
             for (const auto& slice : data) {
-                if (slice.size() != expectedRows) {
-                    throw std::invalid_argument("ctool::arrayInput data must have consistent row counts per slice.");
+                if (slice.size() != m_rows) {
+                    throw std::invalid_argument("ctool::array: Input data must have consistent row counts per slice.");
                 }
                 for (const auto& row : slice) {
-                    if (row.size() != expectedCols) {
+                    if (row.size() != m_cols) {
                         throw std::invalid_argument("ctool::array: Input data must have consistent column counts.");
                     }
+                    m_data.insert(m_data.end(), row.begin(), row.end());
                 }
             }
-            m_data = data;
         }
 
         // --- Dimensions ---
         template <typename T>
         size_t Array3D<T>::depth() const noexcept {
-            return m_data.size();
+            return m_depth;
         }
 
         template <typename T>
         size_t Array3D<T>::rows() const noexcept {
-            return m_data.empty() ? 0 : m_data[0].size();
+            return m_rows;
         }
 
         template <typename T>
         size_t Array3D<T>::cols() const noexcept {
-            return m_data.empty() || m_data[0].empty() ? 0 : m_data[0][0].size();
+            return m_cols;
         }
 
         template <typename T>
         size_t Array3D<T>::size() const noexcept {
-            return depth() * rows() * cols();
+            return m_data.size();
         }
 
         template <typename T>
         bool Array3D<T>::empty() const noexcept {
-            return m_data.empty() || m_data[0].empty() || m_data[0][0].empty();
+            return m_data.empty();
         }
 
         template <typename T>
         void Array3D<T>::clear() {
             m_data.clear();
+            m_depth = 0;
+            m_rows = 0;
+            m_cols = 0;
         }
 
         // --- Element Access ---
         template <typename T>
         T& Array3D<T>::at(size_t depth, size_t row, size_t col) {
-            if (depth >= m_data.size() || row >= m_data[depth].size() || col >= m_data[depth][0].size()) {
+            if (depth >= m_depth || row >= m_rows || col >= m_cols) {
                 throw std::out_of_range("ctool::array::at: Index out of bounds.");
             }
-            return m_data[depth][row][col];
+            return m_data[index(depth, row, col)];
         }
 
         template <typename T>
         const T& Array3D<T>::at(size_t depth, size_t row, size_t col) const {
-            if (depth >= m_data.size() || row >= m_data[depth].size() || col >= m_data[depth][0].size()) {
+            if (depth >= m_depth || row >= m_rows || col >= m_cols) {
                 throw std::out_of_range("ctool::array::at: Index out of bounds.");
             }
-            return m_data[depth][row][col];
+            return m_data[index(depth, row, col)];
         }
 
         template <typename T>
         T& Array3D<T>::operator()(size_t depth, size_t row, size_t col) {
-            return m_data[depth][row][col];
+            return m_data[index(depth, row, col)];
         }
 
         template <typename T>
         const T& Array3D<T>::operator()(size_t depth, size_t row, size_t col) const {
-            return m_data[depth][row][col];
+            return m_data[index(depth, row, col)];
+        }
+
+        template <typename T>
+        T* Array3D<T>::data() noexcept {
+            return m_data.data();
+        }
+
+        template <typename T>
+        const T* Array3D<T>::data() const noexcept {
+            return m_data.data();
         }
 
         // --- Operations ---
         template <typename T>
         void Array3D<T>::fill(const T& val) {
-            for (auto& slice : m_data) {
-                for (auto& row : slice) {
-                    row.assign(row.size(), val);
-                }
-            }
+            std::fill(m_data.begin(), m_data.end(), val);
         }
 
         template <typename T>
         void Array3D<T>::fillDepth(size_t depth, const T& val) {
-            if (depth >= m_data.size()) {
+            if (depth >= m_depth) {
                 throw std::out_of_range("ctool::array::fillDepth: Slice index out of bounds.");
             }
-            auto& slice = m_data[depth];
-            for (auto& row : slice) {
-                std::fill(row.begin(), row.end(), val);
-            }
+            std::fill(m_data.begin() + (depth * m_rows * m_cols), 
+                      m_data.begin() + ((depth + 1) * m_rows * m_cols), val);
         }
 
         template <typename T>
         void Array3D<T>::fillRow(size_t row, const T& val) {
-            if (empty() || row >= m_data[0].size()) {
+            if (row >= m_rows) {
                 throw std::out_of_range("ctool::array::fillRow: Row index out of bounds.");
             }
-            for (auto& slice : m_data) {
-                std::fill(slice[row].begin(), slice[row].end(), val);
+            for (size_t d = 0; d < m_depth; ++d) {
+                std::fill(m_data.begin() + index(d, row, 0), 
+                          m_data.begin() + index(d, row, m_cols), val);
             }
         }
 
         template <typename T>
         void Array3D<T>::fillColumn(size_t col, const T& val) {
-            if (empty() || col >= m_data[0][0].size()) {
+            if (col >= m_cols) {
                 throw std::out_of_range("ctool::array::fillColumn: Column index out of bounds.");
             }
-            for (auto& slice : m_data) {
-                for (auto& row : slice) {
-                    row[col] = val;
+            for (size_t d = 0; d < m_depth; ++d) {
+                for (size_t r = 0; r < m_rows; ++r) {
+                    m_data[index(d, r, col)] = val;
                 }
             }
         }
 
         template <typename T>
         void Array3D<T>::resize(size_t depth, size_t rows, size_t cols, const T& val) {
-            if (depth == 0 && rows == 0 && cols == 0) {
-                m_data.clear();
+            if (depth == 0 || rows == 0 || cols == 0) {
+                clear();
                 return;
             }
 
-            // Resize outer vector (depth)
-            if (depth > m_data.size()) {
-                m_data.resize(depth, std::vector<std::vector<T>>(rows, std::vector<T>(cols, val)));
+            if (rows == m_rows && cols == m_cols) {
+                m_data.resize(depth * rows * cols, val);
+                m_depth = depth;
             } else {
-                m_data.resize(depth);
-            }
+                std::vector<T> newData(depth * rows * cols, val);
+                size_t minDepth = std::min(depth, m_depth);
+                size_t minRows = std::min(rows, m_rows);
+                size_t minCols = std::min(cols, m_cols);
 
-            // Resize inner vectors (rows and cols)
-            for (auto& slice : m_data) {
-                if (slice.size() < rows) {
-                    slice.resize(rows, std::vector<T>(cols, val));
-                } else if (slice.size() > rows) {
-                    slice.resize(rows);
-                }
-                // Resize columns within each row
-                for (auto& row : slice) {
-                    if (row.size() < cols) {
-                        row.resize(cols, val);
-                    } else if (row.size() > cols) {
-                        row.resize(cols);
+                for (size_t d = 0; d < minDepth; ++d) {
+                    for (size_t r = 0; r < minRows; ++r) {
+                        for (size_t c = 0; c < minCols; ++c) {
+                            newData[(d * rows * cols) + (r * cols) + c] = m_data[index(d, r, c)];
+                        }
                     }
                 }
+                m_data = std::move(newData);
+                m_depth = depth;
+                m_rows = rows;
+                m_cols = cols;
             }
         }
 
         // --- Math / Transformation ---
         template <typename T>
         Array3D<T>& Array3D<T>::scale(double factor) {
-            for (auto& slice : m_data) {
-                for (auto& row : slice) {
-                    for (auto& val : row) {
-                        val = static_cast<T>(val * factor);
-                    }
-                }
+            for (auto& val : m_data) {
+                val = static_cast<T>(val * factor);
             }
             return *this;
         }
 
         template <typename T>
         Array3D<T>& Array3D<T>::add(double val) {
-            for (auto& slice : m_data) {
-                for (auto& row : slice) {
-                    for (auto& element : row) {
-                        element = static_cast<T>(element + val);
-                    }
-                }
+            for (auto& element : m_data) {
+                element = static_cast<T>(element + val);
             }
             return *this;
         }
 
         // --- Utility ---
         template <typename T>
-        const std::vector<std::vector<std::vector<T>>>& Array3D<T>::toVector() const {
-            return m_data;
+        std::vector<std::vector<std::vector<T>>> Array3D<T>::toVector() const {
+            std::vector<std::vector<std::vector<T>>> result(m_depth, 
+                std::vector<std::vector<T>>(m_rows, std::vector<T>(m_cols)));
+            
+            for (size_t d = 0; d < m_depth; ++d) {
+                for (size_t r = 0; r < m_rows; ++r) {
+                    for (size_t c = 0; c < m_cols; ++c) {
+                        result[d][r][c] = m_data[index(d, r, c)];
+                    }
+                }
+            }
+            return result;
         }
 
         template <typename T>
@@ -221,14 +228,7 @@ namespace ctool {
             if (empty()) {
                 throw std::runtime_error("ctool::array::max: Cannot get max of empty array.");
             }
-            T m = m_data[0][0][0];
-            for (const auto& slice : m_data) {
-                for (const auto& row : slice) {
-                    T row_max = *std::max_element(row.begin(), row.end());
-                    if (row_max > m) m = row_max;
-                }
-            }
-            return m;
+            return *std::max_element(m_data.begin(), m_data.end());
         }
 
         template <typename T>
@@ -236,22 +236,22 @@ namespace ctool {
             if (empty()) {
                 throw std::runtime_error("ctool::array::min: Cannot get min of empty array.");
             }
-            T m = m_data[0][0][0];
-            for (const auto& slice : m_data) {
-                for (const auto& row : slice) {
-                    T row_min = *std::min_element(row.begin(), row.end());
-                    if (row_min < m) m = row_min;
-                }
-            }
-            return m;
+            return *std::min_element(m_data.begin(), m_data.end());
         }
 
         template <typename T>
         ctool::array::Array2D<T> Array3D<T>::slice(size_t d) const {
-            if (d >= m_data.size()) {
+            if (d >= m_depth) {
                 throw std::out_of_range("ctool::array::slice: Slice index out of bounds.");
             }
-            return ctool::array::Array2D<T>(m_data[d]);
+            
+            ctool::array::Array2D<T> result(m_rows, m_cols);
+            for (size_t r = 0; r < m_rows; ++r) {
+                for (size_t c = 0; c < m_cols; ++c) {
+                    result(r, c) = m_data[index(d, r, c)];
+                }
+            }
+            return result;
         }
 
         // --- Stream Output ---
@@ -261,17 +261,13 @@ namespace ctool {
                << ", Rows: " << arr.rows() 
                << ", Cols: " << arr.cols() << "]:\n";
             
-            size_t depthsCount = arr.depth();
-            for (size_t i = 0; i < depthsCount; ++i) {
+            for (size_t i = 0; i < arr.depth(); ++i) {
                 os << "Slice " << i << ":\n";
-                const auto& slice = arr.m_data[i];
-                size_t rowsCount = slice.size();
-                for (size_t r = 0; r < rowsCount; ++r) {
+                for (size_t r = 0; r < arr.rows(); ++r) {
                     os << "  Row " << r << ": [";
-                    size_t colsCount = slice[r].size();
-                    for (size_t c = 0; c < colsCount; ++c) {
-                        os << slice[r][c];
-                        if (c < colsCount - 1) os << ", ";
+                    for (size_t c = 0; c < arr.cols(); ++c) {
+                        os << arr(i, r, c);
+                        if (c < arr.cols() - 1) os << ", ";
                     }
                     os << "]\n";
                 }

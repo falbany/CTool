@@ -55,7 +55,8 @@ namespace ctool {
             }
 
             for (size_t i = 0; i < array.rows(); ++i) {
-                df.pushRow(std::vector<Cell>(array.toVector()[i].begin(), array.toVector()[i].end()));
+                std::vector<double> rowData = array.sliceRow(i);
+                df.pushRow(std::vector<Cell>(rowData.begin(), rowData.end()));
             }
             return df;
         }

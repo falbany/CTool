@@ -158,7 +158,13 @@ namespace ctool {
              * @brief Returns the underlying nested vectors as a const reference.
              * @return const std::vector<std::vector<std::vector<T>>>&
              */
-            const std::vector<std::vector<std::vector<T>>>& toVector() const;
+            std::vector<std::vector<std::vector<T>>> toVector() const;
+
+            /**
+             * @brief Raw pointer access to contiguous data (interoperability).
+             */
+            T*       data() noexcept;
+            const T* data() const noexcept;
 
             /**
              * @brief Returns the maximum value in the array.
@@ -182,7 +188,13 @@ namespace ctool {
             ctool::array::Array2D<T> slice(size_t d) const;
 
           private:
-            std::vector<std::vector<std::vector<T>>> m_data;
+            std::vector<T> m_data;
+            size_t         m_depth;
+            size_t         m_rows;
+            size_t         m_cols;
+
+            // Helper to calculate 1D index
+            inline size_t index(size_t depth, size_t row, size_t col) const { return (depth * m_rows * m_cols) + (row * m_cols) + col; }
         };
 
         /**
